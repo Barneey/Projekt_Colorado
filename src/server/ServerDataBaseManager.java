@@ -32,16 +32,28 @@ public class ServerDataBaseManager {
 			Statement statement = connection.createStatement();
 			
 			String createUserTable = "CREATE TABLE users ("
-					+ "uid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
-					+ "Juser VARCHAR(24),"
-					+ "Jpassword VARCHAR(100),"
-					+ "JlastLoggin TIMESTAMP)";
+									+ "uid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
+									+ "Juser VARCHAR(24),"
+									+ "Jpassword VARCHAR(100),"
+									+ "JlastLoggin TIMESTAMP)";
 			statement.executeUpdate(createUserTable);
 			alstLog.add("Table users created");
 			log.setListData(alstLog.toArray(new String[0]));
 			
 			// INSERT INTO USERS(JUSER, JPASSWORD, JLASTLOGGIN) VALUES ('root', 'root', '1970-01-01 00:00:00');
 			//
+
+
+			alstLog.add("Creating Table chatChannels...");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			String createChatChannels = "CREATE TABLE chatChannels ("
+						+ "channelID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
+						+ "channelName VARCHAR(100))";
+			statement.executeUpdate(createChatChannels);
+			alstLog.add("Table chatChannels created");
+			log.setListData(alstLog.toArray(new String[0]));
+			
 			
 			alstLog.add("Creating Table chatMessages...");
 			log.setListData(alstLog.toArray(new String[0]));
@@ -49,6 +61,7 @@ public class ServerDataBaseManager {
 			String sql = "CREATE TABLE chatmessages ("
 						+ "messageid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
 						+ "user_uid INTEGER REFERENCES USERS (uid),"
+						+ "channel_cid INTEGER REFERENCES CHATCHANNELS (channelID),"
 						+ "message VARCHAR(100),"
 						+ "messagedate TIMESTAMP)";
 			statement.executeUpdate(sql);
@@ -102,6 +115,60 @@ public class ServerDataBaseManager {
 			new ServerResultFrame(e.getMessage());
 		}
 	}
+
+	public void deleteDataBaseManually(JList<String> log){
+		ArrayList<String> alstLog = new ArrayList<>();
+
+		try {
+			alstLog.add("Loading driver...");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			alstLog.add("Driver loaded");
+			log.setListData(alstLog.toArray(new String[0]));
+			alstLog.add("Deleting Tables...");
+			log.setListData(alstLog.toArray(new String[0]));
+			Connection connection = DriverManager.getConnection("jdbc:derby:" + ServerDataBase.DBNAME + ";");
+			Statement statement = connection.createStatement();
+			
+			String readAllTablesSQL = "SELECT * FROM SYS.SYSTABLES";
+			ResultSet allTables = statement.executeQuery(readAllTablesSQL);
+			ArrayList<String> allExistingUserTables = new ArrayList<>();
+			while(allTables.next()){
+				if(allTables.getString("TABLETYPE").equals("T")){
+					String tablename = allTables.getString("TABLENAME");
+					allExistingUserTables.add(tablename);
+				}
+			}
+			String chatmessages = "CHATMESSAGES";
+			if(allExistingUserTables.contains(chatmessages)){
+				dropTable(statement, chatmessages);
+				alstLog.add("Table \"" + chatmessages +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
+			}
+			
+			String chatchannels = "CHATCHANNELS";
+			if(allExistingUserTables.contains(chatchannels)){
+				dropTable(statement, chatchannels);
+				alstLog.add("Table \"" + chatmessages +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
+			}
+			
+			String users = "USERS";
+			if(allExistingUserTables.contains(users)){
+				dropTable(statement, users);
+				alstLog.add("Table \"" + users +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
+			}
+			
+			alstLog.add("Shutting down data base...");
+			log.setListData(alstLog.toArray(new String[0]));
+			alstLog.add("Data base shut down");
+			log.setListData(alstLog.toArray(new String[0]));
+			} catch (Exception e) {
+				new ServerResultFrame(e.getMessage());
+			}
+		}
 	
 	private void dropTable(Statement s, String tablename) throws SQLException{
 		s.execute("DROP TABLE " + tablename);

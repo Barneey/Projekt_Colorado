@@ -37,6 +37,7 @@ public class ServerResultFrame extends JFrame{
 		jtaResult.setEditable(false);
 		scrollPane.setViewportView(jtaResult);
 		pack();
+		setLocationRelativeTo(null);
 	}
 	
 	public void setMessage(ResultSet message){
@@ -44,6 +45,7 @@ public class ServerResultFrame extends JFrame{
 			JTable jtbResult = new JTable(resultSetToTableModel(null, message));
 			scrollPane.setViewportView(jtbResult);
 			pack();
+			setLocationRelativeTo(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

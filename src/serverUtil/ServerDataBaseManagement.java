@@ -98,7 +98,7 @@ public class ServerDataBaseManagement extends JFrame{
 	
 	public class ALDeleteDB implements ActionListener{
 		public void actionPerformed(ActionEvent ae){
-			sDBM.deleteDataBase(jlstLog);
+			sDBM.deleteDataBaseManually(jlstLog);
 		}
 	}
 }
