@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import server_client.User;
+
 public class LoginServer extends Thread{
 
 	private boolean running;

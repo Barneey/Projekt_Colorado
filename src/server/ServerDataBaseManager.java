@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.swing.JList;
 
 import serverUtil.ServerResultFrame;
+import server_client.User;
 
 public class ServerDataBaseManager {
 // Create Table
