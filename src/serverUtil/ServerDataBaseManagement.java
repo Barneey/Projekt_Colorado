@@ -14,6 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import server.ServerDataBaseManager;
 
@@ -63,17 +64,17 @@ public class ServerDataBaseManagement extends JFrame{
 				
 				jplAll.add(jplButtons, BorderLayout.NORTH);
 				
-			
-			jlstLog = new JList<>();
-			jlstLog.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-			jlstLog.setPreferredSize(new Dimension(300, 250));
-			jplAll.add(jlstLog, BorderLayout.CENTER);
+				jlstLog = new JList<>();
+				JScrollPane scpLog = new JScrollPane(jlstLog);
+				scpLog.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+				
+			jplAll.add(scpLog, BorderLayout.CENTER);
 		
 		add(jplAll, BorderLayout.CENTER);	
 			
 		pack();
+		setSize(new Dimension(this.getWidth() + 30, this.getHeight() + 100));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setResizable(false);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}

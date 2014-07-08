@@ -28,6 +28,7 @@ public class MainFrame extends JFrame{
 		super(JGSystem.NAME);
 		this.DEFAULT_MAIN_FRAMESIZE = new Dimension(1024, 768);
 		this.setSize(this.DEFAULT_MAIN_FRAMESIZE);
+		this.setLayout(new BorderLayout());
 		
 		this.jplnHeader = new JPanelMainFrameHeader();
 		this.jplnHeader.setSize(this.getWidth(), 100);
@@ -35,7 +36,6 @@ public class MainFrame extends JFrame{
 		
 		
 		
-		this.setLayout(new BorderLayout());
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WLMainFrame());
 		this.addComponentListener(new CLMainFrame());
