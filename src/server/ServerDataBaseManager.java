@@ -13,9 +13,6 @@ import serverUtil.ServerResultFrame;
 import server_client.User;
 
 public class ServerDataBaseManager {
-// Create Table
-// Add entry
-// Drop Table
 	
 	public static final int QUERY = 0;
 	public static final int UPDATE = 1;
@@ -52,8 +49,8 @@ public class ServerDataBaseManager {
 			log.setListData(alstLog.toArray(new String[0]));
 			
 			String createUserUserRelationshipTypes = "CREATE TABLE UserUserRelationshipTypes ("
-											+ "uurtid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
-											+ "rtype VARCHAR(255))";
+													+ "uurtid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
+													+ "rtype VARCHAR(255))";
 			statement.executeUpdate(createUserUserRelationshipTypes);
 			alstLog.add("Table UserUserRelationshipTypes created");
 			log.setListData(alstLog.toArray(new String[0]));
@@ -90,16 +87,63 @@ public class ServerDataBaseManager {
 			alstLog.add("Table UserUserRelationships created");
 			log.setListData(alstLog.toArray(new String[0]));
 			
+			//			###CREATING TABLE CHATCHANNELTYPES###
+			
+			alstLog.add("Creating Table chatChannelTypes...");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			String createChatChannelTypes = "CREATE TABLE chatChannelTypes("
+											+ "cctID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,"
+											+ "cctype VARCHAR(255))";
+			statement.executeUpdate(createChatChannelTypes);
+			
+			alstLog.add("Table chatChannelTypes created");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			//			###FILLING TABLE CHATCHANNELTYPES###
+			
+			alstLog.add("Filling Table chatChannelTypes");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			String insertChatChannelTypePrivate = "INSERT INTO CHATCHANNELTYPES (cctype) VALUES ('private')";
+			statement.execute(insertChatChannelTypePrivate);
+			
+			String insertChatChannelTypePermanent = "INSERT INTO CHATCHANNELTYPES (cctype) VALUES ('permanent')";
+			statement.execute(insertChatChannelTypePermanent);
+			
+			String insertChatChannelTypeCustom = "INSERT INTO CHATCHANNELTYPES (cctype) VALUES ('custom')";
+			statement.execute(insertChatChannelTypeCustom);
+			
+			alstLog.add("Table chatChannelTypes filled");
+			log.setListData(alstLog.toArray(new String[0]));
+			
 			//			###CREATING TABLE CHATCHANNELS###
 			
 			alstLog.add("Creating Table chatChannels...");
 			log.setListData(alstLog.toArray(new String[0]));
 			
 			String createChatChannels = "CREATE TABLE chatChannels ("
-						+ "channelID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
-						+ "channelName VARCHAR(100))";
+										+ "channelID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,"
+										+ "channelType INTEGER REFERENCES CHATCHANNELTYPES(cctID),"
+										+ "channelName VARCHAR(100))";
 			statement.executeUpdate(createChatChannels);
 			alstLog.add("Table chatChannels created");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			// 			###FILLING TABLE CHATCHANNELS
+			
+			alstLog.add("Filling Table chatChannels...");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			String insertChatChannelsHelp = "INSERT INTO CHATCHANNELS (channelType, channelName)" +
+											"VALUES ((SELECT cctid FROM chatChannelTypes where cctype = 'permanent'), 'Help')";
+			statement.executeUpdate(insertChatChannelsHelp);
+			
+			String insertChatChannelsJGame_DEU_1 = "INSERT INTO CHATCHANNELS (channelType, channelName)" +
+													"VALUES ((SELECT cctid FROM chatChannelTypes where cctype = 'permanent'), 'JGame DEU-1')";
+			statement.executeUpdate(insertChatChannelsJGame_DEU_1);
+			
+			alstLog.add("Table chatChannels filled");
 			log.setListData(alstLog.toArray(new String[0]));
 			
 			//			###CREATING TABLE USERCHANNELRELATIONSHIPTYPES###
@@ -257,6 +301,13 @@ public class ServerDataBaseManager {
 				alstLog.add("Table \"" + chatchannels +  "\" deleted");
 				log.setListData(alstLog.toArray(new String[0]));
 			}
+			
+			String chatChannelTypes = "CHATCHANNELTYPES";
+			if(allExistingUserTables.contains(chatChannelTypes)){
+				dropTable(statement, chatChannelTypes);
+				alstLog.add("Table \"" + chatChannelTypes +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
+			}
 
 			String userUserRelationships = "USERUSERRELATIONSHIPS";
 			if(allExistingUserTables.contains(userUserRelationships)){
@@ -338,5 +389,5 @@ public class ServerDataBaseManager {
 			new ServerResultFrame(e.getMessage());
 		}
 		return user;
-	}
+	}	
 }
