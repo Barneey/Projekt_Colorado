@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 import server_client.User;
 
@@ -106,7 +107,6 @@ public class LoginFrame extends JFrame
 		txtflPassword.addFocusListener(new flTextFieldSelection(txtflPassword));
 		txtflPassword.setSize(textFieldDimension);
 		txtflPassword.setLocation(startX + 95, startY + 35);
-		txtflPassword.setFont(JGSystem.FONT_SMALL);
 		txtflPassword.setForeground(JGSystem.COLOR_TEXT);
 		this.add(txtflPassword);
 		
@@ -183,6 +183,11 @@ public class LoginFrame extends JFrame
 	
 	public static void main(String args[])
 	{
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		new LoginFrame();
 	}
 	

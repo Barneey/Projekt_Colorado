@@ -22,7 +22,7 @@ public class MainFrame extends JFrame{
 	
 	
 	private final Dimension DEFAULT_MAIN_FRAMESIZE; 
-	private JPanelMainFrameHeader jplnHeader;
+	private JPanelMainFrameHeader jpnlHeader;
 
 	public MainFrame(User user) {
 		super(JGSystem.NAME);
@@ -30,11 +30,14 @@ public class MainFrame extends JFrame{
 		this.setSize(this.DEFAULT_MAIN_FRAMESIZE);
 		this.setLayout(new BorderLayout());
 		
-		this.jplnHeader = new JPanelMainFrameHeader();
-		this.jplnHeader.setSize(this.getWidth(), 100);
-		this.add(jplnHeader, BorderLayout.NORTH);
+		this.jpnlHeader = new JPanelMainFrameHeader();
+		this.jpnlHeader.setSize(this.getWidth(), 100);
+		this.add(jpnlHeader, BorderLayout.NORTH);
+		
+		JPanel jpnlMainContent = new JPanel();
 		
 		
+		this.add(jpnlMainContent, BorderLayout.CENTER);
 		
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WLMainFrame());
@@ -59,7 +62,7 @@ public class MainFrame extends JFrame{
 
 		@Override
 		public void componentResized(ComponentEvent e) {
-			jplnHeader.setSize(getWidth(), 100);
+			jpnlHeader.setSize(getWidth(), 100);
 			
 		}
 
