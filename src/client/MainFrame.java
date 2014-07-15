@@ -1,12 +1,17 @@
 package client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -22,28 +27,81 @@ public class MainFrame extends JFrame{
 	
 	
 	private final Dimension DEFAULT_MAIN_FRAMESIZE; 
-	private JPanelMainFrameHeader jpnlHeader;
 
 	public MainFrame(User user) {
 		super(JGSystem.NAME);
 		this.DEFAULT_MAIN_FRAMESIZE = new Dimension(1024, 768);
 		this.setSize(this.DEFAULT_MAIN_FRAMESIZE);
+		this.setMaximumSize(this.DEFAULT_MAIN_FRAMESIZE);
 		this.setLayout(new BorderLayout());
 		
-		this.jpnlHeader = new JPanelMainFrameHeader();
-		this.jpnlHeader.setSize(this.getWidth(), 100);
-		this.add(jpnlHeader, BorderLayout.NORTH);
-		
-		JPanel jpnlMainContent = new JPanel();
-		
-		
-		this.add(jpnlMainContent, BorderLayout.CENTER);
-		
+			JPanel jpnlMainPanel = new JPanel();
+			jpnlMainPanel.setLayout(null);
+				JPanelMainFrameHeader jpnlHeader = new JPanelMainFrameHeader();
+				jpnlHeader.scaleTo(DEFAULT_MAIN_FRAMESIZE.width, 110);
+				jpnlHeader.setLocation(0, 0);
+			jpnlMainPanel.add(jpnlHeader);
+			
+				UserPanel userPanel = new UserPanel(user);
+				userPanel.setLocation(0, 110);
+			jpnlMainPanel.add(userPanel);
+			
+		this.add(jpnlMainPanel, BorderLayout.CENTER);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WLMainFrame());
-		this.addComponentListener(new CLMainFrame());
+//		this.addMouseListener(new MLMainFrame());
+//		this.addComponentListener(new CLMainFrame());
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+	}
+	
+	@Override
+    public void paint(Graphics g) {
+        Dimension currentSize = getSize();
+        Dimension maximumSize = getMaximumSize();
+
+        if (currentSize.width > maximumSize.width || currentSize.height > maximumSize.height) {
+            currentSize.width = Math.min(maximumSize.width, currentSize.width);
+            currentSize.height = Math.min(maximumSize.height, currentSize.height);
+            Point p = getLocation();
+            p.setLocation(Math.max(p.x, 0),  Math.max(p.y, 0));
+            setSize(currentSize);
+            setLocation(p);
+        }
+        super.paint(g);
+    }
+	
+	private class MLMainFrame implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+
+		}
+		
 	}
 	
 	private class CLMainFrame implements ComponentListener{
@@ -62,8 +120,6 @@ public class MainFrame extends JFrame{
 
 		@Override
 		public void componentResized(ComponentEvent e) {
-			jpnlHeader.setSize(getWidth(), 100);
-			
 		}
 
 		@Override
@@ -123,6 +179,5 @@ public class MainFrame extends JFrame{
 		}
 		
 	}
-	
 	
 }

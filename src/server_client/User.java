@@ -6,18 +6,21 @@ import java.util.Date;
 
 public class User implements Serializable{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6199635274651607854L;
-	private String name;
-	private char[] password;
-	private Date lastLogin;
-	private boolean validLogin;
 	private int id;
+	private String username;
+	private char[] password;
+	private boolean validLogin;
+	private String nick;
+	private int level;
+	private int levelUpExp;
+	private int currentExp;
+	private int rCoins;
+	private int vCoins;
+	private Date lastLogin;
 	
 	public User(String name, char[] password){
-		this.name = name;
+		this.username = name;
 		this.password = password;
 		try {
 			this.lastLogin = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("1970-01-01 00:00:00");
@@ -29,12 +32,12 @@ public class User implements Serializable{
 		this.id = -1;
 	}
 
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public char[] getPassword() {
@@ -61,11 +64,56 @@ public class User implements Serializable{
 		this.validLogin = validLogin;
 	}
 
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
 	public int getId() {
 		return id;
 	}
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getrCoins() {
+		return rCoins;
+	}
+
+	public void setrCoins(int rCoins) {
+		this.rCoins = rCoins;
+	}
+
+	public int getvCoins() {
+		return vCoins;
+	}
+
+	public void setvCoins(int vCoins) {
+		this.vCoins = vCoins;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+		this.levelUpExp = ((int)(Math.pow(this.level, 3.8/3.0) * 100 + 100) / 100) * 100;
+	}
+
+	public int getLevelUpExp() {
+		return levelUpExp;
+	}
+
+	public int getCurrentExp() {
+		return currentExp;
+	}
+
+	public void setCurrentExp(int currentExp) {
+		this.currentExp = currentExp;
 	}
 }

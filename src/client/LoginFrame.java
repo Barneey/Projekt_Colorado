@@ -1,4 +1,5 @@
 package client;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -117,7 +118,6 @@ public class LoginFrame extends JFrame
 		jlbWrongLoginNotification.setForeground(JGSystem.COLOR_ERROR);
 		this.add(jlbWrongLoginNotification);
 		
-		
 		jlbCapsNotification = new JLabel();
 		this.checkOnCapslock();
 		jlbCapsNotification.setSize(textLabelDimension);
@@ -192,6 +192,8 @@ public class LoginFrame extends JFrame
 	}
 	
 	private void login(){
+		// Cursor does not change when method is called after using Return-Key (Mouse-Click works)
+	    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		User user = dbCon.loginUser(new User(txtflUsername.getText(), txtflPassword.getPassword()));
 		if(user.isValidLogin()){
 			this.usc.setSavedUsername(jchbxRememberUsername.isSelected());
@@ -205,6 +207,7 @@ public class LoginFrame extends JFrame
 		}else{
 			jlbWrongLoginNotification.setText("Login failed!");
 		}
+	    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 	
 	private void checkOnCapslock(){

@@ -25,23 +25,28 @@ public class ServerDataBaseManager {
 			alstLog.add("Connecting...");
 			log.setListData(alstLog.toArray(new String[0]));
 			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
 
 			//			###CREATING TABLE USERS###
 			
 			alstLog.add("Creating Table users...");
 			log.setListData(alstLog.toArray(new String[0]));
-			Statement statement = connection.createStatement();
 			
-			String createUserTable = "CREATE TABLE users ("
+			String createUsers = "CREATE TABLE users ("
 									+ "uid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
-									+ "Juser VARCHAR(24),"
-									+ "Jpassword VARCHAR(100),"
-									+ "JlastLoggin TIMESTAMP)";
-			statement.executeUpdate(createUserTable);
+									+ "Juser VARCHAR(24) NOT NULL,"
+									+ "Jpassword VARCHAR(100) NOT NULL,"
+									+ "Jnick VARCHAR(24),"
+									+ "level INTEGER DEFAULT 1,"
+									+ "currentExp INTEGER DEFAULT 0,"
+									+ "rCoins INTEGER DEFAULT 0,"
+									+ "vCoins INTEGER DEFAULT 0,"
+									+ "JlastLoggin TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+			statement.executeUpdate(createUsers);
 			alstLog.add("Table users created");
 			log.setListData(alstLog.toArray(new String[0]));
 			
-			// INSERT INTO USERS(JUSER, JPASSWORD, JLASTLOGGIN) VALUES ('root', 'root', '1970-01-01 00:00:00')
+			// INSERT INTO USERS(JUSER, JPASSWORD) VALUES ('root', 'root')
 
 			//			###CREATING TABLE USERUSERRELATIONSHIPTYPES###
 			
@@ -330,6 +335,12 @@ public class ServerDataBaseManager {
 				log.setListData(alstLog.toArray(new String[0]));
 			}
 			
+			String levelRanges = "LEVELRANGES";
+			if(allExistingUserTables.contains(levelRanges)){
+				dropTable(statement, levelRanges);
+				alstLog.add("Table \"" + levelRanges +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
+			}
 			
 			alstLog.add("Shutting down data base...");
 			log.setListData(alstLog.toArray(new String[0]));
@@ -377,10 +388,16 @@ public class ServerDataBaseManager {
 			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
-			String sqlStatement = "SELECT * FROM users WHERE juser='" + user.getName() + "' AND jpassword='" + new String(user.getPassword()) + "'";
+			String sqlStatement = "SELECT * FROM users WHERE juser='" + user.getUsername() + "' AND jpassword='" + new String(user.getPassword()) + "'";
 			ResultSet rs = statement.executeQuery(sqlStatement);
 			if (rs.next()) {
+				user.setId(rs.getInt("uid"));
 				user.setValidLogin(true);
+				user.setNick(rs.getString("jnick"));
+				user.setLevel(rs.getInt("level"));
+				user.setCurrentExp(rs.getInt("currentExp"));
+				user.setrCoins(rs.getInt("rcoins"));
+				user.setvCoins(rs.getInt("vcoins"));
 				user.setLastLogin(rs.getDate("jlastloggin"));
 			}
 			statement.close();

@@ -26,7 +26,11 @@ public class JPanelMainFrameHeader extends JPanel{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+	}
+	
+	public void scaleTo(int width, int height){
+		setSize(width, height);
+		scaleImage();
 	}
 	
 	private void scaleImage(){
@@ -43,8 +47,6 @@ public class JPanelMainFrameHeader extends JPanel{
 	
    @Override
 	protected void paintComponent(Graphics g) {
-		scaleImage();
-		super.paintComponent(g);
 		g.drawImage(biHeaderScaled, 0, 0, null);        
 	}
 
