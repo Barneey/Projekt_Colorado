@@ -33,7 +33,7 @@ public class ServerResultFrame extends JFrame{
 	}
 	
 	public void setMessage(String message){		
-		JTextArea jtaResult = new JTextArea(message, 1, 50);
+		JTextArea jtaResult = new JTextArea(message, 1, message.length());
 		jtaResult.setEditable(false);
 		scrollPane.setViewportView(jtaResult);
 		pack();

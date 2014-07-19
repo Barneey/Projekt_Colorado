@@ -9,6 +9,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,9 +30,11 @@ public class MainFrame extends JFrame{
 	
 	
 	private final Dimension DEFAULT_MAIN_FRAMESIZE; 
+	private DatabaseConnection dbCon;
 
 	public MainFrame(User user) {
 		super(JGSystem.NAME);
+		this.dbCon = DatabaseConnection.getInstance();
 		this.DEFAULT_MAIN_FRAMESIZE = new Dimension(1024, 768);
 		this.setSize(this.DEFAULT_MAIN_FRAMESIZE);
 		this.setMaximumSize(this.DEFAULT_MAIN_FRAMESIZE);
@@ -53,6 +58,26 @@ public class MainFrame extends JFrame{
 //		this.addComponentListener(new CLMainFrame());
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		
+		if(!checkNickname(user)){
+			requestNickname(user);
+			userPanel.updatePanel(user);
+			revalidate();
+		}
+		updateLoginDate(user);
+	}
+	
+	private void updateLoginDate(User user){
+		user.setLastLogin(new Date());
+		dbCon.updateUser(user, DatabaseConnection.LOGIN_PORT);
+	}
+	
+	private void requestNickname(User user){
+		new RequestNicknameFrame(user);
+	}
+	
+	private boolean checkNickname(User user){
+		return user.getNick() != null;
 	}
 	
 	@Override
@@ -150,7 +175,7 @@ public class MainFrame extends JFrame{
 			int answer = JOptionPane.showOptionDialog(null, "Are you sure you want to exit the JGame Collection?", "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, object, object[1]);
 			if(answer == 0)
 			{
-				JGSystem.exit();
+				JGSystem.getInstance().exit();
 			}	
 		}
 

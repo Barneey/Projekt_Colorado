@@ -23,17 +23,48 @@ import server_client.User;
 public class DatabaseConnection {
 	
 	private String serverAddressLogin;
-	private int portLogin;
+	public static final int LOGIN_PORT = 4711;
+	public static final int CHAT_PORT = 4712;
+	public static final int CASH_PORT = 4713;
+	private static DatabaseConnection instance;
 
-	public DatabaseConnection() {
+	private DatabaseConnection() {
 		serverAddressLogin = "localhost";
-		portLogin = 4711;
+	}
+	
+	public static DatabaseConnection getInstance(){
+		if(instance == null){
+			instance = new DatabaseConnection();
+		}
+		return instance;
+	}
+	
+	public boolean validateUniqueNickname(String nickname){
+		boolean isUniqueNickname = false;
+		try {
+			Socket loginSocket = new Socket(serverAddressLogin, LOGIN_PORT);
+			
+			OutputStream outputStream = loginSocket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+			objectOutputStream.writeObject("CHECK_UNIQUE_NICKNAME");
+			objectOutputStream.writeObject(nickname);
+			objectOutputStream.flush();
+
+			InputStream inputStream = loginSocket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			isUniqueNickname = objectInputStream.readBoolean();
+			
+			
+			loginSocket.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return isUniqueNickname;
 	}
 	
 	public User loginUser(User user){
 		try {
-
-			Socket loginSocket = new Socket(serverAddressLogin, portLogin);
+			Socket loginSocket = new Socket(serverAddressLogin, LOGIN_PORT);
 			
 			OutputStream outputStream = loginSocket.getOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
@@ -52,5 +83,24 @@ public class DatabaseConnection {
 			new ErrorFrame("User verification failed!");
 		}
 		return user;
+	}
+	
+	public void updateUser(User user, int port){
+		if(port == LOGIN_PORT || port == CASH_PORT){
+			try {
+				Socket loginSocket = new Socket(serverAddressLogin, port);
+				
+				OutputStream outputStream = loginSocket.getOutputStream();
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+						outputStream);
+				objectOutputStream.writeObject("UPDATE_USER");
+				objectOutputStream.writeObject(user);
+				objectOutputStream.flush();
+
+				loginSocket.close();			
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

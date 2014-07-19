@@ -64,7 +64,7 @@ public class LoginFrame extends JFrame
 		this.loginframe = this;
 		this.startX = 85;
 		this.startY = 100;
-		this.dbCon = new DatabaseConnection();
+		this.dbCon = DatabaseConnection.getInstance();
 		this.usc = UserSettingsClient.getInstance();
 		
 		this.textFieldDimension = new Dimension(200, 25);

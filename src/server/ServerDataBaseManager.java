@@ -5,7 +5,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.JList;
 
@@ -230,14 +234,12 @@ public class ServerDataBaseManager {
 			log.setListData(alstLog.toArray(new String[0]));
 			Connection connection = DriverManager.getConnection("jdbc:derby:" + ServerDataBase.DBNAME + ";");
 			Statement statement = connection.createStatement();
-			String readAllTablesSQL = "SELECT * FROM SYS.SYSTABLES";
+			String readAllTablesSQL = "SELECT * FROM SYS.SYSTABLES WHERE TYBLETYPE = 'T'";
 			ResultSet allTables = statement.executeQuery(readAllTablesSQL);
 			ArrayList<String> tables = new ArrayList<>();
 			while(allTables.next()){
-				if(allTables.getString("TABLETYPE").equals("T")){
-					String tablename = allTables.getString("TABLENAME");
-					tables.add(tablename);
-				}
+				String tablename = allTables.getString("TABLENAME");
+				tables.add(tablename);
 			}
 			for (String table : tables) {
 				dropTable(statement, table);
@@ -269,14 +271,12 @@ public class ServerDataBaseManager {
 			Connection connection = DriverManager.getConnection("jdbc:derby:" + ServerDataBase.DBNAME + ";");
 			Statement statement = connection.createStatement();
 			
-			String readAllTablesSQL = "SELECT * FROM SYS.SYSTABLES";
+			String readAllTablesSQL = "SELECT * FROM SYS.SYSTABLES WHERE TABLETYPE = 'T'";
 			ResultSet allTables = statement.executeQuery(readAllTablesSQL);
 			ArrayList<String> allExistingUserTables = new ArrayList<>();
 			while(allTables.next()){
-				if(allTables.getString("TABLETYPE").equals("T")){
-					String tablename = allTables.getString("TABLENAME");
-					allExistingUserTables.add(tablename);
-				}
+				String tablename = allTables.getString("TABLENAME");
+				allExistingUserTables.add(tablename);
 			}
 			
 			String chatmessages = "CHATMESSAGES";
@@ -398,7 +398,7 @@ public class ServerDataBaseManager {
 				user.setCurrentExp(rs.getInt("currentExp"));
 				user.setrCoins(rs.getInt("rcoins"));
 				user.setvCoins(rs.getInt("vcoins"));
-				user.setLastLogin(rs.getDate("jlastloggin"));
+				user.setLastLogin(rs.getTimestamp("jlastloggin"));
 			}
 			statement.close();
 			connection.close();
@@ -407,4 +407,49 @@ public class ServerDataBaseManager {
 		}
 		return user;
 	}	
+
+	public boolean checkUniqueNickname(String nickname){
+		boolean isUnique = false;
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			String sqlStatement = "SELECT * FROM users WHERE jnick='" + nickname + "'";
+			ResultSet rs = statement.executeQuery(sqlStatement);
+			isUnique = !rs.next();
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			new ServerResultFrame(e.getMessage());
+		}
+		return isUnique; 
+	}
+
+	public void updateUser(User user){
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+
+			DateFormat dtfLastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String lastLoginDate = dtfLastLogin.format(user.getLastLogin());
+
+			String sqlStatement = "UPDATE users SET "
+									+ "jnick='" + user.getNick() + "',"
+									+ "level=" + user.getLevel() + ","
+									+ "currentexp=" + user.getCurrentExp() + ","
+									+ "rcoins=" + user.getrCoins() + ","
+									+ "vcoins=" + user.getvCoins() + ","
+									+ "jlastloggin='" + lastLoginDate + "' "
+									+ "WHERE uid=" + user.getId();
+			statement.executeUpdate(sqlStatement);
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			new ServerResultFrame(e.getMessage());
+		}
+	}
 }
