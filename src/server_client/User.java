@@ -17,6 +17,7 @@ public class User implements Serializable{
 	private int currentExp;
 	private int rCoins;
 	private int vCoins;
+	private int points;
 	private Date lastLogin;
 	
 	public User(String name, char[] password){
@@ -115,5 +116,13 @@ public class User implements Serializable{
 
 	public void setCurrentExp(int currentExp) {
 		this.currentExp = currentExp;
+	}
+
+	public int getPoints() {
+		return points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
 	}
 }

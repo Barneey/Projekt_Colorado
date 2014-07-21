@@ -45,6 +45,7 @@ public class ServerDataBaseManager {
 									+ "currentExp INTEGER DEFAULT 0,"
 									+ "rCoins INTEGER DEFAULT 0,"
 									+ "vCoins INTEGER DEFAULT 0,"
+									+ "points INTEGER DEFAULT 0,"
 									+ "JlastLoggin TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 			statement.executeUpdate(createUsers);
 			alstLog.add("Table users created");
@@ -398,6 +399,7 @@ public class ServerDataBaseManager {
 				user.setCurrentExp(rs.getInt("currentExp"));
 				user.setrCoins(rs.getInt("rcoins"));
 				user.setvCoins(rs.getInt("vcoins"));
+				user.setPoints(rs.getInt("points"));
 				user.setLastLogin(rs.getTimestamp("jlastloggin"));
 			}
 			statement.close();

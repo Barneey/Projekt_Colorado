@@ -51,6 +51,10 @@ public class MainFrame extends JFrame{
 				userPanel.setLocation(0, 110);
 			jpnlMainPanel.add(userPanel);
 			
+				ChatPanel chatPanel = new ChatPanel(user);
+				chatPanel.setLocation(0, 120 + userPanel.getHeight());
+			jpnlMainPanel.add(chatPanel);
+			
 		this.add(jpnlMainPanel, BorderLayout.CENTER);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WLMainFrame());
