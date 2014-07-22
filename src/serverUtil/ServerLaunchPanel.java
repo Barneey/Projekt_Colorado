@@ -1,7 +1,5 @@
 package serverUtil;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,11 +7,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import server.ChatServer;
 import server.LoginServer;
 
 public class ServerLaunchPanel extends JPanel{
 	
-
 	private String name;
 	private boolean running;
 	private Thread thread;
@@ -48,7 +46,9 @@ public class ServerLaunchPanel extends JPanel{
 			if(thread.isAlive()){
 				if(thread.getClass() == LoginServer.class){
 					((LoginServer)thread).continueMe();
-				}else{
+				}else if(thread.getClass() == ChatServer.class){
+					((ChatServer)thread).continueMe();
+				}else if(true){
 					// TODO Extend for more possible servers
 				}
 			}else{
@@ -65,8 +65,11 @@ public class ServerLaunchPanel extends JPanel{
 		public void actionPerformed(ActionEvent ae){
 			if(thread.getClass() == LoginServer.class){
 				((LoginServer)thread).stopMe();
-			}else{
+			}else if(thread.getClass() == ChatServer.class){
+				((ChatServer)thread).stopMe();
+			}else if(true){
 				// TODO Extend for more possible servers
+			
 			}
 			running = false;
 			statusLamp.setStatus(running);

@@ -104,8 +104,10 @@ public class DatabaseConnection {
 				objectOutputStream.flush();
 
 				loginSocket.close();			
+			}catch (SocketException e){
+				new ErrorFrame("Server unreachable!");
 			} catch (Exception e) {
-				e.printStackTrace();
+				new ErrorFrame("An unknown Error occoured");
 			}
 		}
 	}
@@ -126,8 +128,10 @@ public class DatabaseConnection {
 			
 			chatSocket.close();
 			
+		}catch (SocketException e){
+			new ErrorFrame("Chat Server unreachable!");
 		} catch (Exception e) {
-			e.printStackTrace();
+			new ErrorFrame("An unknown Error occoured");
 		}
 		return channels;
 	}
