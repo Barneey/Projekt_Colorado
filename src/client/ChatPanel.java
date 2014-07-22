@@ -3,9 +3,12 @@ package client;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,6 +26,7 @@ public class ChatPanel extends JPanel{
 	private JTextField jtxtChannelName;
 	private JList<ChatChannel> jlstChannels;
 	private DatabaseConnection dbCon;
+	private JButton jbttnJoin;
 	
 	public ChatPanel(User user){
 		setLayout(null);
@@ -32,9 +36,11 @@ public class ChatPanel extends JPanel{
 		jtxtChannelName = new JTextField("Deu-1", 20);
 		jtxtChannelName.setSize(100, 25);
 		jtxtChannelName.setLocation(10, 10);
+		jtxtChannelName.addFocusListener(new FLChatChannel());
+		jtxtChannelName.setDocument(new LengthRestrictedDocument(20));
 		this.add(jtxtChannelName);
 		
-		JButton jbttnJoin = new JButton("Join");
+		jbttnJoin = new JButton("Join");
 		jbttnJoin.setSize(70, 25);
 		jbttnJoin.setLocation(120, 10);
 		jbttnJoin.addActionListener(new ALJoinChannel());
@@ -54,14 +60,30 @@ public class ChatPanel extends JPanel{
 		this.setSize(200, 450);
 	}
 	
+	private class FLChatChannel implements FocusListener{
+
+		@Override
+		public void focusGained(FocusEvent arg0) {
+			jtxtChannelName.selectAll();
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
 	private class MAChannelList implements MouseListener{
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			jtxtChannelName.setText(jlstChannels.getModel().getElementAt(jlstChannels.locationToIndex(e.getPoint())).toString());
 			if(e.getClickCount() >= 2){
 				int index = jlstChannels.locationToIndex(e.getPoint());
 				new ChatFrame(jlstChannels.getModel().getElementAt(index));
-			}	
+			}
 		}
 
 		@Override
@@ -95,13 +117,29 @@ public class ChatPanel extends JPanel{
 		ChatChannel[] chatChannels = dbCon.getAllPublicChannels();
 		if(chatChannels != null){
 			jlstChannels.setListData(chatChannels);
+		}else{
+			jbttnJoin.setEnabled(false);
+			jlstChannels.setEnabled(false);
+			jtxtChannelName.setEnabled(false);
 		}
 	}
 	
 	private class ALJoinChannel implements ActionListener{
 		
 		public void actionPerformed(ActionEvent ae){
-			
+			ArrayList<ChatChannel> channels = new ArrayList<>();
+			for (int i = 0; i < jlstChannels.getModel().getSize(); i++) {
+				channels.add(jlstChannels.getModel().getElementAt(i));
+			}
+			boolean channelExists = false;
+			ChatChannel channel = new ChatChannel(-1, "", jtxtChannelName.getText());
+			for (ChatChannel chatChannel : channels) {
+				if(!channelExists && chatChannel.getChannelName().equals(channel.getChannelName())){
+					channelExists = true;
+					channel = chatChannel;
+				}
+			}
+			new ChatFrame(channel, channelExists);
 		}
 	}
 }
