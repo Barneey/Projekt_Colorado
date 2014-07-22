@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 
 import server_client.User;
 
@@ -45,6 +46,8 @@ public class LoginServer extends Thread{
 							sDBM.verifyUser(user);
 							objectOutputStream.writeObject(user);
 							objectOutputStream.flush();
+							user.setLastLogin(new Date());
+							sDBM.updateUser(user);
 							break;
 						case "CHECK_UNIQUE_NICKNAME":
 							String nickname = objectInputStream.readObject().toString();

@@ -76,13 +76,13 @@ public class MainFrame extends JFrame{
 			userPanel.updatePanel(user);
 			revalidate();
 		}
-		updateLoginDate(user);
+//		updateLoginDate(user);
 	}
 	
-	private void updateLoginDate(User user){
-		user.setLastLogin(new Date());
-		dbCon.updateUser(user, DatabaseConnection.LOGIN_PORT);
-	}
+//	private void updateLoginDate(User user){
+//		user.setLastLogin(new Date());
+//		dbCon.updateUser(user, DatabaseConnection.LOGIN_PORT);
+//	}
 	
 	private void requestNickname(User user){
 		new RequestNicknameFrame(user);
