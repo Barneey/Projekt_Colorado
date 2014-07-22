@@ -1,5 +1,7 @@
 package serverUtil;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,18 +14,21 @@ import server.LoginServer;
 
 public class ServerLaunchPanel extends JPanel{
 	
+
 	private String name;
 	private boolean running;
 	private Thread thread;
 	private JButton jbttnStart;
 	private JButton jbttnStop;
 	private ServerStatusPanel statusLamp;
+	private Class serverClass;
 	
 	public ServerLaunchPanel(String name, Thread thread){
 		super();
 		this.name = name;
 		this.thread = thread;
 		this.running = false;
+		this.serverClass = thread.getClass();
 		
 		JLabel jlbName = new JLabel(this.name);
 		add(jlbName);
@@ -65,11 +70,10 @@ public class ServerLaunchPanel extends JPanel{
 		public void actionPerformed(ActionEvent ae){
 			if(thread.getClass() == LoginServer.class){
 				((LoginServer)thread).stopMe();
-			}else if(thread.getClass() == ChatServer.class){
+			}else if(serverClass == ChatServer.class){
 				((ChatServer)thread).stopMe();
 			}else if(true){
 				// TODO Extend for more possible servers
-			
 			}
 			running = false;
 			statusLamp.setStatus(running);

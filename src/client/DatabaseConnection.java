@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import javax.xml.ws.Endpoint;
 
@@ -29,6 +30,7 @@ public class DatabaseConnection {
 	public static final int CHAT_PORT = 4712;
 	public static final int CASH_PORT = 4713;
 	private static DatabaseConnection instance;
+	private final int TIMEOUT = 10000;
 
 	private DatabaseConnection() {
 		serverAddressLogin = "localhost";
@@ -47,6 +49,8 @@ public class DatabaseConnection {
 		try {
 			Socket loginSocket = new Socket(serverAddressLogin, LOGIN_PORT);
 			
+			loginSocket.setSoTimeout(TIMEOUT);
+			
 			OutputStream outputStream = loginSocket.getOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 			objectOutputStream.writeObject("CHECK_UNIQUE_NICKNAME");
@@ -61,6 +65,8 @@ public class DatabaseConnection {
 			loginSocket.close();
 		}catch (SocketException e){
 			new ErrorFrame("Login Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
 		}
@@ -70,6 +76,8 @@ public class DatabaseConnection {
 	public User loginUser(User user){
 		try {
 			Socket loginSocket = new Socket(serverAddressLogin, LOGIN_PORT);
+			
+			loginSocket.setSoTimeout(TIMEOUT);
 			
 			OutputStream outputStream = loginSocket.getOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
@@ -84,7 +92,10 @@ public class DatabaseConnection {
 			loginSocket.close();			
 		}catch (SocketException e){
 			new ErrorFrame("Login Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
 		} catch (Exception e) {
+			e.printStackTrace();
 			new ErrorFrame("User verification failed!");
 		}
 		return user;
@@ -94,18 +105,22 @@ public class DatabaseConnection {
 		if(port == LOGIN_PORT || port == CASH_PORT){
 			try {
 				String serverAddress = (port == LOGIN_PORT ? serverAddressLogin : serverAddressChat);
-				Socket loginSocket = new Socket(serverAddress, port);
+				Socket socket = new Socket(serverAddress, port);
 				
-				OutputStream outputStream = loginSocket.getOutputStream();
+				socket.setSoTimeout(TIMEOUT);
+				
+				OutputStream outputStream = socket.getOutputStream();
 				ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 						outputStream);
 				objectOutputStream.writeObject("UPDATE_USER");
 				objectOutputStream.writeObject(user);
 				objectOutputStream.flush();
 
-				loginSocket.close();			
+				socket.close();			
 			}catch (SocketException e){
 				new ErrorFrame("Server unreachable!");
+			} catch (SocketTimeoutException e){
+				new ErrorFrame("Connection timed out");
 			} catch (Exception e) {
 				new ErrorFrame("An unknown Error occoured");
 			}
@@ -116,7 +131,9 @@ public class DatabaseConnection {
 		ChatChannel[] channels = null;
 		try {
 			Socket chatSocket = new Socket(serverAddressLogin, CHAT_PORT);
-		
+			
+			chatSocket.setSoTimeout(TIMEOUT);
+			
 			OutputStream outputStream = chatSocket.getOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 			objectOutputStream.writeObject("GET_ALL_PUBLIC_CHANNELS");
@@ -130,8 +147,11 @@ public class DatabaseConnection {
 			
 		}catch (SocketException e){
 			new ErrorFrame("Chat Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
+			e.printStackTrace();
 		}
 		return channels;
 	}

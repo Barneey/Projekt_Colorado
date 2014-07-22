@@ -46,14 +46,6 @@ public class LoginServer extends Thread{
 							objectOutputStream.writeObject(user);
 							objectOutputStream.flush();
 							break;
-						case "CHECK_UNIQUE_NICKNAME":
-							String nickname = objectInputStream.readObject().toString();
-							objectOutputStream.writeBoolean(sDBM.checkUniqueNickname(nickname));
-							objectOutputStream.flush();
-							break;
-						case "UPDATE_USER":
-							sDBM.updateUser((User)objectInputStream.readObject());
-							break;
 						default:
 
 							break;
