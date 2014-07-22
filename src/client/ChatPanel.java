@@ -1,20 +1,62 @@
 package client;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
+import server_client.ChatChannel;
 import server_client.User;
 
 public class ChatPanel extends JPanel{
 	
+	private JTextField jtxtChannelName;
+	private JList<ChatChannel> jlstChannels;
+	private DatabaseConnection dbCon;
+	
 	public ChatPanel(User user){
 		setLayout(null);
+		Dimension channelListSize = new Dimension(190, 400);
+		dbCon = DatabaseConnection.getInstance();
 		
-		JLabel jlblTest = new JLabel("Test");
-		jlblTest.setSize(50, 25);
-		jlblTest.setLocation(10, 10);
-		this.add(jlblTest);
+		jtxtChannelName = new JTextField("Deu-1", 20);
+		jtxtChannelName.setSize(100, 25);
+		jtxtChannelName.setLocation(10, 10);
+		this.add(jtxtChannelName);
 		
-		this.setSize(200, 110);
+		JButton jbttnJoin = new JButton("Join");
+		jbttnJoin.setSize(70, 25);
+		jbttnJoin.setLocation(120, 10);
+		jbttnJoin.addActionListener(new ALJoinChannel());
+		this.add(jbttnJoin);
+		
+		jlstChannels = new JList<>();
+		jlstChannels.setPreferredSize(new Dimension(channelListSize.width, channelListSize.height - 5));
+		loadChannel();
+		JScrollPane jscrllChannels = new JScrollPane(jlstChannels,
+										            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+										            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jscrllChannels.setSize(channelListSize);
+		jscrllChannels.setLocation(10, 45);
+		this.add(jscrllChannels);
+		
+		this.setSize(200, 450);
+	}
+	
+	private void loadChannel(){
+		jlstChannels.setListData(dbCon.getAllPublicChannels());
+	}
+	
+	private class ALJoinChannel implements ActionListener{
+		
+		public void actionPerformed(ActionEvent ae){
+			
+		}
 	}
 }

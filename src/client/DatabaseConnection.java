@@ -11,6 +11,7 @@ import java.net.SocketException;
 
 import javax.xml.ws.Endpoint;
 
+import server_client.ChatChannel;
 import server_client.User;
 
 /**
@@ -23,6 +24,7 @@ import server_client.User;
 public class DatabaseConnection {
 	
 	private String serverAddressLogin;
+	private String serverAddressChat;
 	public static final int LOGIN_PORT = 4711;
 	public static final int CHAT_PORT = 4712;
 	public static final int CASH_PORT = 4713;
@@ -30,6 +32,7 @@ public class DatabaseConnection {
 
 	private DatabaseConnection() {
 		serverAddressLogin = "localhost";
+		serverAddressChat = "localhost";
 	}
 	
 	public static DatabaseConnection getInstance(){
@@ -56,8 +59,10 @@ public class DatabaseConnection {
 			
 			
 			loginSocket.close();
+		}catch (SocketException e){
+			new ErrorFrame("Login Server unreachable!");
 		} catch (Exception e) {
-			// TODO: handle exception
+			new ErrorFrame("An unknown Error occoured");
 		}
 		return isUniqueNickname;
 	}
@@ -88,7 +93,8 @@ public class DatabaseConnection {
 	public void updateUser(User user, int port){
 		if(port == LOGIN_PORT || port == CASH_PORT){
 			try {
-				Socket loginSocket = new Socket(serverAddressLogin, port);
+				String serverAddress = (port == LOGIN_PORT ? serverAddressLogin : serverAddressChat);
+				Socket loginSocket = new Socket(serverAddress, port);
 				
 				OutputStream outputStream = loginSocket.getOutputStream();
 				ObjectOutputStream objectOutputStream = new ObjectOutputStream(
@@ -102,5 +108,27 @@ public class DatabaseConnection {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public ChatChannel[] getAllPublicChannels(){
+		ChatChannel[] channels = null;
+		try {
+			Socket chatSocket = new Socket(serverAddressLogin, CHAT_PORT);
+		
+			OutputStream outputStream = chatSocket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+			objectOutputStream.writeObject("GET_ALL_PUBLIC_CHANNELS");
+			objectOutputStream.flush();
+
+			InputStream inputStream = chatSocket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			channels = (ChatChannel[])objectInputStream.readObject();
+			
+			chatSocket.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return channels;
 	}
 }

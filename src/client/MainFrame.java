@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import server_client.User;
 
@@ -30,32 +31,39 @@ public class MainFrame extends JFrame{
 	
 	
 	private final Dimension DEFAULT_MAIN_FRAMESIZE; 
+	private final Dimension PREFERRED_PANEL_SIZE;
 	private DatabaseConnection dbCon;
 
 	public MainFrame(User user) {
 		super(JGSystem.NAME);
 		this.dbCon = DatabaseConnection.getInstance();
 		this.DEFAULT_MAIN_FRAMESIZE = new Dimension(1024, 768);
+		this.PREFERRED_PANEL_SIZE = new Dimension(1024-5-25, 768-25-25);
 		this.setSize(this.DEFAULT_MAIN_FRAMESIZE);
 		this.setMaximumSize(this.DEFAULT_MAIN_FRAMESIZE);
 		this.setLayout(new BorderLayout());
 		
-			JPanel jpnlMainPanel = new JPanel();
-			jpnlMainPanel.setLayout(null);
-				JPanelMainFrameHeader jpnlHeader = new JPanelMainFrameHeader();
-				jpnlHeader.scaleTo(DEFAULT_MAIN_FRAMESIZE.width, 110);
-				jpnlHeader.setLocation(0, 0);
-			jpnlMainPanel.add(jpnlHeader);
-			
-				UserPanel userPanel = new UserPanel(user);
-				userPanel.setLocation(0, 110);
-			jpnlMainPanel.add(userPanel);
-			
-				ChatPanel chatPanel = new ChatPanel(user);
-				chatPanel.setLocation(0, 120 + userPanel.getHeight());
-			jpnlMainPanel.add(chatPanel);
-			
-		this.add(jpnlMainPanel, BorderLayout.CENTER);
+				JPanel jpnlMainPanel = new JPanel();
+				jpnlMainPanel.setPreferredSize(this.PREFERRED_PANEL_SIZE);
+				jpnlMainPanel.setLayout(null);
+					JPanelMainFrameHeader jpnlHeader = new JPanelMainFrameHeader();
+					jpnlHeader.scaleTo(this.DEFAULT_MAIN_FRAMESIZE.width, 110);
+					jpnlHeader.setLocation(0, 0);
+				jpnlMainPanel.add(jpnlHeader);
+				
+					UserPanel userPanel = new UserPanel(user);
+					userPanel.setLocation(0, 110);
+				jpnlMainPanel.add(userPanel);
+				
+					ChatPanel chatPanel = new ChatPanel(user);
+					chatPanel.setLocation(0, 120 + userPanel.getHeight());
+				jpnlMainPanel.add(chatPanel);
+		
+				
+				
+			JScrollPane jscrllMainScrollPane = new JScrollPane(jpnlMainPanel);
+				
+		this.add(jscrllMainScrollPane, BorderLayout.CENTER);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WLMainFrame());
 //		this.addMouseListener(new MLMainFrame());

@@ -37,8 +37,9 @@ public class ChatServer extends Thread{
 
 					String order = (String)objectInputStream.readObject();
 					switch (order) {
-					case "":
-						
+					case "GET_ALL_PUBLIC_CHANNELS":
+						objectOutputStream.writeObject(sDBM.getAllChatChannels());
+						objectOutputStream.flush();
 						break;
 
 					default:

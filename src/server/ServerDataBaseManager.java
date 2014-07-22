@@ -14,6 +14,7 @@ import java.util.Date;
 import javax.swing.JList;
 
 import serverUtil.ServerResultFrame;
+import server_client.ChatChannel;
 import server_client.User;
 
 public class ServerDataBaseManager {
@@ -453,5 +454,32 @@ public class ServerDataBaseManager {
 			e.printStackTrace();
 			new ServerResultFrame(e.getMessage());
 		}
+	}
+
+	public ChatChannel[] getAllChatChannels(){
+		ChatChannel channels[] = null;
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String sqlStatement = "SELECT channelID, cctype AS channelType, channelName "
+								+ "FROM CHATCHANNELS, CHATCHANNELTYPES WHERE cctid = chatchannels.channelType "
+								+ "AND (chatchannels.channelType = (SELECT CCTID FROM chatchannelTypes WHERE cctype = 'permanent') "
+								+ "OR chatchannels.channelType = (SELECT CCTID FROM chatchannelTypes WHERE cctype = 'custom'))";
+			
+			ResultSet rs = statement.executeQuery(sqlStatement);
+			ArrayList<ChatChannel> alstChannels = new ArrayList<>();
+			while(rs.next()){
+				ChatChannel channel = new ChatChannel(rs.getInt("channelID"), rs.getString("channelType"), rs.getString("channelName"));
+				alstChannels.add(channel);
+			}
+			channels = alstChannels.toArray(new ChatChannel[0]);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return channels;
 	}
 }
