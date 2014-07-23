@@ -9,10 +9,13 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.ws.Endpoint;
 
 import server_client.ChatChannel;
+import server_client.ChatMessage;
 import server_client.User;
 
 /**
@@ -26,6 +29,7 @@ public class DatabaseConnection {
 	
 	private String serverAddressLogin;
 	private String serverAddressChat;
+	private String serverAddressCash;
 	public static final int LOGIN_PORT = 4711;
 	public static final int CHAT_PORT = 4712;
 	public static final int CASH_PORT = 4713;
@@ -35,6 +39,7 @@ public class DatabaseConnection {
 	private DatabaseConnection() {
 		serverAddressLogin = "localhost";
 		serverAddressChat = "localhost";
+		serverAddressCash = "localhost";
 	}
 	
 	public static DatabaseConnection getInstance(){
@@ -104,7 +109,7 @@ public class DatabaseConnection {
 	public void updateUser(User user, int port){
 		if(port == LOGIN_PORT || port == CASH_PORT){
 			try {
-				String serverAddress = (port == LOGIN_PORT ? serverAddressLogin : serverAddressChat);
+				String serverAddress = (port == LOGIN_PORT ? serverAddressLogin : serverAddressCash);
 				Socket socket = new Socket(serverAddress, port);
 				
 				socket.setSoTimeout(TIMEOUT);
@@ -154,5 +159,148 @@ public class DatabaseConnection {
 			e.printStackTrace();
 		}
 		return channels;
+	}
+
+	public Date getServerDate(int port){
+		Date date = null;
+		if(port == LOGIN_PORT || port == CHAT_PORT){
+			try {
+				String serverAddress = (port == LOGIN_PORT ? serverAddressLogin : serverAddressChat);
+				Socket socket = new Socket(serverAddress, port);
+				
+				socket.setSoTimeout(TIMEOUT);
+				
+				OutputStream outputStream = socket.getOutputStream();
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+				objectOutputStream.writeObject("GET_DATE");
+				objectOutputStream.flush();
+
+				InputStream inputStream = socket.getInputStream();
+				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+				
+				date = (Date)objectInputStream.readObject();
+				
+				socket.close();			
+			}catch (SocketException e){
+				new ErrorFrame("Server unreachable!");
+			} catch (SocketTimeoutException e){
+				new ErrorFrame("Connection timed out");
+			} catch (Exception e) {
+				new ErrorFrame("An unknown Error occoured");
+			}
+		}
+		return date;
+	}
+	
+	public void joinChannel(ChatChannel channel, User user){
+		try {
+			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			
+			socket.setSoTimeout(TIMEOUT);
+			
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+					outputStream);
+			objectOutputStream.writeObject("JOIN_CHANNEL");
+			objectOutputStream.writeObject(channel);
+			objectOutputStream.writeObject(user);
+			objectOutputStream.flush();
+
+			socket.close();
+			
+		}catch (SocketException e){
+			new ErrorFrame("Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
+		} catch (Exception e) {
+			new ErrorFrame("An unknown Error occoured");
+		}
+	}
+	
+	public User[] loadUsers(ChatChannel channel){
+		User[] users = null;
+		try {
+			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			
+			socket.setSoTimeout(TIMEOUT);
+			
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+					outputStream);
+			objectOutputStream.writeObject("LOAD_USERS");
+			objectOutputStream.writeObject(channel);
+			objectOutputStream.flush();
+			
+			InputStream inputStream = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			
+			users = (User[])objectInputStream.readObject();
+			
+			
+			socket.close();
+			
+		}catch (SocketException e){
+			new ErrorFrame("Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
+		} catch (Exception e) {
+			new ErrorFrame("An unknown Error occoured");
+		}
+		return users;
+	}
+	
+	public ChatMessage[] loadMessages(ChatChannel channel, Date joinDate){
+		ChatMessage[] chatMessages = null;
+		try {
+			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			
+			socket.setSoTimeout(TIMEOUT);
+			
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+					outputStream);
+			objectOutputStream.writeObject("LOAD_MESSAGES");
+			objectOutputStream.writeObject(channel);
+			objectOutputStream.writeObject(joinDate);
+			objectOutputStream.flush();
+			
+			InputStream inputStream = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			chatMessages = (ChatMessage[])objectInputStream.readObject();
+
+			socket.close();
+			
+		}catch (SocketException e){
+			new ErrorFrame("Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
+		} catch (Exception e) {
+			new ErrorFrame("An unknown Error occoured");
+		}
+		return chatMessages;
+	}
+	
+	public void addMessage(ChatMessage chatMessage){
+		try {
+			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			
+			socket.setSoTimeout(TIMEOUT);
+			
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+					outputStream);
+			objectOutputStream.writeObject("ADD_MESSAGE");
+			objectOutputStream.writeObject(chatMessage);
+			objectOutputStream.flush();
+			
+			socket.close();
+			
+		}catch (SocketException e){
+			new ErrorFrame("Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
+		} catch (Exception e) {
+			new ErrorFrame("An unknown Error occoured");
+		}
 	}
 }

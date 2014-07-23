@@ -43,13 +43,13 @@ public class ChatPanel extends JPanel{
 		jbttnJoin = new JButton("Join");
 		jbttnJoin.setSize(70, 25);
 		jbttnJoin.setLocation(120, 10);
-		jbttnJoin.addActionListener(new ALJoinChannel());
+		jbttnJoin.addActionListener(new ALJoinChannel(user));
 		this.add(jbttnJoin);
 		
 		jlstChannels = new JList<>();
 		jlstChannels.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jlstChannels.setPreferredSize(new Dimension(channelListSize.width, channelListSize.height - 5));
-		jlstChannels.addMouseListener(new MAChannelList());
+		jlstChannels.addMouseListener(new MAChannelList(user));
 		loadChannel();
 		JScrollPane jscrllChannels = new JScrollPane(jlstChannels,
 										            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -77,12 +77,18 @@ public class ChatPanel extends JPanel{
 	
 	private class MAChannelList implements MouseListener{
 
+		private User user;
+		
+		public MAChannelList(User user){
+			this.user = user;
+		}
+		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			jtxtChannelName.setText(jlstChannels.getModel().getElementAt(jlstChannels.locationToIndex(e.getPoint())).toString());
 			if(e.getClickCount() >= 2){
 				int index = jlstChannels.locationToIndex(e.getPoint());
-				new ChatFrame(jlstChannels.getModel().getElementAt(index));
+				new ChatFrame(jlstChannels.getModel().getElementAt(index), user);
 			}
 		}
 
@@ -126,6 +132,12 @@ public class ChatPanel extends JPanel{
 	
 	private class ALJoinChannel implements ActionListener{
 		
+		private User user;
+		
+		public ALJoinChannel(User user){
+			this.user = user;
+		}
+		
 		public void actionPerformed(ActionEvent ae){
 			ArrayList<ChatChannel> channels = new ArrayList<>();
 			for (int i = 0; i < jlstChannels.getModel().getSize(); i++) {
@@ -139,7 +151,7 @@ public class ChatPanel extends JPanel{
 					channel = chatChannel;
 				}
 			}
-			new ChatFrame(channel, channelExists);
+			new ChatFrame(channel, user, channelExists);
 		}
 	}
 }

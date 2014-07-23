@@ -15,6 +15,7 @@ import javax.swing.JList;
 
 import serverUtil.ServerResultFrame;
 import server_client.ChatChannel;
+import server_client.ChatMessage;
 import server_client.User;
 
 public class ServerDataBaseManager {
@@ -248,6 +249,8 @@ public class ServerDataBaseManager {
 				alstLog.add("Table \"" + table +  "\" deleted");
 				log.setListData(alstLog.toArray(new String[0]));
 			}
+			statement.close();
+			connection.close();
 			
 			alstLog.add("Shutting down data base...");
 			log.setListData(alstLog.toArray(new String[0]));
@@ -344,6 +347,8 @@ public class ServerDataBaseManager {
 				log.setListData(alstLog.toArray(new String[0]));
 			}
 			
+			statement.close();
+			connection.close();
 			alstLog.add("Shutting down data base...");
 			log.setListData(alstLog.toArray(new String[0]));
 			alstLog.add("Data base shut down");
@@ -476,10 +481,98 @@ public class ServerDataBaseManager {
 				alstChannels.add(channel);
 			}
 			channels = alstChannels.toArray(new ChatChannel[0]);
-			
+			statement.close();
+			connection.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return channels;
+	}
+
+	public void joinUserInChannel(ChatChannel chatChannel, User user){
+		try{
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+		
+			String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
+											+ "VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rype = 'online' ))";
+			
+			statement.executeUpdate(joinUserInChannelUpdate);
+		
+			statement.close();
+			connection.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public User[] loadUsers(ChatChannel channel){
+		User[] users = null;
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String sqlStatement = "SELECT * FROM userchatrelations, users, userChannelRelationshipTypes "
+								+ "WHERE userchatrelations.channelID = " + channel.getChannelID() + " "
+								+ "AND userchatrelations.userid = users.uid "
+								+ "AND userChannelRelationshipTypes.ucrtID = (SELECT ucrtid FROM userChannelRelationshipTypes WHERE rtype='online')";
+			
+			
+			ResultSet rs = statement.executeQuery(sqlStatement);
+			ArrayList<User> alstUsers = new ArrayList<>();
+			while(rs.next()){
+				User user = new User(rs.getString("juser"), null);
+				user.setId(rs.getInt("uid"));
+				user.setValidLogin(true);
+				user.setNick(rs.getString("jnick"));
+				user.setLevel(rs.getInt("level"));
+				user.setCurrentExp(rs.getInt("currentExp"));
+				user.setrCoins(rs.getInt("rcoins"));
+				user.setvCoins(rs.getInt("vcoins"));
+				user.setPoints(rs.getInt("points"));
+				user.setLastLogin(rs.getTimestamp("jlastloggin"));
+				alstUsers.add(user);
+			}
+			users = alstUsers.toArray(new User[0]);
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return users;
+	}
+
+	public ChatMessage[] loadMessages(ChatChannel channel, Date joinDate){
+		ChatMessage[] chatMessages = null;
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String sqlStatement = "SELECT jnick, cctype AS channelType, channelName "
+								+ "FROM CHATCHANNELS, CHATCHANNELTYPES WHERE cctid = chatchannels.channelType "
+								+ "AND (chatchannels.channelType = (SELECT CCTID FROM chatchannelTypes WHERE cctype = 'permanent') "
+								+ "OR chatchannels.channelType = (SELECT CCTID FROM chatchannelTypes WHERE cctype = 'custom'))";
+			
+			ResultSet rs = statement.executeQuery(sqlStatement);
+			ArrayList<ChatMessage> alstMessages = new ArrayList<>();
+			while(rs.next()){
+				ChatMessage message = new ChatMessage(rs.getString("jnick"), channel.getChannelID(), rs.getString("message"));
+				message.setMessageDate(rs.getTimestamp("messagedate"));
+				alstMessages.add(message);
+			}
+			chatMessages = alstMessages.toArray(new ChatMessage[0]);
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return chatMessages;
 	}
 }

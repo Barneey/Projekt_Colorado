@@ -27,6 +27,8 @@ public class UserSettingsClient {
 	private Map<String, String> userSettings;
 	private File fUserData;
 	private String sDir;
+	private boolean showTimestamp;
+	private String sShowTimestamp;
 	
 	protected UserSettingsClient() {
 		this.xstream = new XStream(new StaxDriver());
@@ -36,6 +38,8 @@ public class UserSettingsClient {
 		sUsername = "username";
 		savedUsername = false;
 		sSavedUsername = "savedUSername";
+		showTimestamp = true;
+		sShowTimestamp = "showTimestamp";
 		loadUserSettings();
 	}
 	
@@ -43,6 +47,7 @@ public class UserSettingsClient {
 		userSettings = new HashMap<String, String>();
 		userSettings.put(sSavedUsername, String.valueOf(savedUsername));
 		userSettings.put(sUsername, username);
+		userSettings.put(sShowTimestamp, String.valueOf(showTimestamp));
 	}
 	
 	private void loadUserSettings(){
@@ -63,6 +68,7 @@ public class UserSettingsClient {
 		this.userSettings = (HashMap<String, String>)(this.xstream.fromXML(fUserData));
 		this.username = userSettings.get(sUsername);
 		this.savedUsername = Boolean.parseBoolean(userSettings.get(sSavedUsername));
+		this.showTimestamp = Boolean.parseBoolean(userSettings.get(sShowTimestamp));
 	}
 	
 	public boolean saveUserSettings(){
@@ -102,5 +108,13 @@ public class UserSettingsClient {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public boolean isShowTimestamp() {
+		return showTimestamp;
+	}
+
+	public void setShowTimestamp(boolean showTimestamp) {
+		this.showTimestamp = showTimestamp;
 	}
 }

@@ -57,6 +57,9 @@ public class LoginServer extends Thread{
 						case "UPDATE_USER":
 							sDBM.updateUser((User)objectInputStream.readObject());
 							break;
+						case "GET_DATE":
+							objectOutputStream.writeObject(new Date());
+							break;
 						default:
 
 							break;

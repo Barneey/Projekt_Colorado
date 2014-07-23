@@ -6,6 +6,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
+
+import server_client.ChatChannel;
+import server_client.ChatMessage;
+import server_client.User;
 
 public class ChatServer extends Thread {
 
@@ -44,7 +49,24 @@ public class ChatServer extends Thread {
 								.getAllChatChannels());
 						objectOutputStream.flush();
 						break;
-
+					case "GET_DATE":
+						objectOutputStream.writeObject(new Date());
+						break;
+					case "JOIN_CHANNEL":
+						ChatChannel joiningChannel = (ChatChannel)objectInputStream.readObject();
+						User user = (User)objectInputStream.readObject();
+						sDBM.joinUserInChannel(joiningChannel, user);
+						break;
+					case "LOAD_USERS":
+						ChatChannel loadingUsersChannel = (ChatChannel)objectInputStream.readObject();
+						User[] users = sDBM.loadUsers(loadingUsersChannel);
+						objectOutputStream.writeObject(users);
+						break;
+					case "LOAD_MESSAGES":
+						ChatChannel loadingMessagesChannel = (ChatChannel)objectInputStream.readObject();
+						Date joinDate = (Date)objectInputStream.readObject();
+						ChatMessage[] messages = sDBM.loadMessages(loadingMessagesChannel, joinDate);
+						break;
 					default:
 						break;
 					}
