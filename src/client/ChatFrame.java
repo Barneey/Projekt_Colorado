@@ -31,7 +31,6 @@ public class ChatFrame extends JFrame{
 	private JList<User> jlstUsers;
 	private DatabaseConnection dbCon;
 	private Date joinDate;
-	private boolean showTimestamp;
 	private ChatChannel channel;
 	private User user;
 	
@@ -50,7 +49,7 @@ public class ChatFrame extends JFrame{
 		this.channel = channel;
 		this.dbCon = DatabaseConnection.getInstance();
 		this.joinDate = dbCon.getServerDate(DatabaseConnection.CHAT_PORT);
-		joinChannel(channel, user);
+		joinChannel(channelExists);
 		
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.LINE_AXIS));
 		add(Box.createRigidArea(new Dimension(10, 0)));
@@ -67,7 +66,7 @@ public class ChatFrame extends JFrame{
 					jtxtrMessages.setPreferredSize(new Dimension(300, 425));
 					jtxtrMessages.setLineWrap(true);
 					jtxtrMessages.setEditable(false);
-					loadMessages(channel, joinDate);
+					loadMessages();
 
 					JScrollPane jscrllMessages = new JScrollPane(jtxtrMessages, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 																JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -76,6 +75,7 @@ public class ChatFrame extends JFrame{
 					
 					jtxtfldEnterMessage = new JTextField();
 					jtxtfldEnterMessage.setPreferredSize(new Dimension(300, 25));
+					jtxtfldEnterMessage.setDocument(new LengthRestrictedDocument(100));
 					jtxtfldEnterMessage.addActionListener(new ALAddMessage());
 					jpnlLeftPanel.add(jtxtfldEnterMessage, BorderLayout.SOUTH);
 					
@@ -104,8 +104,8 @@ public class ChatFrame extends JFrame{
 		setVisible(true);		
 	}
 	
-	private void joinChannel(ChatChannel channel, User user){
-		dbCon.joinChannel(channel, user);
+	private void joinChannel(boolean channelExists){
+		dbCon.joinChannel(channel, user, channelExists);
 	}
 	
 	private void loadUsers(ChatChannel channel){
@@ -113,24 +113,25 @@ public class ChatFrame extends JFrame{
 		jlstUsers.setListData(alstUsers);
 	}
 	
-	private void loadMessages(ChatChannel channel, Date joinDate){
+	private void loadMessages(){
 		ChatMessage[] alstMessages = dbCon.loadMessages(channel, joinDate);
 		boolean showTimestamp = UserSettingsClient.getInstance().isShowTimestamp();
-		for (ChatMessage chatMessage : alstMessages) {
-			jtxtrMessages.append(chatMessage.toString(showTimestamp));
-			jtxtrMessages.append("\n");
+		jtxtrMessages.setText("");
+		if(alstMessages != null){
+			for (ChatMessage chatMessage : alstMessages) {
+				jtxtrMessages.append(chatMessage.toString(showTimestamp));
+				jtxtrMessages.append("\n");
+			}
 		}
-	}
-	
-	private void addMessage(ChatChannel channel, User user){
-		ChatMessage chatMessage = new ChatMessage(user.getNick(), channel.getChannelID(), jtxtfldEnterMessage.getText());
-		dbCon.addMessage(chatMessage);
 	}
 	
 	private class ALAddMessage implements ActionListener{
 		
 		public void actionPerformed(ActionEvent ae){
-			addMessage(channel, user);
+			ChatMessage chatMessage = new ChatMessage(user.getNick(), user.getId(), channel.getChannelID(), jtxtfldEnterMessage.getText());
+			dbCon.addMessage(chatMessage);
+			jtxtfldEnterMessage.setText("");
+			loadMessages();
 		}
 	}
 }

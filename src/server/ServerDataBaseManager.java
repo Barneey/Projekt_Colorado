@@ -489,16 +489,43 @@ public class ServerDataBaseManager {
 		return channels;
 	}
 
+	public ChatChannel createChannel(ChatChannel chatChannel){
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			String insertIntoChatChannels = "INSERT INTO chatchannels (channeltype, channelname) "
+											+ "VALUES ((SELECT cctid FROM chatchanneltypes WHERE cctype = 'custom' ), '" + chatChannel.getChannelName() + "')";
+			statement.executeUpdate(insertIntoChatChannels);
+		
+			String getChannel = "SELECT channelID "
+								+ "FROM CHATCHANNELS "
+								+ "WHERE channelname = '" + chatChannel.getChannelName() + "' "
+								+ "AND channeltype = (SELECT cctid FROM chatchannelTypes WHERE cctype = 'custom')";
+
+			ResultSet rs = statement.executeQuery(getChannel);
+			if(rs.next()){
+				chatChannel.setChannelID(rs.getInt("channelID"));
+			}
+			
+			statement.close();
+			connection.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return chatChannel;
+	}
+	
 	public void joinUserInChannel(ChatChannel chatChannel, User user){
 		try{
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
-		
 			String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
-											+ "VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rype = 'online' ))";
-			
+											+ "VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
 			statement.executeUpdate(joinUserInChannelUpdate);
 		
 			statement.close();
@@ -555,15 +582,19 @@ public class ServerDataBaseManager {
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
-			String sqlStatement = "SELECT jnick, cctype AS channelType, channelName "
-								+ "FROM CHATCHANNELS, CHATCHANNELTYPES WHERE cctid = chatchannels.channelType "
-								+ "AND (chatchannels.channelType = (SELECT CCTID FROM chatchannelTypes WHERE cctype = 'permanent') "
-								+ "OR chatchannels.channelType = (SELECT CCTID FROM chatchannelTypes WHERE cctype = 'custom'))";
+			DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String formattedDate = dtf.format(joinDate);
+			
+			String sqlStatement = "SELECT jnick, uid, message, messagedate "
+								+ "FROM chatmessages, users "
+								+ "WHERE chatmessages.channel_cid = " + channel.getChannelID() + " "
+								+ "AND chatmessages.user_uid = users.uid "
+								+ "AND messagedate >= '" + formattedDate + "'";
 			
 			ResultSet rs = statement.executeQuery(sqlStatement);
 			ArrayList<ChatMessage> alstMessages = new ArrayList<>();
 			while(rs.next()){
-				ChatMessage message = new ChatMessage(rs.getString("jnick"), channel.getChannelID(), rs.getString("message"));
+				ChatMessage message = new ChatMessage(rs.getString("jnick"), rs.getInt("uid"), channel.getChannelID(), rs.getString("message"));
 				message.setMessageDate(rs.getTimestamp("messagedate"));
 				alstMessages.add(message);
 			}
@@ -574,5 +605,26 @@ public class ServerDataBaseManager {
 			e.printStackTrace();
 		}
 		return chatMessages;
+	}
+	
+	public void addMessage(ChatMessage message){
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String currentDate = dtf.format(new Date());
+			
+			String sqlStatement = "INSERT INTO chatmessages (user_uid, channel_cid, message, messagedate) VALUES (" + message.getUserID() + ", " + message.getChannelCID() + ", '" + message.getMessage() + "', '" + currentDate + "')";
+			
+			statement.executeUpdate(sqlStatement);
+
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

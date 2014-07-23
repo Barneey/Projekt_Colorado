@@ -52,6 +52,12 @@ public class ChatServer extends Thread {
 					case "GET_DATE":
 						objectOutputStream.writeObject(new Date());
 						break;
+					case "CREATE_CHANNEL":
+						ChatChannel creatingChannel = (ChatChannel)objectInputStream.readObject();
+						creatingChannel = sDBM.createChannel(creatingChannel);
+						objectOutputStream.writeObject(creatingChannel);
+						objectOutputStream.flush();
+						break;
 					case "JOIN_CHANNEL":
 						ChatChannel joiningChannel = (ChatChannel)objectInputStream.readObject();
 						User user = (User)objectInputStream.readObject();
@@ -61,11 +67,18 @@ public class ChatServer extends Thread {
 						ChatChannel loadingUsersChannel = (ChatChannel)objectInputStream.readObject();
 						User[] users = sDBM.loadUsers(loadingUsersChannel);
 						objectOutputStream.writeObject(users);
+						objectOutputStream.flush();
 						break;
 					case "LOAD_MESSAGES":
 						ChatChannel loadingMessagesChannel = (ChatChannel)objectInputStream.readObject();
 						Date joinDate = (Date)objectInputStream.readObject();
 						ChatMessage[] messages = sDBM.loadMessages(loadingMessagesChannel, joinDate);
+						objectOutputStream.writeObject(messages);
+						objectOutputStream.flush();
+						break;
+					case "ADD_MESSAGE":
+						ChatMessage addingMessage = (ChatMessage)objectInputStream.readObject();
+						sDBM.addMessage(addingMessage);
 						break;
 					default:
 						break;

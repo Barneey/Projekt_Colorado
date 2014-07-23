@@ -125,4 +125,8 @@ public class User implements Serializable{
 	public void setPoints(int points) {
 		this.points = points;
 	}
+	
+	public String toString(){
+		return this.nick;
+	}
 }

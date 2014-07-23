@@ -192,7 +192,7 @@ public class DatabaseConnection {
 		return date;
 	}
 	
-	public void joinChannel(ChatChannel channel, User user){
+	public void joinChannel(ChatChannel channel, User user, boolean channelExists){
 		try {
 			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
 			
@@ -201,6 +201,15 @@ public class DatabaseConnection {
 			OutputStream outputStream = socket.getOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 					outputStream);
+			if(!channelExists){
+				objectOutputStream.writeObject("CREATE_CHANNEL");
+				objectOutputStream.writeObject(channel);
+				objectOutputStream.flush();
+				
+				InputStream inputStream = socket.getInputStream();
+				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+				channel = (ChatChannel)objectInputStream.readObject();
+			}
 			objectOutputStream.writeObject("JOIN_CHANNEL");
 			objectOutputStream.writeObject(channel);
 			objectOutputStream.writeObject(user);

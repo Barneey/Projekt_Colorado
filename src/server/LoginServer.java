@@ -59,6 +59,7 @@ public class LoginServer extends Thread{
 							break;
 						case "GET_DATE":
 							objectOutputStream.writeObject(new Date());
+							objectOutputStream.flush();
 							break;
 						default:
 

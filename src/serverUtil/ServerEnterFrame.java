@@ -37,7 +37,7 @@ public class ServerEnterFrame extends JFrame{
 		
 		jtaEnter = new JTextArea(20, 40);
 		JScrollPane scrollPane = new JScrollPane(jtaEnter); 
-//		jtaEnter.setEditable(false);
+		jtaEnter.setLineWrap(true);
 		add(scrollPane, BorderLayout.CENTER);
 		
 		JButton jbttnEnterQuery = new JButton("Enter " + sType);

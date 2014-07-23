@@ -18,6 +18,10 @@ public class ChatChannel implements Serializable {
 		this.channelName = channelName;
 	}
 
+	public void setChannelID(int channelID){
+		this.channelID = channelID;
+	}
+	
 	public int getChannelID() {
 		return channelID;
 	}

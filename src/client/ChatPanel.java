@@ -27,23 +27,26 @@ public class ChatPanel extends JPanel{
 	private JList<ChatChannel> jlstChannels;
 	private DatabaseConnection dbCon;
 	private JButton jbttnJoin;
+	private User user;
 	
 	public ChatPanel(User user){
 		setLayout(null);
 		Dimension channelListSize = new Dimension(190, 400);
 		dbCon = DatabaseConnection.getInstance();
+		this.user = user;
 		
-		jtxtChannelName = new JTextField("Deu-1", 20);
+		jtxtChannelName = new JTextField(20);
 		jtxtChannelName.setSize(100, 25);
 		jtxtChannelName.setLocation(10, 10);
 		jtxtChannelName.addFocusListener(new FLChatChannel());
 		jtxtChannelName.setDocument(new LengthRestrictedDocument(20));
+		jtxtChannelName.setText("Deu-1");
 		this.add(jtxtChannelName);
 		
 		jbttnJoin = new JButton("Join");
 		jbttnJoin.setSize(70, 25);
 		jbttnJoin.setLocation(120, 10);
-		jbttnJoin.addActionListener(new ALJoinChannel(user));
+		jbttnJoin.addActionListener(new ALJoinChannel());
 		this.add(jbttnJoin);
 		
 		jlstChannels = new JList<>();
@@ -132,19 +135,13 @@ public class ChatPanel extends JPanel{
 	
 	private class ALJoinChannel implements ActionListener{
 		
-		private User user;
-		
-		public ALJoinChannel(User user){
-			this.user = user;
-		}
-		
 		public void actionPerformed(ActionEvent ae){
 			ArrayList<ChatChannel> channels = new ArrayList<>();
 			for (int i = 0; i < jlstChannels.getModel().getSize(); i++) {
 				channels.add(jlstChannels.getModel().getElementAt(i));
 			}
 			boolean channelExists = false;
-			ChatChannel channel = new ChatChannel(-1, "", jtxtChannelName.getText());
+			ChatChannel channel = new ChatChannel(-1, "public", jtxtChannelName.getText());
 			for (ChatChannel chatChannel : channels) {
 				if(!channelExists && chatChannel.getChannelName().equals(channel.getChannelName())){
 					channelExists = true;
