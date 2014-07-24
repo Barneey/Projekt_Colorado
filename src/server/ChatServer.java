@@ -52,16 +52,17 @@ public class ChatServer extends Thread {
 					case "GET_DATE":
 						objectOutputStream.writeObject(new Date());
 						break;
-					case "CREATE_CHANNEL":
-						ChatChannel creatingChannel = (ChatChannel)objectInputStream.readObject();
-						creatingChannel = sDBM.createChannel(creatingChannel);
-						objectOutputStream.writeObject(creatingChannel);
+					case "CREATE_AND_JOIN_CHANNEL":
+						ChatChannel creatingAndJoiningChannel = (ChatChannel)objectInputStream.readObject();
+						User user = (User)objectInputStream.readObject();
+						creatingAndJoiningChannel = sDBM.createAndJoinChannel(creatingAndJoiningChannel, user);
+						objectOutputStream.writeObject(creatingAndJoiningChannel);
 						objectOutputStream.flush();
 						break;
 					case "JOIN_CHANNEL":
 						ChatChannel joiningChannel = (ChatChannel)objectInputStream.readObject();
-						User user = (User)objectInputStream.readObject();
-						sDBM.joinUserInChannel(joiningChannel, user);
+						User joiningUser = (User)objectInputStream.readObject();
+						sDBM.joinUserInChannel(joiningChannel, joiningUser);
 						break;
 					case "LOAD_USERS":
 						ChatChannel loadingUsersChannel = (ChatChannel)objectInputStream.readObject();

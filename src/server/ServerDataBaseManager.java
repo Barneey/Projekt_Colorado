@@ -488,8 +488,8 @@ public class ServerDataBaseManager {
 		}
 		return channels;
 	}
-
-	public ChatChannel createChannel(ChatChannel chatChannel){
+	
+	public ChatChannel createAndJoinChannel(ChatChannel chatChannel, User user){
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
@@ -509,6 +509,11 @@ public class ServerDataBaseManager {
 				chatChannel.setChannelID(rs.getInt("channelID"));
 			}
 			
+			String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
+											+"VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
+
+			statement.executeUpdate(joinUserInChannelUpdate);
+			
 			statement.close();
 			connection.close();
 			
@@ -526,8 +531,8 @@ public class ServerDataBaseManager {
 			Statement statement = connection.createStatement();
 			String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
 											+ "VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
+
 			statement.executeUpdate(joinUserInChannelUpdate);
-		
 			statement.close();
 			connection.close();
 			

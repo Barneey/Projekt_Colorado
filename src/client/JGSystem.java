@@ -11,6 +11,7 @@ import java.awt.Font;
 public class JGSystem {
 	private static JGSystem instance = null;
 	public static final Font FONT_SMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+	public static final Font FONT_CHAT = new Font(Font.SANS_SERIF, Font.PLAIN, 13);
 	public static final Font FONT_BIG = new Font(Font.SERIF, Font.ITALIC, 22);
 	public static final Font FONT_ERROR = new Font(Font.SERIF, Font.BOLD, 14);
 	public static final Font FONT_WARN = new Font(Font.SERIF, Font.PLAIN, 13);

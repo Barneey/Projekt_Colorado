@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class User implements Serializable{
+public class User implements Serializable, Comparable<User>{
 	
 	private static final long serialVersionUID = -6199635274651607854L;
 	private int id;
@@ -127,6 +127,11 @@ public class User implements Serializable{
 	}
 	
 	public String toString(){
-		return this.nick;
+		return "(" + this.level + ")" + this.nick;
+	}
+
+	@Override
+	public int compareTo(User o) {
+		return this.nick.compareTo(o.getNick());
 	}
 }

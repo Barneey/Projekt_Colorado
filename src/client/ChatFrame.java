@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
@@ -63,6 +64,7 @@ public class ChatFrame extends JFrame{
 				jpnlLeftPanel.setPreferredSize(new Dimension(300, 460));
 						
 					jtxtrMessages = new JTextArea();
+					jtxtrMessages.setFont(JGSystem.FONT_CHAT);
 					jtxtrMessages.setPreferredSize(new Dimension(300, 425));
 					jtxtrMessages.setLineWrap(true);
 					jtxtrMessages.setEditable(false);
@@ -90,7 +92,7 @@ public class ChatFrame extends JFrame{
 		
 					jlstUsers = new JList<>();
 					jlstUsers.setPreferredSize(new Dimension(150, 450));
-					loadUsers(channel);
+					loadUsers();
 				JScrollPane jscrllChannels = new JScrollPane(jlstUsers, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -108,8 +110,9 @@ public class ChatFrame extends JFrame{
 		dbCon.joinChannel(channel, user, channelExists);
 	}
 	
-	private void loadUsers(ChatChannel channel){
+	private void loadUsers(){
 		User[] alstUsers = dbCon.loadUsers(channel);
+		Arrays.sort(alstUsers);
 		jlstUsers.setListData(alstUsers);
 	}
 	
@@ -132,6 +135,7 @@ public class ChatFrame extends JFrame{
 			dbCon.addMessage(chatMessage);
 			jtxtfldEnterMessage.setText("");
 			loadMessages();
+			loadUsers();
 		}
 	}
 }

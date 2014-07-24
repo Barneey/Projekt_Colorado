@@ -201,19 +201,17 @@ public class DatabaseConnection {
 			OutputStream outputStream = socket.getOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 					outputStream);
-			if(!channelExists){
-				objectOutputStream.writeObject("CREATE_CHANNEL");
-				objectOutputStream.writeObject(channel);
-				objectOutputStream.flush();
-				
-				InputStream inputStream = socket.getInputStream();
-				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-				channel = (ChatChannel)objectInputStream.readObject();
-			}
-			objectOutputStream.writeObject("JOIN_CHANNEL");
+
+			objectOutputStream.writeObject((channelExists ? "JOIN_CHANNEL" : "CREATE_AND_JOIN_CHANNEL"));
 			objectOutputStream.writeObject(channel);
 			objectOutputStream.writeObject(user);
 			objectOutputStream.flush();
+			
+			if(!channelExists){
+				InputStream inputStream = socket.getInputStream();
+				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+				channel.setChannelID(((ChatChannel)objectInputStream.readObject()).getChannelID());
+			}
 
 			socket.close();
 			
@@ -299,6 +297,8 @@ public class DatabaseConnection {
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 					outputStream);
 			objectOutputStream.writeObject("ADD_MESSAGE");
+			chatMessage.setMessage(chatMessage.getMessage().replaceAll("[']", "''"));
+			
 			objectOutputStream.writeObject(chatMessage);
 			objectOutputStream.flush();
 			

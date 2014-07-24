@@ -1,6 +1,8 @@
 package server_client;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ChatMessage implements Serializable{
@@ -34,11 +36,22 @@ public class ChatMessage implements Serializable{
 		return userID;
 	}
 	
+	public void setMessage(String message){
+		this.message = message;
+	}
+	
 	public String getMessage(){
 		return this.message;
 	}
 	
 	public String toString(boolean showTimestamp){
-		return (showTimestamp ? "[" + messageDate + "] " : "" ) + username + ": " + message;
+		String chatString = username + ": " + message;
+		if(showTimestamp){
+			DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+			String formattedDate = formatter.format(messageDate);
+			return "[" + formattedDate + "] " + chatString;
+		}else{
+			return chatString;
+		}
 	}
 }
