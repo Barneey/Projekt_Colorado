@@ -1,6 +1,9 @@
 package client;
 import java.awt.Color;
 import java.awt.Font;
+import java.sql.DatabaseMetaData;
+
+import server_client.User;
 
 /**
  * 
@@ -25,8 +28,9 @@ public class JGSystem {
 
 	}
 
-	public void exit(){
+	public void exit(User user){
 		 UserSettingsClient.getInstance().saveUserSettings();
+		 DatabaseConnection.getInstance().leaveAllChannels(user);
 		 System.exit(0);
 	}
 	

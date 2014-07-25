@@ -36,6 +36,7 @@ public class ChatFrame extends JFrame{
 	private Date joinDate;
 	private ChatChannel channel;
 	private User user;
+	private Thread updater;
 	
 	public ChatFrame(ChatChannel channel, User user){
 		construct(channel, user, true);
@@ -47,7 +48,7 @@ public class ChatFrame extends JFrame{
 	
 	private void construct(ChatChannel channel, User user, boolean channelExists){
 		setTitle(channel.getChannelName());
-		
+		this.updater = new Updater();
 		this.user = user;
 		this.channel = channel;
 		this.dbCon = DatabaseConnection.getInstance();
@@ -107,7 +108,9 @@ public class ChatFrame extends JFrame{
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WLChatFrame());
 		setLocationRelativeTo(null);
-		setVisible(true);		
+		setVisible(true);
+
+		startUpdatingChannel();
 	}
 	
 	private void joinChannel(boolean channelExists){
@@ -116,8 +119,10 @@ public class ChatFrame extends JFrame{
 	
 	private void loadUsers(){
 		User[] alstUsers = dbCon.loadUsers(channel);
-		Arrays.sort(alstUsers);
-		jlstUsers.setListData(alstUsers);
+		if(alstUsers != null){
+			Arrays.sort(alstUsers);
+			jlstUsers.setListData(alstUsers);
+		}
 	}
 	
 	private void loadMessages(){
@@ -132,8 +137,31 @@ public class ChatFrame extends JFrame{
 		}
 	}
 	
+	private class Updater extends Thread{
+		@Override
+		public void run() {
+			while(true){
+				try {
+					sleep(100);
+					loadMessages();
+					loadUsers();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	private void startUpdatingChannel(){
+		updater.start();
+	}
+	
+//	private void stopUpdatingChannel(){
+//		updater.interrupt();
+//	}
+	
 	private void leaveChannel(){
-		dbCon.leaveChannel(channel);
+		dbCon.leaveChannel(channel, user);
 	}
 	
 	private class ALAddMessage implements ActionListener{
@@ -158,13 +186,12 @@ public class ChatFrame extends JFrame{
 		@Override
 		public void windowClosed(WindowEvent arg0) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void windowClosing(WindowEvent arg0) {
-			
-			
+			leaveChannel();
+			dispose();
 		}
 
 		@Override

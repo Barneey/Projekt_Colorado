@@ -529,10 +529,18 @@ public class ServerDataBaseManager {
 			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
-			String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
-											+ "VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
+			
+			String selectUserFromChannel = "SELECT * FROM USERCHATRELATIONS WHERE userID =" + user.getId() + " "
+										+ "AND channelID = " + chatChannel.getChannelID();
+			
+			ResultSet rs = statement.executeQuery(selectUserFromChannel);
+			
+			if(!rs.next()){
+				String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
+												+ "VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
 
-			statement.executeUpdate(joinUserInChannelUpdate);
+				statement.executeUpdate(joinUserInChannelUpdate);
+			}
 			statement.close();
 			connection.close();
 			
@@ -626,6 +634,57 @@ public class ServerDataBaseManager {
 			
 			statement.executeUpdate(sqlStatement);
 
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void leaveChannel(ChatChannel channel, User user){
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String deleteStatement = "DELETE FROM userchatrelations WHERE userID=" + user.getId() + " "
+									+ "AND channelID = " + channel.getChannelID();
+			
+			statement.executeUpdate(deleteStatement);
+			
+			if(channel.getChannelType().equals("custom")){
+				String selectStatement = "SELECT * FROM userchatrelations WHERE channelID = " + channel.getChannelID();
+	
+				ResultSet rs = statement.executeQuery(selectStatement);
+				
+				if(!rs.next()){
+					String deleteMessagesStatement = "DELETE FROM chatmessages WHERE channel_cid = " + channel.getChannelID();
+					statement.executeUpdate(deleteMessagesStatement);
+					
+					String deleteChannelStatement = "DELETE FROM chatchannels WHERE channelID = " + channel.getChannelID();
+					statement.executeUpdate(deleteChannelStatement);
+				}
+			}
+		
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void leaveAllChannels(User user){
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String deleteStatement = "DELETE FROM userchatrelations WHERE userID=" + user.getId();
+			
+			statement.executeUpdate(deleteStatement);
+		
 			statement.close();
 			connection.close();
 		} catch (Exception e) {

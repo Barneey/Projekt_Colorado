@@ -28,12 +28,14 @@ public class ChatPanel extends JPanel{
 	private DatabaseConnection dbCon;
 	private JButton jbttnJoin;
 	private User user;
+	private Thread updater;
 	
 	public ChatPanel(User user){
 		setLayout(null);
 		Dimension channelListSize = new Dimension(190, 400);
-		dbCon = DatabaseConnection.getInstance();
+		this.dbCon = DatabaseConnection.getInstance();
 		this.user = user;
+		this.updater = new ChannelListUpdater();
 		
 		jtxtChannelName = new JTextField(20);
 		jtxtChannelName.setSize(100, 25);
@@ -61,6 +63,27 @@ public class ChatPanel extends JPanel{
 		jscrllChannels.setLocation(10, 45);
 		this.add(jscrllChannels);
 		this.setSize(200, 450);
+		
+		startUpdatingChannels();
+	}
+	
+	private class ChannelListUpdater extends Thread{
+		
+		@Override
+		public void run(){
+			while(true){
+				try {
+					sleep(500);
+					loadChannel();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	private void startUpdatingChannels(){
+		updater.start();
 	}
 	
 	private class FLChatChannel implements FocusListener{
@@ -125,7 +148,12 @@ public class ChatPanel extends JPanel{
 	private void loadChannel(){
 		ChatChannel[] chatChannels = dbCon.getAllPublicChannels();
 		if(chatChannels != null){
+			jbttnJoin.setEnabled(true);
+			jlstChannels.setEnabled(true);
+			jtxtChannelName.setEnabled(true);
+			int selectedIndex = jlstChannels.getSelectedIndex();
 			jlstChannels.setListData(chatChannels);
+			jlstChannels.setSelectedIndex(selectedIndex);
 		}else{
 			jbttnJoin.setEnabled(false);
 			jlstChannels.setEnabled(false);

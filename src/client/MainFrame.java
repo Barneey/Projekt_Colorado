@@ -32,11 +32,13 @@ public class MainFrame extends JFrame{
 	
 	private final Dimension DEFAULT_MAIN_FRAMESIZE; 
 	private final Dimension PREFERRED_PANEL_SIZE;
-	private DatabaseConnection dbCon;
+//	private DatabaseConnection dbCon;
+	private User user;
 
 	public MainFrame(User user) {
 		super(JGSystem.NAME);
-		this.dbCon = DatabaseConnection.getInstance();
+//		this.dbCon = DatabaseConnection.getInstance();
+		this.user = user;
 		this.DEFAULT_MAIN_FRAMESIZE = new Dimension(1024, 768);
 		this.PREFERRED_PANEL_SIZE = new Dimension(1024-5-25, 768-25-25);
 		this.setSize(this.DEFAULT_MAIN_FRAMESIZE);
@@ -181,7 +183,7 @@ public class MainFrame extends JFrame{
 			int answer = JOptionPane.showOptionDialog(null, "Are you sure you want to exit the JGame Collection?", "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, object, object[1]);
 			if(answer == 0)
 			{
-				JGSystem.getInstance().exit();
+				JGSystem.getInstance().exit(user);
 			}	
 		}
 

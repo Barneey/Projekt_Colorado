@@ -138,7 +138,7 @@ public class RequestNicknameFrame extends JDialog{
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
-		JGSystem.getInstance().exit();
+		JGSystem.getInstance().exit(user);
 	}
 
 	@Override

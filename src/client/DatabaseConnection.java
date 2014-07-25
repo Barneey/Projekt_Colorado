@@ -313,7 +313,7 @@ public class DatabaseConnection {
 		}
 	}
 
-	public void leaveChannel(ChatChannel channel){
+	public void leaveChannel(ChatChannel channel, User user){
 		try {
 			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
 			
@@ -324,6 +324,7 @@ public class DatabaseConnection {
 			
 			objectOutputStream.writeObject("LEAVE_CHANNEL");
 			objectOutputStream.writeObject(channel);
+			objectOutputStream.writeObject(user);
 			objectOutputStream.flush();
 			
 			
@@ -335,5 +336,29 @@ public class DatabaseConnection {
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
 		}
+	}
+	
+	public void leaveAllChannels(User user){
+		try {
+			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			
+			socket.setSoTimeout(TIMEOUT);
+			
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+			
+			objectOutputStream.writeObject("LEAVE_ALL_CHANNELS");
+			objectOutputStream.writeObject(user);
+			objectOutputStream.flush();
+			
+			
+			socket.close();
+		}catch (SocketException e){
+			new ErrorFrame("Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
+		} catch (Exception e) {
+			new ErrorFrame("An unknown Error occoured");
+		}		
 	}
 }

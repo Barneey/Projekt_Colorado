@@ -64,6 +64,15 @@ public class ChatServer extends Thread {
 						User joiningUser = (User)objectInputStream.readObject();
 						sDBM.joinUserInChannel(joiningChannel, joiningUser);
 						break;
+					case "LEAVE_CHANNEL":
+						ChatChannel leavingChannel = (ChatChannel)objectInputStream.readObject();
+						User leavingUser = (User)objectInputStream.readObject();
+						sDBM.leaveChannel(leavingChannel, leavingUser);
+						break;
+					case "LEAVE_ALL_CHANNELS":
+						User leavingAllChannelsUser = (User)objectInputStream.readObject();
+						sDBM.leaveAllChannels(leavingAllChannelsUser);
+						break;
 					case "LOAD_USERS":
 						ChatChannel loadingUsersChannel = (ChatChannel)objectInputStream.readObject();
 						User[] users = sDBM.loadUsers(loadingUsersChannel);
