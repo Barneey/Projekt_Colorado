@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -102,6 +104,8 @@ public class ChatFrame extends JFrame{
 		add(Box.createRigidArea(new Dimension(10, 0)));
 
 		pack();
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WLChatFrame());
 		setLocationRelativeTo(null);
 		setVisible(true);		
 	}
@@ -128,6 +132,10 @@ public class ChatFrame extends JFrame{
 		}
 	}
 	
+	private void leaveChannel(){
+		dbCon.leaveChannel(channel);
+	}
+	
 	private class ALAddMessage implements ActionListener{
 		
 		public void actionPerformed(ActionEvent ae){
@@ -137,5 +145,51 @@ public class ChatFrame extends JFrame{
 			loadMessages();
 			loadUsers();
 		}
+	}
+
+	private class WLChatFrame implements WindowListener{
+
+		@Override
+		public void windowActivated(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent arg0) {
+			
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowOpened(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }
