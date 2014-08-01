@@ -69,7 +69,6 @@ public class UserPanel extends JPanel{
 		jlbLastLogin.setLocation(0, 80);
 		this.add(jlbLastLogin);
 		
-		this.setSize(200, 110);
 	}
 	
 	public void updatePanel(User user){

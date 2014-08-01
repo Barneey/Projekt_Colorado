@@ -1,22 +1,27 @@
 package client;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 import server_client.ChatChannel;
 import server_client.User;
@@ -27,64 +32,113 @@ public class ChatPanel extends JPanel{
 	private JList<ChatChannel> jlstChannels;
 	private DatabaseConnection dbCon;
 	private JButton jbttnJoin;
+	private JButton jbttnRefresh;
 	private User user;
-	private Thread updater;
+	private ChannelListUpdater updater;
+	private BufferedImage bffredImgRefreshButtonInactive;
+	private Image ImgRefreshButtonActive;
+	private boolean refreshButtonLabeled;
+	private boolean refreshing;
+	private ImageLoader imgLdr;
 	
 	public ChatPanel(User user){
-		setLayout(null);
-		Dimension channelListSize = new Dimension(190, 400);
+		Dimension channelListSize = new Dimension(190, 450);
 		this.dbCon = DatabaseConnection.getInstance();
 		this.user = user;
 		this.updater = new ChannelListUpdater();
+		this.imgLdr = ImageLoader.getInstance();
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
-		jtxtChannelName = new JTextField(20);
-		jtxtChannelName.setSize(100, 25);
-		jtxtChannelName.setLocation(10, 10);
-		jtxtChannelName.addFocusListener(new FLChatChannel());
-		jtxtChannelName.setDocument(new LengthRestrictedDocument(20));
-		jtxtChannelName.setText("Deu-1");
-		this.add(jtxtChannelName);
+		JPanel jpnlUpperPanel = new JPanel();
+			jpnlUpperPanel.setLayout(new BoxLayout(jpnlUpperPanel, BoxLayout.X_AXIS));
+			jpnlUpperPanel.setPreferredSize(new Dimension(220,25));
+			
+			jtxtChannelName = new JTextField(20);
+			jtxtChannelName.setDocument(new LengthRestrictedDocument(20));
+			jtxtChannelName.setPreferredSize(new Dimension(100, 25));
+			jtxtChannelName.setMaximumSize(jtxtChannelName.getPreferredSize());
+			jtxtChannelName.addFocusListener(new FLChatChannel());
+			jtxtChannelName.setText("Deu-1");
+			jpnlUpperPanel.add(jtxtChannelName);
 		
-		jbttnJoin = new JButton("Join");
-		jbttnJoin.setSize(70, 25);
-		jbttnJoin.setLocation(120, 10);
-		jbttnJoin.addActionListener(new ALJoinChannel());
-		this.add(jbttnJoin);
+			jbttnJoin = new JButton("Join");
+			jbttnJoin.setPreferredSize(new Dimension(70, 25));
+			jbttnJoin.addActionListener(new ALJoinChannel());
+			jpnlUpperPanel.add(jbttnJoin);
+			
+			jbttnRefresh = new JButton();
+			
+			bffredImgRefreshButtonInactive = imgLdr.loadRefreshButtonInactive();
+			refreshButtonLabeled = (bffredImgRefreshButtonInactive == null); 
+			if(refreshButtonLabeled){
+				jbttnRefresh.setText("Refresh");
+				jbttnRefresh.setPreferredSize(new Dimension(50, 25));
+			}else{
+				jbttnRefresh.setIcon(new ImageIcon(bffredImgRefreshButtonInactive));
+				jbttnRefresh.setPreferredSize(new Dimension(20,25));
+				ImgRefreshButtonActive = imgLdr.loadRefreshButtonActive();
+			}
+			jbttnRefresh.addMouseListener(new MLAutoRefresh());
+			jpnlUpperPanel.add(jbttnRefresh);
+			this.refreshing = false;
+		this.add(jpnlUpperPanel);
 		
+		add(Box.createVerticalStrut(10));
+
 		jlstChannels = new JList<>();
 		jlstChannels.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		jlstChannels.setPreferredSize(new Dimension(channelListSize.width, channelListSize.height - 5));
-		jlstChannels.addMouseListener(new MAChannelList(user));
+		jlstChannels.addMouseListener(new MAChannelList());
 		loadChannel();
 		JScrollPane jscrllChannels = new JScrollPane(jlstChannels,
 										            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 										            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		jscrllChannels.setSize(channelListSize);
-		jscrllChannels.setLocation(10, 45);
+		jscrllChannels.setPreferredSize(channelListSize);
 		this.add(jscrllChannels);
-		this.setSize(200, 450);
-		
-		startUpdatingChannels();
+		updater.setRunning(refreshing);
+		updater.start();
+	}
+
+	private void loadChannel(){
+		ChatChannel[] chatChannels = dbCon.getAllPublicChannels();
+		if(chatChannels != null){
+			jbttnJoin.setEnabled(true);
+			jlstChannels.setEnabled(true);
+			jtxtChannelName.setEnabled(true);
+			int selectedIndex = jlstChannels.getSelectedIndex();
+			jlstChannels.setListData(chatChannels);
+			jlstChannels.setSelectedIndex(selectedIndex);
+		}else{
+			jbttnJoin.setEnabled(false);
+			jlstChannels.setEnabled(false);
+			jtxtChannelName.setEnabled(false);
+		}
 	}
 	
 	private class ChannelListUpdater extends Thread{
 		
+		private boolean running;
+		
 		@Override
 		public void run(){
+			running = true;
 			while(true){
-				try {
-					sleep(500);
-					loadChannel();
-				} catch (Exception e) {
-					e.printStackTrace();
+				if(running){
+					try {
+						sleep(500);
+						loadChannel();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
+		
+		public void setRunning(boolean running){
+			this.running = running;
+		}
 	}
 	
-	private void startUpdatingChannels(){
-		updater.start();
-	}
 	
 	private class FLChatChannel implements FocusListener{
 
@@ -98,17 +152,54 @@ public class ChatPanel extends JPanel{
 			// TODO Auto-generated method stub
 			
 		}
+	}
+
+	
+	private class MLAutoRefresh implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent me) {
+			if(SwingUtilities.isLeftMouseButton(me)){
+				loadChannel();
+			}else if(SwingUtilities.isRightMouseButton(me)){
+				refreshing = !refreshing;
+				updater.setRunning(refreshing);
+				if(refreshing){
+					jbttnRefresh.setIcon(new ImageIcon(ImgRefreshButtonActive));
+				}else{
+					jbttnRefresh.setIcon(new ImageIcon(bffredImgRefreshButtonInactive));
+				}
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 	
 	private class MAChannelList implements MouseListener{
 
-		private User user;
-		
-		public MAChannelList(User user){
-			this.user = user;
-		}
-		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			jtxtChannelName.setText(jlstChannels.getModel().getElementAt(jlstChannels.locationToIndex(e.getPoint())).toString());
@@ -143,22 +234,6 @@ public class ChatPanel extends JPanel{
 		}
 		
 		
-	}
-	
-	private void loadChannel(){
-		ChatChannel[] chatChannels = dbCon.getAllPublicChannels();
-		if(chatChannels != null){
-			jbttnJoin.setEnabled(true);
-			jlstChannels.setEnabled(true);
-			jtxtChannelName.setEnabled(true);
-			int selectedIndex = jlstChannels.getSelectedIndex();
-			jlstChannels.setListData(chatChannels);
-			jlstChannels.setSelectedIndex(selectedIndex);
-		}else{
-			jbttnJoin.setEnabled(false);
-			jlstChannels.setEnabled(false);
-			jtxtChannelName.setEnabled(false);
-		}
 	}
 	
 	private class ALJoinChannel implements ActionListener{

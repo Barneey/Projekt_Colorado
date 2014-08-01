@@ -13,6 +13,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -47,21 +49,30 @@ public class MainFrame extends JFrame{
 		
 				JPanel jpnlMainPanel = new JPanel();
 				jpnlMainPanel.setPreferredSize(this.PREFERRED_PANEL_SIZE);
-				jpnlMainPanel.setLayout(null);
+				jpnlMainPanel.setLayout(new BorderLayout());
 					JPanelMainFrameHeader jpnlHeader = new JPanelMainFrameHeader();
-					jpnlHeader.scaleTo(this.DEFAULT_MAIN_FRAMESIZE.width, 110);
-					jpnlHeader.setLocation(0, 0);
-				jpnlMainPanel.add(jpnlHeader);
+					jpnlHeader.setPreferredSize(new Dimension(this.DEFAULT_MAIN_FRAMESIZE.width, 110));
+				jpnlMainPanel.add(jpnlHeader, BorderLayout.NORTH);
 				
-					UserPanel userPanel = new UserPanel(user);
-					userPanel.setLocation(0, 110);
-				jpnlMainPanel.add(userPanel);
-				
-					ChatPanel chatPanel = new ChatPanel(user);
-					chatPanel.setLocation(0, 120 + userPanel.getHeight());
-				jpnlMainPanel.add(chatPanel);
-		
-				
+					JPanel jpnlWest = new JPanel();
+					jpnlWest.setLayout(new BoxLayout(jpnlWest, BoxLayout.Y_AXIS));
+						UserPanel userPanel = new UserPanel(user);
+						userPanel.setPreferredSize(new Dimension(200, 110));
+					jpnlWest.add(userPanel);
+					jpnlWest.add(Box.createVerticalStrut(30));
+						ChatPanel chatPanel = new ChatPanel(user);
+						chatPanel.setPreferredSize(new Dimension(200, 500));
+					jpnlWest.add(chatPanel);
+				jpnlMainPanel.add(jpnlWest, BorderLayout.WEST);
+					JPanel jpnlCenter = new JPanel();
+					jpnlCenter.setLayout(new BorderLayout());
+						ContentPanel contentPanel = new ContentPanel();
+						contentPanel.setPreferredSize(new Dimension(this.DEFAULT_MAIN_FRAMESIZE.width - 200, this.DEFAULT_MAIN_FRAMESIZE.height - 110));
+					jpnlCenter.add(contentPanel, BorderLayout.CENTER);
+						MenuPanel menuPanel = new MenuPanel(contentPanel);
+						menuPanel.setPreferredSize(new Dimension(this.DEFAULT_MAIN_FRAMESIZE.width - 200, 110));
+					jpnlCenter.add(menuPanel, BorderLayout.NORTH);
+				jpnlMainPanel.add(jpnlCenter, BorderLayout.CENTER);
 				
 			JScrollPane jscrllMainScrollPane = new JScrollPane(jpnlMainPanel);
 				
