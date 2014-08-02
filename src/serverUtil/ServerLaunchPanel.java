@@ -1,7 +1,6 @@
 package serverUtil;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,28 +8,24 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import server.ChatServer;
-import server.LoginServer;
+import server.Server;
 
 public class ServerLaunchPanel extends JPanel{
 	
 
 	private String name;
-	private boolean running;
-	private Thread thread;
+	private Server server;
 	private JButton jbttnStart;
 	private JButton jbttnStop;
 	private ServerStatusPanel statusLamp;
-	private Class serverClass;
 	
-	public ServerLaunchPanel(String name, Thread thread){
+	public ServerLaunchPanel(String name, Server server){
 		super();
 		this.name = name;
-		this.thread = thread;
-		this.running = false;
-		this.serverClass = thread.getClass();
+		this.server = server;
 		
 		JLabel jlbName = new JLabel(this.name);
+		jlbName.setPreferredSize(new Dimension(80, 25));
 		add(jlbName);
 		
 		jbttnStart = new JButton("Start");
@@ -48,19 +43,12 @@ public class ServerLaunchPanel extends JPanel{
 	
 	private class ALStart implements ActionListener{
 		public void actionPerformed(ActionEvent ae){
-			if(thread.isAlive()){
-				if(thread.getClass() == LoginServer.class){
-					((LoginServer)thread).continueMe();
-				}else if(thread.getClass() == ChatServer.class){
-					((ChatServer)thread).continueMe();
-				}else if(true){
-					// TODO Extend for more possible servers
-				}
+			if(server.isAlive()){
+				server.continueMe();
 			}else{
-				thread.start();
+				server.start();
 			}
-			running = true;
-			statusLamp.setStatus(running);
+			statusLamp.setStatus(true);
 			jbttnStart.setEnabled(false);
 			jbttnStop.setEnabled(true);
 		}
@@ -68,21 +56,10 @@ public class ServerLaunchPanel extends JPanel{
 	
 	private class ALStop implements ActionListener{
 		public void actionPerformed(ActionEvent ae){
-			if(thread.getClass() == LoginServer.class){
-				((LoginServer)thread).stopMe();
-			}else if(serverClass == ChatServer.class){
-				((ChatServer)thread).stopMe();
-			}else if(true){
-				// TODO Extend for more possible servers
-			}
-			running = false;
-			statusLamp.setStatus(running);
+			server.stopMe();
+			statusLamp.setStatus(false);
 			jbttnStart.setEnabled(true);
 			jbttnStop.setEnabled(false);
 		}
-	}
-	
-	public boolean isRunning(){
-		return this.running;
 	}
 }

@@ -12,7 +12,7 @@ import server_client.ChatChannel;
 import server_client.ChatMessage;
 import server_client.User;
 
-public class ChatServer extends Thread {
+public class ChatServer extends Server {
 
 	private boolean running;
 

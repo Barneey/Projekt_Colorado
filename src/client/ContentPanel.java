@@ -18,7 +18,7 @@ public class ContentPanel extends JPanel{
 	
 	private void createContent(){
 		content = new JPanel();
-		content.add(new JLabel("dasdsd"));
+		content.add(new JLabel("Testor"));
 	}
 	
 	public void setContent(JPanel content){

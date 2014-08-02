@@ -10,7 +10,7 @@ import java.util.Date;
 
 import server_client.User;
 
-public class LoginServer extends Thread{
+public class LoginServer extends Server{
 
 	private boolean running;
 	
