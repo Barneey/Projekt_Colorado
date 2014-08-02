@@ -9,10 +9,13 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 
 import javax.xml.ws.Endpoint;
+
+import com.sun.rowset.CachedRowSetImpl;
 
 import server_client.ChatChannel;
 import server_client.ChatMessage;
@@ -27,19 +30,22 @@ import server_client.User;
 
 public class DatabaseConnection {
 	
-	private String serverAddressLogin;
-	private String serverAddressChat;
-	private String serverAddressCash;
+	private final String SERVER_ADDRESS_LOGIN;
+	private final String SERVER_ADDRESS_CHAT;
+	private final String SERVER_ADDRESS_CASH;
+	private final String SERVER_ADDRESS_MAIN;
 	public static final int LOGIN_PORT = 4711;
 	public static final int CHAT_PORT = 4712;
 	public static final int CASH_PORT = 4713;
+	public static final int MAIN_PORT = 4714;
 	private static DatabaseConnection instance;
-	private final int TIMEOUT = 10000;
+	private final int TIMEOUT = 5000;
 
 	private DatabaseConnection() {
-		serverAddressLogin = "localhost";
-		serverAddressChat = "localhost";
-		serverAddressCash = "localhost";
+		SERVER_ADDRESS_LOGIN = "localhost";
+		SERVER_ADDRESS_CHAT = "localhost";
+		SERVER_ADDRESS_CASH = "localhost";
+		SERVER_ADDRESS_MAIN = "localhost";
 	}
 	
 	public static DatabaseConnection getInstance(){
@@ -52,7 +58,7 @@ public class DatabaseConnection {
 	public boolean validateUniqueNickname(String nickname){
 		boolean isUniqueNickname = false;
 		try {
-			Socket loginSocket = new Socket(serverAddressLogin, LOGIN_PORT);
+			Socket loginSocket = new Socket(SERVER_ADDRESS_LOGIN, LOGIN_PORT);
 			
 			loginSocket.setSoTimeout(TIMEOUT);
 			
@@ -80,7 +86,7 @@ public class DatabaseConnection {
 	
 	public User loginUser(User user){
 		try {
-			Socket loginSocket = new Socket(serverAddressLogin, LOGIN_PORT);
+			Socket loginSocket = new Socket(SERVER_ADDRESS_LOGIN, LOGIN_PORT);
 			
 			loginSocket.setSoTimeout(TIMEOUT);
 			
@@ -109,7 +115,7 @@ public class DatabaseConnection {
 	public void updateUser(User user, int port){
 		if(port == LOGIN_PORT || port == CASH_PORT){
 			try {
-				String serverAddress = (port == LOGIN_PORT ? serverAddressLogin : serverAddressCash);
+				String serverAddress = (port == LOGIN_PORT ? SERVER_ADDRESS_LOGIN : SERVER_ADDRESS_CASH);
 				Socket socket = new Socket(serverAddress, port);
 				
 				socket.setSoTimeout(TIMEOUT);
@@ -135,7 +141,7 @@ public class DatabaseConnection {
 	public ChatChannel[] getAllPublicChannels(){
 		ChatChannel[] channels = null;
 		try {
-			Socket chatSocket = new Socket(serverAddressLogin, CHAT_PORT);
+			Socket chatSocket = new Socket(SERVER_ADDRESS_LOGIN, CHAT_PORT);
 			
 			chatSocket.setSoTimeout(TIMEOUT);
 			
@@ -165,7 +171,7 @@ public class DatabaseConnection {
 		Date date = null;
 		if(port == LOGIN_PORT || port == CHAT_PORT){
 			try {
-				String serverAddress = (port == LOGIN_PORT ? serverAddressLogin : serverAddressChat);
+				String serverAddress = (port == LOGIN_PORT ? SERVER_ADDRESS_LOGIN : SERVER_ADDRESS_CHAT);
 				Socket socket = new Socket(serverAddress, port);
 				
 				socket.setSoTimeout(TIMEOUT);
@@ -194,7 +200,7 @@ public class DatabaseConnection {
 	
 	public void joinChannel(ChatChannel channel, User user, boolean channelExists){
 		try {
-			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
 			socket.setSoTimeout(TIMEOUT);
 			
@@ -227,7 +233,7 @@ public class DatabaseConnection {
 	public User[] loadUsers(ChatChannel channel){
 		User[] users = null;
 		try {
-			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
 			socket.setSoTimeout(TIMEOUT);
 			
@@ -259,7 +265,7 @@ public class DatabaseConnection {
 	public ChatMessage[] loadMessages(ChatChannel channel, Date joinDate){
 		ChatMessage[] chatMessages = null;
 		try {
-			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
 			socket.setSoTimeout(TIMEOUT);
 			
@@ -289,7 +295,7 @@ public class DatabaseConnection {
 	
 	public void addMessage(ChatMessage chatMessage){
 		try {
-			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
 			socket.setSoTimeout(TIMEOUT);
 			
@@ -315,7 +321,7 @@ public class DatabaseConnection {
 
 	public void leaveChannel(ChatChannel channel, User user){
 		try {
-			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
 			socket.setSoTimeout(TIMEOUT);
 			
@@ -340,7 +346,7 @@ public class DatabaseConnection {
 	
 	public void leaveAllChannels(User user){
 		try {
-			Socket socket = new Socket(serverAddressChat, CHAT_PORT);
+			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
 			socket.setSoTimeout(TIMEOUT);
 			
@@ -360,5 +366,34 @@ public class DatabaseConnection {
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
 		}		
+	}
+
+	public CachedRowSetImpl getRanking(){
+		try {
+			Socket socket = new Socket(SERVER_ADDRESS_MAIN, MAIN_PORT);
+			
+			socket.setSoTimeout(TIMEOUT);
+			
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+			
+			InputStream inputStream = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			
+			objectOutputStream.writeObject("GET_RANKING");
+			objectOutputStream.flush();
+
+			CachedRowSetImpl rowSet = (CachedRowSetImpl)objectInputStream.readObject();
+			
+			socket.close();
+			return rowSet;
+		}catch (SocketException e){
+			new ErrorFrame("Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
+		} catch (Exception e) {
+			new ErrorFrame("An unknown Error occoured");
+		}
+		return null;
 	}
 }

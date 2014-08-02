@@ -8,10 +8,10 @@ package server;
  */
 public class ServerDataBase {
 	private static ServerDataBase instance = null;
-	public static final String DBNAME = "JGameCollectionDB";
+	private final String DBNAME;
 
 	protected ServerDataBase() {
-
+		DBNAME = "JGameCollectionDB";
 	}
 	
 	public static ServerDataBase getInstance() {
@@ -19,5 +19,9 @@ public class ServerDataBase {
 			instance = new ServerDataBase();
 		}
 		return instance;
+	}
+	
+	public String getDBName(){
+		return this.DBNAME;
 	}
 }

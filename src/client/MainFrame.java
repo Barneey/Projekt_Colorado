@@ -67,7 +67,7 @@ public class MainFrame extends JFrame{
 					JPanel jpnlCenter = new JPanel();
 					jpnlCenter.setLayout(new BorderLayout());
 						ContentPanel contentPanel = new ContentPanel();
-						contentPanel.setPreferredSize(new Dimension(this.DEFAULT_MAIN_FRAMESIZE.width - 200, this.DEFAULT_MAIN_FRAMESIZE.height - 110));
+						contentPanel.setPreferredSize(new Dimension(770, 485));
 					jpnlCenter.add(contentPanel, BorderLayout.CENTER);
 						MenuPanel menuPanel = new MenuPanel(contentPanel);
 						menuPanel.setPreferredSize(new Dimension(this.DEFAULT_MAIN_FRAMESIZE.width - 200, 110));

@@ -24,9 +24,9 @@ public class LoginServer extends Server{
 	
 	public void run(){
 		running = true;
-		final int LOGGIN_PORT = 4711;
+		final int LOGIN_PORT = 4711;
 		try {
-			ServerSocket loginServerSocket = new ServerSocket(LOGGIN_PORT);
+			ServerSocket loginServerSocket = new ServerSocket(LOGIN_PORT);
 			ServerDataBaseManager sDBM = new ServerDataBaseManager();
 			while(true){
 				if(running){

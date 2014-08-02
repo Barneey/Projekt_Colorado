@@ -1,27 +1,39 @@
 package client;
 
+import java.awt.Dimension;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 
 public class ContentPanel extends JPanel{
 	
-	JPanel content;
+	private JRootPane rootContent;
+	private JPanel contentPanelContent;
 	
 	public ContentPanel(){
 		super();
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		rootContent = new JRootPane();
+		add(rootContent);
 		createContent();
-		add(content);
-		
+		setContent(contentPanelContent);
 	}
 	
 	private void createContent(){
-		content = new JPanel();
-		content.add(new JLabel("Testor"));
+		if(contentPanelContent == null){
+			contentPanelContent = new JPanel();
+		}
+		// TODO Create Method
+		contentPanelContent.add(new JLabel("Dummy"));
 	}
 	
+	
 	public void setContent(JPanel content){
-		this.content = content;
+		if(content != null){
+			rootContent.setContentPane(content);
+			revalidate();
+		}
 	}
 }

@@ -2,10 +2,12 @@ package serverUtil;
 
 import java.awt.Dimension;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
 import server.ChatServer;
 import server.LoginServer;
+import server.MainServer;
 
 public class ServerLauncher extends JFrame{
 	
@@ -15,22 +17,23 @@ public class ServerLauncher extends JFrame{
 	
 	public ServerLauncher(){
 		super("Server Launcher");
-		setLayout(null);
-
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		
 		final Dimension PANEL_SIZE = new Dimension(270, 50);
+		
 		ServerLaunchPanel slpLoginServer = new ServerLaunchPanel("Login Server", new LoginServer());
-		slpLoginServer.setSize(PANEL_SIZE);
-		slpLoginServer.setLocation(5, 5);
+		slpLoginServer.setPreferredSize(PANEL_SIZE);
 		add(slpLoginServer);
 		
-		ServerLaunchPanel slpChatServer = new ServerLaunchPanel("Chat server", new ChatServer());
-		slpChatServer.setSize(PANEL_SIZE);
-		slpChatServer.setLocation(5, 50);
+		ServerLaunchPanel slpChatServer = new ServerLaunchPanel("Chat Server", new ChatServer());
+		slpChatServer.setPreferredSize(PANEL_SIZE);
 		add(slpChatServer);
 
-		final Dimension FRAME_SIZE = new Dimension((int)PANEL_SIZE.getWidth() + 10, (int)(PANEL_SIZE.getHeight() * 2.3) + 10);
-		setSize(FRAME_SIZE);
+		ServerLaunchPanel slpMainServer = new ServerLaunchPanel("Main Server", new MainServer());
+		slpMainServer.setPreferredSize(PANEL_SIZE);
+		add(slpMainServer);
+		
+		pack();
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);

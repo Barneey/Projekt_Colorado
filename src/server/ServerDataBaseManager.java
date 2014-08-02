@@ -11,7 +11,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.sql.rowset.CachedRowSet;
 import javax.swing.JList;
+
+import com.sun.rowset.CachedRowSetImpl;
 
 import serverUtil.ServerResultFrame;
 import server_client.ChatChannel;
@@ -22,12 +25,17 @@ public class ServerDataBaseManager {
 	
 	public static final int QUERY = 0;
 	public static final int UPDATE = 1;
+	private String DBName;
+	
+	public ServerDataBaseManager(){
+		DBName = ServerDataBase.getInstance().getDBName();
+	}
 	
 	public void initializeDataBase(JList<String> log){
 		ArrayList<String> alstLog = new ArrayList<>();
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME + ";create=true";
+			String url = "jdbc:derby:" + DBName + ";create=true";
 			alstLog.add("Connecting...");
 			log.setListData(alstLog.toArray(new String[0]));
 			Connection connection = DriverManager.getConnection(url);
@@ -235,7 +243,7 @@ public class ServerDataBaseManager {
 			log.setListData(alstLog.toArray(new String[0]));
 			alstLog.add("Deleting Tables...");
 			log.setListData(alstLog.toArray(new String[0]));
-			Connection connection = DriverManager.getConnection("jdbc:derby:" + ServerDataBase.DBNAME + ";");
+			Connection connection = DriverManager.getConnection("jdbc:derby:" + DBName + ";");
 			Statement statement = connection.createStatement();
 			String readAllTablesSQL = "SELECT * FROM SYS.SYSTABLES WHERE TYBLETYPE = 'T'";
 			ResultSet allTables = statement.executeQuery(readAllTablesSQL);
@@ -273,7 +281,7 @@ public class ServerDataBaseManager {
 			log.setListData(alstLog.toArray(new String[0]));
 			alstLog.add("Deleting Tables...");
 			log.setListData(alstLog.toArray(new String[0]));
-			Connection connection = DriverManager.getConnection("jdbc:derby:" + ServerDataBase.DBNAME + ";");
+			Connection connection = DriverManager.getConnection("jdbc:derby:" + DBName + ";");
 			Statement statement = connection.createStatement();
 			
 			String readAllTablesSQL = "SELECT * FROM SYS.SYSTABLES WHERE TABLETYPE = 'T'";
@@ -366,7 +374,7 @@ public class ServerDataBaseManager {
 		
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			switch (type) {
@@ -392,7 +400,7 @@ public class ServerDataBaseManager {
 	public User verifyUser(User user){
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			String sqlStatement = "SELECT * FROM users WHERE juser='" + user.getUsername() + "' AND jpassword='" + new String(user.getPassword()) + "'";
@@ -420,7 +428,7 @@ public class ServerDataBaseManager {
 		boolean isUnique = false;
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			String sqlStatement = "SELECT * FROM users WHERE jnick='" + nickname + "'";
@@ -437,7 +445,7 @@ public class ServerDataBaseManager {
 	public void updateUser(User user){
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 
@@ -465,7 +473,7 @@ public class ServerDataBaseManager {
 		ChatChannel channels[] = null;
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
@@ -492,7 +500,7 @@ public class ServerDataBaseManager {
 	public ChatChannel createAndJoinChannel(ChatChannel chatChannel, User user){
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			String insertIntoChatChannels = "INSERT INTO chatchannels (channeltype, channelname) "
@@ -526,7 +534,7 @@ public class ServerDataBaseManager {
 	public void joinUserInChannel(ChatChannel chatChannel, User user){
 		try{
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
@@ -553,7 +561,7 @@ public class ServerDataBaseManager {
 		User[] users = null;
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
@@ -591,7 +599,7 @@ public class ServerDataBaseManager {
 		ChatMessage[] chatMessages = null;
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
@@ -623,7 +631,7 @@ public class ServerDataBaseManager {
 	public void addMessage(ChatMessage message){
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
@@ -644,7 +652,7 @@ public class ServerDataBaseManager {
 	public void leaveChannel(ChatChannel channel, User user){
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
@@ -677,7 +685,7 @@ public class ServerDataBaseManager {
 	public void leaveAllChannels(User user){
 		try {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			String url = "jdbc:derby:" + ServerDataBase.DBNAME;
+			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
@@ -690,5 +698,26 @@ public class ServerDataBaseManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public CachedRowSetImpl getRanking(){
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + DBName;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String getRanking = "SELECT jnick AS Jamertag, Level, points FROM USERS ORDER BY POINTS FETCH FIRST 100 ROWS ONLY";
+			
+			CachedRowSetImpl rowSet = new CachedRowSetImpl();
+			rowSet.populate(statement.executeQuery(getRanking));
+			
+			statement.close();
+			connection.close();
+			return rowSet;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
