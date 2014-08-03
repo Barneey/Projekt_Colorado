@@ -53,7 +53,11 @@ public class MenuPanel extends JPanel{
 	private class ALPlay implements ActionListener{
 		
 		public void actionPerformed(ActionEvent ae){
-			// TODO write Method
+			if(playPanel == null){
+				playPanel = new PlayPanel(contentPanel.getPreferredSize());
+			}
+			playPanel.loadPlaymodes();
+			contentPanel.setContent(playPanel);
 		}
 	}
 
