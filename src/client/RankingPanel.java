@@ -9,13 +9,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.sun.rowset.CachedRowSetImpl;
 
 public class RankingPanel extends JPanel{
 	
 	private JScrollPane jscrllRankings;
-	private DefaultTableModel tableModelRankings;
+	private UneditableDefaultTableModel tableModelRankings;
 	private JTable tableRankings;
 	private DatabaseConnection dbCon;
 	
@@ -23,8 +25,10 @@ public class RankingPanel extends JPanel{
 		super();
 		dbCon = DatabaseConnection.getInstance();
 		jscrllRankings = new JScrollPane();
-		tableModelRankings = new DefaultTableModel();
+		tableModelRankings = new UneditableDefaultTableModel();
 		tableRankings = new JTable(tableModelRankings);
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tableRankings.getModel());
+		tableRankings.setRowSorter(sorter);
 		jscrllRankings.setViewportView(tableRankings);
 		jscrllRankings.setPreferredSize(d);
 		this.add(jscrllRankings);

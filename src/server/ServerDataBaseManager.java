@@ -707,7 +707,7 @@ public class ServerDataBaseManager {
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
-			String getRanking = "SELECT jnick AS Jamertag, Level, points FROM USERS ORDER BY POINTS FETCH FIRST 100 ROWS ONLY";
+			String getRanking = "SELECT jnick AS Jamertag, Level, points FROM USERS ORDER BY POINTS DESC FETCH FIRST 100 ROWS ONLY";
 			
 			CachedRowSetImpl rowSet = new CachedRowSetImpl();
 			rowSet.populate(statement.executeQuery(getRanking));
