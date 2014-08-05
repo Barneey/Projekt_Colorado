@@ -6,6 +6,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
 import server.ChatServer;
+import server.GameServer;
 import server.LoginServer;
 import server.MainServer;
 
@@ -32,6 +33,10 @@ public class ServerLauncher extends JFrame{
 		ServerLaunchPanel slpMainServer = new ServerLaunchPanel("Main Server", new MainServer());
 		slpMainServer.setPreferredSize(PANEL_SIZE);
 		add(slpMainServer);
+		
+		ServerLaunchPanel slpGameServer = new ServerLaunchPanel("Game Server", new GameServer());
+		slpGameServer.setPreferredSize(PANEL_SIZE);
+		add(slpGameServer);
 		
 		pack();
 		setResizable(false);

@@ -21,7 +21,6 @@ public class MenuPanel extends JPanel{
 		Dimension buttonSize = new Dimension(150,70);
 
 		JButton jbttnPlay = new JButton("Play");
-		jbttnPlay.setEnabled(false);
 		jbttnPlay.setPreferredSize(buttonSize);
 		jbttnPlay.addActionListener(new ALPlay());
 		add(jbttnPlay);

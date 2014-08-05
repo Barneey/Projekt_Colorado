@@ -19,6 +19,7 @@ import com.sun.rowset.CachedRowSetImpl;
 
 import server_client.ChatChannel;
 import server_client.ChatMessage;
+import server_client.Playmode;
 import server_client.User;
 
 /**
@@ -34,10 +35,12 @@ public class DatabaseConnection {
 	private final String SERVER_ADDRESS_CHAT;
 	private final String SERVER_ADDRESS_CASH;
 	private final String SERVER_ADDRESS_MAIN;
+	private final String SERVER_ADDRESS_GAME;
 	public static final int LOGIN_PORT = 4711;
 	public static final int CHAT_PORT = 4712;
 	public static final int CASH_PORT = 4713;
 	public static final int MAIN_PORT = 4714;
+	public static final int GAME_PORT = 4715;
 	private static DatabaseConnection instance;
 	private final int TIMEOUT = 5000;
 
@@ -46,6 +49,7 @@ public class DatabaseConnection {
 		SERVER_ADDRESS_CHAT = "localhost";
 		SERVER_ADDRESS_CASH = "localhost";
 		SERVER_ADDRESS_MAIN = "localhost";
+		SERVER_ADDRESS_GAME = "localhost";
 	}
 	
 	public static DatabaseConnection getInstance(){
@@ -395,5 +399,34 @@ public class DatabaseConnection {
 			new ErrorFrame("An unknown Error occoured");
 		}
 		return null;
+	}
+
+	public Playmode[] getPlaymodes() {
+		Playmode[] playmodes = null;
+		try {
+			Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+			
+			socket.setSoTimeout(TIMEOUT);
+			
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+			
+			InputStream inputStream = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			
+			objectOutputStream.writeObject("GET_PLAYMODES");
+			objectOutputStream.flush();
+
+			playmodes = (Playmode[])objectInputStream.readObject();
+			
+			socket.close();
+		}catch (SocketException e){
+			new ErrorFrame("Server unreachable!");
+		} catch (SocketTimeoutException e){
+			new ErrorFrame("Connection timed out");
+		} catch (Exception e) {
+			new ErrorFrame("An unknown Error occoured");
+		}
+		return playmodes;
 	}
 }

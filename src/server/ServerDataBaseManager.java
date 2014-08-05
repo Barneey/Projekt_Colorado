@@ -19,6 +19,7 @@ import com.sun.rowset.CachedRowSetImpl;
 import serverUtil.ServerResultFrame;
 import server_client.ChatChannel;
 import server_client.ChatMessage;
+import server_client.Playmode;
 import server_client.User;
 
 public class ServerDataBaseManager {
@@ -221,6 +222,62 @@ public class ServerDataBaseManager {
 			alstLog.add("Table chatMessages created");
 			log.setListData(alstLog.toArray(new String[0]));
 			
+//			###CREATING TABLE PLAYMODES###
+			
+			alstLog.add("Creating Table playmodes...");
+			log.setListData(alstLog.toArray(new String[0]));
+			String createPlaymodes = "CREATE TABLE playmodes ("
+										+ "pmid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
+										+ "titel VARCHAR(25),"
+										+ "desctext VARCHAR(255),"
+										+ "available boolean)";
+			statement.executeUpdate(createPlaymodes);
+			alstLog.add("Table playmodes created");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			//			###FILLING TABLE PLAYMODES###
+			
+			alstLog.add("Filling Table playmodes...");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			String insertPlaymodesFFA = "INSERT INTO playmodes (titel, desctext, available) VALUES ('FFA', 'Free for all - Up to 8 players fight against each other', true)";
+			statement.execute(insertPlaymodesFFA);
+			
+			String insertPlaymodesTEAM = "INSERT INTO playmodes (titel, desctext, available) VALUES ('TEAM', 'Team vs Team - Two teams fight against each other', true)";
+			statement.execute(insertPlaymodesTEAM);
+			
+			String insertPlaymodesUNDERDOG = "INSERT INTO playmodes (titel, desctext, available) VALUES ('UNDERDOG', 'The Underdog Challange - A single player competes against a group of player', true)";
+			statement.execute(insertPlaymodesUNDERDOG);
+			
+			alstLog.add("Table playmodes filled");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+//			###CREATING TABLE GAMES###
+			
+			alstLog.add("Creating Table games...");
+			log.setListData(alstLog.toArray(new String[0]));
+			String createGames = "CREATE TABLE games ("
+								+ "gid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
+								+ "pmID INTEGER REFERENCES PLAYMODES (pmID),"
+								+ "winner INTEGER,"
+								+ "gamestart TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+			statement.executeUpdate(createGames);
+			alstLog.add("Table games created");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+//			###CREATING TABLE GAMERUSERLRATIONSHIPS###
+			
+			alstLog.add("Creating gameUserRelationships games...");
+			log.setListData(alstLog.toArray(new String[0]));
+			String createGameUserRelationships = "CREATE TABLE gameUserRelationships ("
+												+ "gurID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
+												+ "gID INTEGER REFERENCES GAMES (gID),"
+												+ "uID INTEGER REFERENCES USERS (uID),"
+												+ "team INTEGER)";
+			statement.executeUpdate(createGameUserRelationships);
+			alstLog.add("Table gameUserRelationships created");
+			log.setListData(alstLog.toArray(new String[0]));
+			
 			statement.close();
 			connection.close();
 			alstLog.add("Connection closed");
@@ -290,6 +347,27 @@ public class ServerDataBaseManager {
 			while(allTables.next()){
 				String tablename = allTables.getString("TABLENAME");
 				allExistingUserTables.add(tablename);
+			}
+			
+			String gameUserRelationships = "GAMEUSERRELATIONS";
+			if(allExistingUserTables.contains(gameUserRelationships)){
+				dropTable(statement, gameUserRelationships);
+				alstLog.add("Table \"" + gameUserRelationships +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
+			}
+			
+			String games = "GAMES";
+			if(allExistingUserTables.contains(games)){
+				dropTable(statement, games);
+				alstLog.add("Table \"" + games +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
+			}
+			
+			String playmodes = "PLAYMODES";
+			if(allExistingUserTables.contains(playmodes)){
+				dropTable(statement, playmodes);
+				alstLog.add("Table \"" + playmodes +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
 			}
 			
 			String chatmessages = "CHATMESSAGES";
@@ -719,5 +797,29 @@ public class ServerDataBaseManager {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public Playmode[] getPlaymodes(){
+		Playmode[] playmodes = null;
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + DBName;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String getRanking = "SELECT * FROM playmodes where available = true";
+			
+			ResultSet rs = statement.executeQuery(getRanking);
+			ArrayList<Playmode> alstPlaymodes = new ArrayList<>();
+			while(rs.next()){
+				alstPlaymodes.add(new Playmode(rs.getInt("pmid"), rs.getString("titel"), rs.getString("descText")));
+			}
+			playmodes = alstPlaymodes.toArray(new Playmode[0]);
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return playmodes;
 	}
 }
