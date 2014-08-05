@@ -29,27 +29,13 @@ import server_client.User;
  *
  */
 
-public class DatabaseConnection {
+public class DatabaseConnection extends ServerConnection{
 	
-	private final String SERVER_ADDRESS_LOGIN;
-	private final String SERVER_ADDRESS_CHAT;
-	private final String SERVER_ADDRESS_CASH;
-	private final String SERVER_ADDRESS_MAIN;
-	private final String SERVER_ADDRESS_GAME;
-	public static final int LOGIN_PORT = 4711;
-	public static final int CHAT_PORT = 4712;
-	public static final int CASH_PORT = 4713;
-	public static final int MAIN_PORT = 4714;
-	public static final int GAME_PORT = 4715;
 	private static DatabaseConnection instance;
 	private final int TIMEOUT = 5000;
 
 	private DatabaseConnection() {
-		SERVER_ADDRESS_LOGIN = "localhost";
-		SERVER_ADDRESS_CHAT = "localhost";
-		SERVER_ADDRESS_CASH = "localhost";
-		SERVER_ADDRESS_MAIN = "localhost";
-		SERVER_ADDRESS_GAME = "localhost";
+
 	}
 	
 	public static DatabaseConnection getInstance(){
