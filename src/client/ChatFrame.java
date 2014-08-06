@@ -23,6 +23,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.DefaultCaret;
 
 import server_client.ChatChannel;
 import server_client.ChatMessage;
@@ -39,6 +40,7 @@ public class ChatFrame extends JFrame{
 	private User user;
 	private Thread updater;
 	private ArrayList<ChatMessage> chatMessages;
+	private ArrayList<ChatMessage> writtenMessages;
 	private JScrollPane jscrllMessages;
 	
 	public ChatFrame(ChatChannel channel, User user){
@@ -52,6 +54,7 @@ public class ChatFrame extends JFrame{
 	private void construct(ChatChannel channel, User user, boolean channelExists){
 		setTitle(channel.getChannelName());
 		this.chatMessages = new ArrayList<>();
+		this.writtenMessages = new ArrayList<>();
 		this.updater = new Updater();
 		this.user = user;
 		this.channel = channel;
@@ -74,11 +77,13 @@ public class ChatFrame extends JFrame{
 					jtxtrMessages.setFont(JGSystem.FONT_CHAT);
 					jtxtrMessages.setLineWrap(true);
 					jtxtrMessages.setEditable(false);
-					loadMessages();
-
-					jscrllMessages = new JScrollPane(jtxtrMessages, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					
+					jscrllMessages = new JScrollPane(jtxtrMessages, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 																JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+					
 					jpnlLeftPanel.add(jscrllMessages, BorderLayout.CENTER);
+
+					loadMessages();
 					
 					jtxtfldEnterMessage = new JTextField();
 					jtxtfldEnterMessage.setPreferredSize(new Dimension(300, 25));
@@ -96,7 +101,6 @@ public class ChatFrame extends JFrame{
 			jpnlRightPanel.add(Box.createRigidArea(new Dimension(0,10)));
 		
 					jlstUsers = new JList<>();
-					jlstUsers.setPreferredSize(new Dimension(150, 450));
 					loadUsers();
 				JScrollPane jscrllChannels = new JScrollPane(jlstUsers, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -140,8 +144,6 @@ public class ChatFrame extends JFrame{
 				jtxtrMessages.append("\n");
 			}
 		}
-		JScrollBar vertical = jscrllMessages.getVerticalScrollBar();
-		vertical.setValue(vertical.getMaximum());
 	}
 	
 	private class Updater extends Thread{
@@ -150,6 +152,10 @@ public class ChatFrame extends JFrame{
 			while(true){
 				try {
 					sleep(100);
+					for (ChatMessage chatMessage : writtenMessages) {
+						dbCon.addMessage(chatMessage);
+					}
+					writtenMessages.clear();
 					loadMessages();
 					loadUsers();
 				} catch (Exception e) {
@@ -163,22 +169,23 @@ public class ChatFrame extends JFrame{
 		updater.start();
 	}
 	
-//	private void stopUpdatingChannel(){
-//		updater.interrupt();
-//	}
-	
 	private void leaveChannel(){
 		dbCon.leaveChannel(channel, user);
+	}
+	
+	public boolean validateMessage(String message){
+		return message.length() > 0;
 	}
 	
 	private class ALAddMessage implements ActionListener{
 		
 		public void actionPerformed(ActionEvent ae){
-			ChatMessage chatMessage = new ChatMessage(user.getNick(), user.getId(), channel.getChannelID(), jtxtfldEnterMessage.getText());
-			dbCon.addMessage(chatMessage);
-			jtxtfldEnterMessage.setText("");
-			loadMessages();
-			loadUsers();
+			String message = jtxtfldEnterMessage.getText();
+			if(validateMessage(message)){
+				ChatMessage chatMessage = new ChatMessage(user.getNick(), user.getId(), channel.getChannelID(), jtxtfldEnterMessage.getText());
+				writtenMessages.add(chatMessage);
+				jtxtfldEnterMessage.setText("");
+			}
 		}
 	}
 
