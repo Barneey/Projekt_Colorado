@@ -1,11 +1,6 @@
 package server;
 
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class MainServer extends Server{
 
@@ -29,25 +24,7 @@ public class MainServer extends Server{
 			ServerDataBaseManager sDBM = new ServerDataBaseManager();
 			while(true){
 				if(running){
-					Socket mainSocket = mainServerSocket.accept();
-					
-					InputStream inputStream = mainSocket.getInputStream();
-					ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-					
-					OutputStream outputStream = mainSocket.getOutputStream();
-					ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-					
-					String order = (String)objectInputStream.readObject();
-					
-					switch (order) {
-					case "GET_RANKING":
-						objectOutputStream.writeObject(sDBM.getRanking());
-						objectOutputStream.flush();
-						break;
-
-					default:
-						break;
-					}
+					new MainServerExecutionThread(mainServerSocket.accept(), sDBM);
 				}
 			}
 		} catch (Exception e) {
