@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
+import server.CashServer;
 import server.ChatServer;
 import server.GameServer;
 import server.LoginServer;
@@ -29,6 +30,10 @@ public class ServerLauncher extends JFrame{
 		ServerLaunchPanel slpChatServer = new ServerLaunchPanel("Chat Server", new ChatServer());
 		slpChatServer.setPreferredSize(PANEL_SIZE);
 		add(slpChatServer);
+		
+		ServerLaunchPanel slpCashServer = new ServerLaunchPanel("Cash Server", new CashServer());
+		slpCashServer.setPreferredSize(PANEL_SIZE);
+		add(slpCashServer);
 
 		ServerLaunchPanel slpMainServer = new ServerLaunchPanel("Main Server", new MainServer());
 		slpMainServer.setPreferredSize(PANEL_SIZE);

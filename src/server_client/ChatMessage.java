@@ -54,4 +54,35 @@ public class ChatMessage implements Serializable{
 			return chatString;
 		}
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof ChatMessage))
+			return false;
+		ChatMessage other = (ChatMessage) obj;
+		if (channelCID != other.channelCID)
+			return false;
+		if (message == null) {
+			if (other.message != null)
+				return false;
+		} else if (!message.equals(other.message))
+			return false;
+		if (messageDate == null) {
+			if (other.messageDate != null)
+				return false;
+		} else if (!messageDate.equals(other.messageDate))
+			return false;
+		if (userID != other.userID)
+			return false;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		return true;
+	}
 }

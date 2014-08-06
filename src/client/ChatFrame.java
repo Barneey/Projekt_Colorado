@@ -19,6 +19,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -37,6 +38,8 @@ public class ChatFrame extends JFrame{
 	private ChatChannel channel;
 	private User user;
 	private Thread updater;
+	private ArrayList<ChatMessage> chatMessages;
+	private JScrollPane jscrllMessages;
 	
 	public ChatFrame(ChatChannel channel, User user){
 		construct(channel, user, true);
@@ -48,6 +51,7 @@ public class ChatFrame extends JFrame{
 	
 	private void construct(ChatChannel channel, User user, boolean channelExists){
 		setTitle(channel.getChannelName());
+		this.chatMessages = new ArrayList<>();
 		this.updater = new Updater();
 		this.user = user;
 		this.channel = channel;
@@ -68,14 +72,12 @@ public class ChatFrame extends JFrame{
 						
 					jtxtrMessages = new JTextArea();
 					jtxtrMessages.setFont(JGSystem.FONT_CHAT);
-					jtxtrMessages.setPreferredSize(new Dimension(300, 425));
 					jtxtrMessages.setLineWrap(true);
 					jtxtrMessages.setEditable(false);
 					loadMessages();
 
-					JScrollPane jscrllMessages = new JScrollPane(jtxtrMessages, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+					jscrllMessages = new JScrollPane(jtxtrMessages, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 																JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
 					jpnlLeftPanel.add(jscrllMessages, BorderLayout.CENTER);
 					
 					jtxtfldEnterMessage = new JTextField();
@@ -126,15 +128,20 @@ public class ChatFrame extends JFrame{
 	}
 	
 	private void loadMessages(){
-		ChatMessage[] alstMessages = dbCon.loadMessages(channel, joinDate);
+		ArrayList<ChatMessage> newMessages = new ArrayList<>(Arrays.asList(dbCon.loadMessages(channel, joinDate)));
+		if(chatMessages.size() > 0){
+			newMessages.removeAll(chatMessages);
+		}
 		boolean showTimestamp = UserSettingsClient.getInstance().isShowTimestamp();
-		jtxtrMessages.setText("");
-		if(alstMessages != null){
-			for (ChatMessage chatMessage : alstMessages) {
+		if(newMessages.size() > 0){
+			for (ChatMessage chatMessage : newMessages) {
+				chatMessages.add(chatMessage);
 				jtxtrMessages.append(chatMessage.toString(showTimestamp));
 				jtxtrMessages.append("\n");
 			}
 		}
+		JScrollBar vertical = jscrllMessages.getVerticalScrollBar();
+		vertical.setValue(vertical.getMaximum());
 	}
 	
 	private class Updater extends Thread{
