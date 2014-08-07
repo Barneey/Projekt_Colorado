@@ -24,7 +24,7 @@ public class GameServer extends Server{
 			ServerDataBaseManager sDBM = new ServerDataBaseManager();
 			while(true){
 				if(running){
-					new GameServerExecutionThread(gameServerSocket.accept(), sDBM).run();
+					new GameServerExecutionThread(gameServerSocket.accept(), sDBM).start();
 				}
 			}
 		} catch (Exception e) {

@@ -188,7 +188,7 @@ public class DatabaseConnection extends ServerConnection{
 		return date;
 	}
 	
-	public void joinChannel(ChatChannel channel, User user, boolean channelExists){
+	public ChatChannel joinChannel(ChatChannel channel, User user, boolean channelExists){
 		try {
 			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
@@ -206,7 +206,7 @@ public class DatabaseConnection extends ServerConnection{
 			if(!channelExists){
 				InputStream inputStream = socket.getInputStream();
 				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-				channel.setChannelID(((ChatChannel)objectInputStream.readObject()).getChannelID());
+				channel = (ChatChannel)objectInputStream.readObject();
 			}
 
 			socket.close();
@@ -218,6 +218,7 @@ public class DatabaseConnection extends ServerConnection{
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
 		}
+		return channel;
 	}
 	
 	public User[] loadUsers(ChatChannel channel){
@@ -283,7 +284,8 @@ public class DatabaseConnection extends ServerConnection{
 		return chatMessages;
 	}
 	
-	public void addMessage(ChatMessage chatMessage){
+	public boolean addMessage(ChatMessage chatMessage){
+		boolean returnValue = false;
 		try {
 			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
@@ -297,8 +299,10 @@ public class DatabaseConnection extends ServerConnection{
 			
 			objectOutputStream.writeObject(chatMessage);
 			objectOutputStream.flush();
-			
+
+			returnValue = (boolean)(new ObjectInputStream(socket.getInputStream())).readObject();
 			socket.close();
+			
 			
 		}catch (SocketException e){
 			new ErrorFrame("Server unreachable!");
@@ -307,9 +311,11 @@ public class DatabaseConnection extends ServerConnection{
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
 		}
+		return returnValue;
 	}
 
 	public boolean leaveChannel(ChatChannel channel, User user){
+		boolean returnValue = false;
 		try {
 			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
@@ -326,10 +332,9 @@ public class DatabaseConnection extends ServerConnection{
 			objectOutputStream.writeObject(user);
 			objectOutputStream.flush();
 			
-			boolean requstedFinished = (boolean)objectInputStream.readObject();
+			returnValue = (boolean)objectInputStream.readObject();
 			
 			socket.close();
-			return requstedFinished;
 		}catch (SocketException e){
 			new ErrorFrame("Server unreachable!");
 		} catch (SocketTimeoutException e){
@@ -337,7 +342,7 @@ public class DatabaseConnection extends ServerConnection{
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
 		}
-		return false;
+		return returnValue;
 	}
 	
 	public void leaveAllChannels(User user){

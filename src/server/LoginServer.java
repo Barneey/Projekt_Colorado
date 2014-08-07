@@ -22,7 +22,7 @@ public class LoginServer extends Server{
 			ServerDataBaseManager sDBM = new ServerDataBaseManager();
 			while(true){
 				if(running){
-					new LoginServerExecutionThread(loginServerSocket.accept(), sDBM).run();
+					new LoginServerExecutionThread(loginServerSocket.accept(), sDBM).start();
 				}			
 			}
 		} catch (Exception e) {

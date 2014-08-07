@@ -22,39 +22,16 @@ public class SmartScroller implements AdjustmentListener
 	private int previousValue = -1;
 	private int previousMaximum = -1;
 
-	/**
-	 *  Convenience constructor.
-	 *  Scroll direction is VERTICAL and viewport position is at the END.
-	 *
-	 *  @param scrollPane the scroll pane to monitor
-	 */
 	public SmartScroller(JScrollPane scrollPane)
 	{
 		this(scrollPane, VERTICAL, END);
 	}
 
-	/**
-	 *  Convenience constructor.
-	 *  Scroll direction is VERTICAL.
-	 *
-	 *  @param scrollPane the scroll pane to monitor
-	 *  @param viewportPosition valid values are START and END
-	 */
 	public SmartScroller(JScrollPane scrollPane, int viewportPosition)
 	{
 		this(scrollPane, VERTICAL, viewportPosition);
 	}
 
-	/**
-	 *  Specify how the SmartScroller will function.
-	 *
-	 *  @param scrollPane the scroll pane to monitor
-	 *  @param scrollDirection indicates which JScrollBar to monitor.
-	 *                         Valid values are HORIZONTAL and VERTICAL.
-	 *  @param viewportPosition indicates where the viewport will normally be
-	 *                          positioned as data is added.
-	 *                          Valid values are START and END
-	 */
 	public SmartScroller(JScrollPane scrollPane, int scrollDirection, int viewportPosition)
 	{
 		if (scrollDirection != HORIZONTAL
@@ -73,8 +50,6 @@ public class SmartScroller implements AdjustmentListener
 			scrollBar = scrollPane.getVerticalScrollBar();
 
 		scrollBar.addAdjustmentListener( this );
-
-		//  Turn off automatic scrolling for text components
 
 		Component view = scrollPane.getViewport().getView();
 
@@ -98,14 +73,8 @@ public class SmartScroller implements AdjustmentListener
 		});
 	}
 
-	/*
-	 *  Analyze every adjustment event to determine when the viewport
-	 *  needs to be repositioned.
-	 */
 	private void checkScrollBar(AdjustmentEvent e)
 	{
-		//  The scroll bar listModel contains information needed to determine
-		//  whether the viewport should be repositioned or not.
 
 		JScrollBar scrollBar = (JScrollBar)e.getSource();
 		BoundedRangeModel listModel = scrollBar.getModel();
@@ -116,8 +85,6 @@ public class SmartScroller implements AdjustmentListener
 		boolean valueChanged = previousValue != value;
 		boolean maximumChanged = previousMaximum != maximum;
 
-		//  Check if the user has manually repositioned the scrollbar
-
 		if (valueChanged && !maximumChanged)
 		{
 			if (viewportPosition == START)
@@ -126,13 +93,8 @@ public class SmartScroller implements AdjustmentListener
 				adjustScrollBar = value + extent >= maximum;
 		}
 
-		//  Reset the "value" so we can reposition the viewport and
-		//  distinguish between a user scroll and a program scroll.
-		//  (ie. valueChanged will be false on a program scroll)
-
 		if (adjustScrollBar && viewportPosition == END)
 		{
-			//  Scroll the viewport to the end.
 			scrollBar.removeAdjustmentListener( this );
 			value = maximum - extent;
 			scrollBar.setValue( value );
@@ -141,7 +103,6 @@ public class SmartScroller implements AdjustmentListener
 
 		if (adjustScrollBar && viewportPosition == START)
 		{
-			//  Keep the viewport at the same relative viewportPosition
 			scrollBar.removeAdjustmentListener( this );
 			value = value + maximum - previousMaximum;
 			scrollBar.setValue( value );

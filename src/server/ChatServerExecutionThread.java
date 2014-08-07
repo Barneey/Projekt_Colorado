@@ -59,6 +59,7 @@ public class ChatServerExecutionThread extends Thread{
 				User leavingUser = (User)objectInputStream.readObject();
 				sDBM.leaveChannel(leavingChannel, leavingUser);
 				objectOutputStream.writeObject(true);
+				objectOutputStream.flush();
 				break;
 			case "LEAVE_ALL_CHANNELS":
 				User leavingAllChannelsUser = (User)objectInputStream.readObject();
@@ -80,6 +81,8 @@ public class ChatServerExecutionThread extends Thread{
 			case "ADD_MESSAGE":
 				ChatMessage addingMessage = (ChatMessage)objectInputStream.readObject();
 				sDBM.addMessage(addingMessage);
+				objectOutputStream.writeObject(true);
+				objectOutputStream.flush();
 				break;
 			default:
 				break;

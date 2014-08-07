@@ -116,7 +116,7 @@ public class ChatFrame extends JFrame{
 	}
 	
 	private void joinChannel(boolean channelExists){
-		dbCon.joinChannel(channel, user, channelExists);
+		this.channel = dbCon.joinChannel(channel, user, channelExists);
 	}
 	
 	private void loadUsers(){
@@ -128,16 +128,19 @@ public class ChatFrame extends JFrame{
 	}
 	
 	private void loadMessages(){
-		ArrayList<ChatMessage> newMessages = new ArrayList<>(Arrays.asList(dbCon.loadMessages(channel, joinDate)));
-		if(chatMessages.size() > 0){
-			newMessages.removeAll(chatMessages);
-		}
-		boolean showTimestamp = UserSettingsClient.getInstance().isShowTimestamp();
-		if(newMessages.size() > 0){
-			for (ChatMessage chatMessage : newMessages) {
-				chatMessages.add(chatMessage);
-				jtxtrMessages.append(chatMessage.toString(showTimestamp));
-				jtxtrMessages.append("\n");
+		ChatMessage[] tempMessages = dbCon.loadMessages(channel, joinDate);
+		if(tempMessages != null){
+			ArrayList<ChatMessage> newMessages = new ArrayList<>(Arrays.asList(tempMessages));
+			if(chatMessages.size() > 0){
+				newMessages.removeAll(chatMessages);
+			}
+			boolean showTimestamp = UserSettingsClient.getInstance().isShowTimestamp();
+			if(newMessages.size() > 0){
+				for (ChatMessage chatMessage : newMessages) {
+					chatMessages.add(chatMessage);
+					jtxtrMessages.append(chatMessage.toString(showTimestamp));
+					jtxtrMessages.append("\n");
+				}
 			}
 		}
 	}
@@ -147,7 +150,9 @@ public class ChatFrame extends JFrame{
 		public void run() {
 			while(true){
 				try {
-					for (ChatMessage chatMessage : writtenMessages) {
+					ArrayList<ChatMessage> messageCopy = new ArrayList<>(writtenMessages);
+					writtenMessages.clear();
+					for (ChatMessage chatMessage : messageCopy) {
 						dbCon.addMessage(chatMessage);
 					}
 					writtenMessages.clear();
@@ -169,8 +174,8 @@ public class ChatFrame extends JFrame{
 		updater.start();
 	}
 	
-	private boolean leaveChannel(){
-		return dbCon.leaveChannel(channel, user);
+	private void leaveChannel(){
+		dbCon.leaveChannel(channel, user);
 	}
 	
 	public boolean validateMessage(String message){
@@ -206,9 +211,8 @@ public class ChatFrame extends JFrame{
 		@Override
 		public void windowClosing(WindowEvent arg0) {
 //			updater.terminate();
-			if(leaveChannel()){
-				dispose();
-			}
+			leaveChannel();
+			dispose();
 		}
 
 		@Override

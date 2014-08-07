@@ -22,7 +22,7 @@ public class CashServer extends Server {
 			ServerDataBaseManager sDBM = new ServerDataBaseManager();
 			while (true) {
 				if (running) {
-					new CashServerExecutionThread(cashServerSocket.accept(), sDBM).run();
+					new CashServerExecutionThread(cashServerSocket.accept(), sDBM).start();
 				}
 			}
 		} catch (Exception e) {

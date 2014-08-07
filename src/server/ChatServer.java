@@ -22,7 +22,7 @@ public class ChatServer extends Server {
 			ServerDataBaseManager sDBM = new ServerDataBaseManager();
 			while (true) {
 				if (running) {
-					new ChatServerExecutionThread(chatServerSocket.accept(), sDBM).run();
+					new ChatServerExecutionThread(chatServerSocket.accept(), sDBM).start();
 				}
 			}
 		} catch (Exception e) {

@@ -733,7 +733,6 @@ public class ServerDataBaseManager {
 			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
-			
 			String deleteStatement = "DELETE FROM userchatrelations WHERE userID=" + user.getId() + " "
 									+ "AND channelID = " + channel.getChannelID();
 			

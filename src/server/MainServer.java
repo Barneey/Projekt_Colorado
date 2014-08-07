@@ -24,7 +24,7 @@ public class MainServer extends Server{
 			ServerDataBaseManager sDBM = new ServerDataBaseManager();
 			while(true){
 				if(running){
-					new MainServerExecutionThread(mainServerSocket.accept(), sDBM).run();;
+					new MainServerExecutionThread(mainServerSocket.accept(), sDBM).start();;
 				}
 			}
 		} catch (Exception e) {
