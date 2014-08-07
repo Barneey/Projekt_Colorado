@@ -309,7 +309,7 @@ public class DatabaseConnection extends ServerConnection{
 		}
 	}
 
-	public void leaveChannel(ChatChannel channel, User user){
+	public boolean leaveChannel(ChatChannel channel, User user){
 		try {
 			Socket socket = new Socket(SERVER_ADDRESS_CHAT, CHAT_PORT);
 			
@@ -318,13 +318,18 @@ public class DatabaseConnection extends ServerConnection{
 			OutputStream outputStream = socket.getOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 			
+			InputStream inputStream = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			
 			objectOutputStream.writeObject("LEAVE_CHANNEL");
 			objectOutputStream.writeObject(channel);
 			objectOutputStream.writeObject(user);
 			objectOutputStream.flush();
 			
+			boolean requstedFinished = (boolean)objectInputStream.readObject();
 			
 			socket.close();
+			return requstedFinished;
 		}catch (SocketException e){
 			new ErrorFrame("Server unreachable!");
 		} catch (SocketTimeoutException e){
@@ -332,6 +337,7 @@ public class DatabaseConnection extends ServerConnection{
 		} catch (Exception e) {
 			new ErrorFrame("An unknown Error occoured");
 		}
+		return false;
 	}
 	
 	public void leaveAllChannels(User user){

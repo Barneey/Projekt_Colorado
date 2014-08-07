@@ -58,6 +58,7 @@ public class ChatServerExecutionThread extends Thread{
 				ChatChannel leavingChannel = (ChatChannel)objectInputStream.readObject();
 				User leavingUser = (User)objectInputStream.readObject();
 				sDBM.leaveChannel(leavingChannel, leavingUser);
+				objectOutputStream.writeObject(true);
 				break;
 			case "LEAVE_ALL_CHANNELS":
 				User leavingAllChannelsUser = (User)objectInputStream.readObject();
@@ -87,5 +88,6 @@ public class ChatServerExecutionThread extends Thread{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return;
 	}
 }
