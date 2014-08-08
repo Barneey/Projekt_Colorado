@@ -1,7 +1,10 @@
 package client;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import server_client.Playmode;
@@ -22,20 +25,34 @@ public class GameConnection extends ServerConnection{
 		}
 		return instance;
 	}
-	
-	public void joinQueue() throws UnknownHostException, IOException{
+
+	public void leaveQueues(User user) throws UnknownHostException, IOException, SocketTimeoutException{
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		objectOutputStream.writeObject("LEAVE_QUEUES");
+		objectOutputStream.writeObject(user);
+		objectOutputStream.flush();
+		
+		socket.close();
+	
 	}
 
-	public void leaveQueues(User user) {
-		// TODO Auto-generated method stub
+	public void joinQueues(User user, Playmode[] playmodes) throws UnknownHostException, IOException, SocketTimeoutException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
-	}
-
-	public void joinQueues(User user, Playmode[] array) {
-		// TODO Auto-generated method stub
+		socket.setSoTimeout(TIMEOUT);
 		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		objectOutputStream.writeObject("JOIN_QUEUES");
+		objectOutputStream.writeObject(user);
+		objectOutputStream.writeObject(playmodes);
+		
+		socket.close();
 	}
 
 }

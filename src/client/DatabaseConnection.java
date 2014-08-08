@@ -1,5 +1,6 @@
 package client;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
@@ -398,32 +400,23 @@ public class DatabaseConnection extends ServerConnection{
 		return null;
 	}
 
-	public Playmode[] getPlaymodes() {
-		Playmode[] playmodes = null;
-		try {
-			Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
-			
-			socket.setSoTimeout(TIMEOUT);
-			
-			OutputStream outputStream = socket.getOutputStream();
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-			
-			InputStream inputStream = socket.getInputStream();
-			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-			
-			objectOutputStream.writeObject("GET_PLAYMODES");
-			objectOutputStream.flush();
+	public Playmode[] getPlaymodes() throws UnknownHostException, IOException, ClassNotFoundException, SocketTimeoutException, SocketException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		
+		objectOutputStream.writeObject("GET_PLAYMODES");
+		objectOutputStream.flush();
 
-			playmodes = (Playmode[])objectInputStream.readObject();
-			
-			socket.close();
-		}catch (SocketException e){
-			new ErrorFrame("Server unreachable!");
-		} catch (SocketTimeoutException e){
-			new ErrorFrame("Connection timed out");
-		} catch (Exception e) {
-			new ErrorFrame("An unknown Error occoured");
-		}
+		Playmode[] playmodes = (Playmode[])objectInputStream.readObject();
+		
+		socket.close();
 		return playmodes;
 	}
 }
