@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import server_client.User;
+
 public class MenuPanel extends JPanel{
 	
 	private ContentPanel contentPanel;
@@ -15,8 +17,10 @@ public class MenuPanel extends JPanel{
 	private RankingPanel rankingPanel;
 	private ShopPanel shopPanel;
 	private SettingsPanel settingsPanel;
+	private User user;
 	
-	public MenuPanel(ContentPanel contentPanel){
+	public MenuPanel(ContentPanel contentPanel, User user){
+		this.user = user;
 		this.contentPanel = contentPanel;
 		Dimension buttonSize = new Dimension(150,70);
 
@@ -53,7 +57,7 @@ public class MenuPanel extends JPanel{
 		
 		public void actionPerformed(ActionEvent ae){
 			if(playPanel == null){
-				playPanel = new PlayPanel(contentPanel.getPreferredSize());
+				playPanel = new PlayPanel(contentPanel.getPreferredSize(), user);
 			}
 			playPanel.loadPlaymodes();
 			contentPanel.setContent(playPanel);

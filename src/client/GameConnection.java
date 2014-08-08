@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import server_client.Playmode;
+import server_client.User;
+
 public class GameConnection extends ServerConnection{
 	
 	private static GameConnection instance;
@@ -22,6 +25,16 @@ public class GameConnection extends ServerConnection{
 	
 	public void joinQueue() throws UnknownHostException, IOException{
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+	}
+
+	public void leaveQueues(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void joinQueues(User user, Playmode[] array) {
+		// TODO Auto-generated method stub
 		
 	}
 
