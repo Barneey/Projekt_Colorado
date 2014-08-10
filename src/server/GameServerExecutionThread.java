@@ -6,6 +6,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import server_client.Playmode;
+import server_client.User;
+
 public class GameServerExecutionThread extends Thread{
 	
 	private Socket gameSocket;
@@ -31,7 +34,13 @@ public class GameServerExecutionThread extends Thread{
 				objectOutputStream.writeObject(sDBM.getPlaymodes());
 				objectOutputStream.flush();
 				break;
-
+			case "LEAVE_QUEUES":
+				User leavingUser = (User)objectInputStream.readObject();
+				break;
+			case "JOIN_QUEUES":
+				User joiningUser = (User)objectInputStream.readObject();
+				Playmode[] joiningPlaymodes = (Playmode[])objectInputStream.readObject();
+				break;
 			default:
 				break;
 			}
