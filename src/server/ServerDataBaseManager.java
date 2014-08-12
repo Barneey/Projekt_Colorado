@@ -855,7 +855,14 @@ public class ServerDataBaseManager {
 			ResultSet rs = statement.executeQuery(getRanking);
 			ArrayList<Playmode> alstPlaymodes = new ArrayList<>();
 			while(rs.next()){
-				alstPlaymodes.add(new Playmode(rs.getInt("pmid"), rs.getString("titel"), rs.getString("descText"), null));
+				int pmid = rs.getInt("pmid");
+				ArrayList<Integer> alstTeamsizes = new ArrayList<>();
+				
+				ResultSet playmodeTeams = statement.executeQuery("SELECT * FROM PLAYMODETEAMS WHERE pmid = " + pmid);
+				while(playmodeTeams.next()){
+					alstTeamsizes.add(playmodeTeams.getInt("size"));
+				}
+				alstPlaymodes.add(new Playmode(pmid, rs.getString("titel"), rs.getString("descText"), alstTeamsizes.toArray(new Integer[0])));
 			}
 			playmodes = alstPlaymodes.toArray(new Playmode[0]);
 			statement.close();

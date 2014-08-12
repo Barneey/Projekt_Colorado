@@ -8,9 +8,9 @@ public class Playmode implements Serializable{
 	private int pid;
 	private String titel;
 	private String descText;
-	private int[] teamSizes;
+	private Integer[] teamSizes;
 	
-	public Playmode(int pid, String titel, String descText, int[] teamSizes){
+	public Playmode(int pid, String titel, String descText, Integer[] teamSizes){
 		this.pid = pid;
 		this.titel = titel;
 		this.descText = descText;
@@ -29,7 +29,7 @@ public class Playmode implements Serializable{
 		return descText;
 	}
 	
-	public int[] getTeamSizes(){
+	public Integer[] getTeamSizes(){
 		return teamSizes;
 	}
 }
