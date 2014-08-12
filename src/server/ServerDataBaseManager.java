@@ -252,6 +252,43 @@ public class ServerDataBaseManager {
 			alstLog.add("Table playmodes filled");
 			log.setListData(alstLog.toArray(new String[0]));
 			
+//			###CREATING TABLE PLAYMODETEAMS###
+			
+			alstLog.add("Creating Table playmodeTeams...");
+			log.setListData(alstLog.toArray(new String[0]));
+			String playmodeTeams = "CREATE TABLE playmodeteams ("
+								+ "pmtID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
+								+ "pmID INTEGER REFERENCES PLAYMODES (pmID),"
+								+ "size INTEGER)";
+			statement.executeUpdate(playmodeTeams);
+			alstLog.add("Table playmodeTeams created");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+//			###FILLING TABLE PLAYMODETEAMS###
+			
+			alstLog.add("Filling Table playmodeTeams...");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			for (int i = 0; i < 8; i++) {
+				String insertPlaymodeTeamsFFA = "INSERT INTO playmodeteams (pmid, size) VALUES ((SELECT pmid FROM playmodes WHERE titel = 'FFA'), 1)";
+				statement.execute(insertPlaymodeTeamsFFA);
+			}
+			
+			for (int i = 0; i < 2; i++) {
+				String insertPlaymodeTeamsTEAM = "INSERT INTO playmodeteams (pmid, size) VALUES ((SELECT pmid FROM playmodes WHERE titel = 'TEAM'), 3)";
+				statement.execute(insertPlaymodeTeamsTEAM);
+			}
+
+			String insertPlaymodeTeamsUNDERDOGTeam = "INSERT INTO playmodeteams (pmid, size) VALUES ((SELECT pmid FROM playmodes WHERE titel = 'UNDERDOG'), 3)";
+			statement.execute(insertPlaymodeTeamsUNDERDOGTeam);
+			
+			String insertPlaymodeTeamsUNDERDOGSolo = "INSERT INTO playmodeteams (pmid, size) VALUES ((SELECT pmid FROM playmodes WHERE titel = 'UNDERDOG'), 1)";
+			statement.execute(insertPlaymodeTeamsUNDERDOGSolo);
+			
+			alstLog.add("Table playmodeTeams filled");
+			log.setListData(alstLog.toArray(new String[0]));
+			
+			
 //			###CREATING TABLE GAMES###
 			
 			alstLog.add("Creating Table games...");
@@ -347,6 +384,13 @@ public class ServerDataBaseManager {
 			while(allTables.next()){
 				String tablename = allTables.getString("TABLENAME");
 				allExistingUserTables.add(tablename);
+			}
+			
+			String playmodeTeams = "PLAYMODETEAMS";
+			if(allExistingUserTables.contains(playmodeTeams)){
+				dropTable(statement, playmodeTeams);
+				alstLog.add("Table \"" + playmodeTeams +  "\" deleted");
+				log.setListData(alstLog.toArray(new String[0]));
 			}
 			
 			String gameUserRelationships = "GAMEUSERRELATIONS";
@@ -811,7 +855,7 @@ public class ServerDataBaseManager {
 			ResultSet rs = statement.executeQuery(getRanking);
 			ArrayList<Playmode> alstPlaymodes = new ArrayList<>();
 			while(rs.next()){
-				alstPlaymodes.add(new Playmode(rs.getInt("pmid"), rs.getString("titel"), rs.getString("descText")));
+				alstPlaymodes.add(new Playmode(rs.getInt("pmid"), rs.getString("titel"), rs.getString("descText"), null));
 			}
 			playmodes = alstPlaymodes.toArray(new Playmode[0]);
 			statement.close();
