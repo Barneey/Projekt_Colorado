@@ -1,9 +1,9 @@
 package server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.Map.Entry;
 import java.util.Queue;
 
 import server_client.Playmode;
@@ -17,6 +17,13 @@ public class GameQueues {
 	
 	private GameQueues(){
 		gameQueueMap = new HashMap<>();
+	}
+	
+	public static GameQueues getInstance(){
+		if(instance == null){
+			instance = new GameQueues();
+		}
+		return instance;
 	}
 	
 	public void setPlaymodes(Playmode[] playmodes){
@@ -38,10 +45,10 @@ public class GameQueues {
 		return playmodeExists;
 	}
 	
-	public static GameQueues getInstance(){
-		if(instance == null){
-			instance = new GameQueues();
+	public void leaveQueues(User leavingUser){
+		Iterator<Entry<Integer, Queue<User>>> it = gameQueueMap.entrySet().iterator();
+		while(it.hasNext()){
+			it.next().getValue().remove(leavingUser);
 		}
-		return instance;
 	}
 }

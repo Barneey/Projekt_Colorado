@@ -850,19 +850,21 @@ public class ServerDataBaseManager {
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
-			String getRanking = "SELECT * FROM playmodes where available = true";
+			String getRanking = "SELECT * FROM playmodes, playmodeteams where playmodes.pmid = playmodeteams.pmid AND available = true ORDER BY playmodes.pmid";
 			
 			ResultSet rs = statement.executeQuery(getRanking);
 			ArrayList<Playmode> alstPlaymodes = new ArrayList<>();
+			int pmidCopy = -1;
+			Playmode playmode = null;
 			while(rs.next()){
 				int pmid = rs.getInt("pmid");
-				ArrayList<Integer> alstTeamsizes = new ArrayList<>();
-				
-				ResultSet playmodeTeams = statement.executeQuery("SELECT * FROM PLAYMODETEAMS WHERE pmid = " + pmid);
-				while(playmodeTeams.next()){
-					alstTeamsizes.add(playmodeTeams.getInt("size"));
+				if(pmid != pmidCopy){
+					// New Playmode
+					pmidCopy = pmid;
+					playmode = new Playmode(pmid, rs.getString("titel"), rs.getString("descText"));
+					alstPlaymodes.add(playmode);
 				}
-				alstPlaymodes.add(new Playmode(pmid, rs.getString("titel"), rs.getString("descText"), alstTeamsizes.toArray(new Integer[0])));
+				playmode.addPlaymodeTeam(rs.getInt("size"));
 			}
 			playmodes = alstPlaymodes.toArray(new Playmode[0]);
 			statement.close();

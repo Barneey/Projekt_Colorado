@@ -13,10 +13,12 @@ public class GameServerExecutionThread extends Thread{
 	
 	private Socket gameSocket;
 	private ServerDataBaseManager sDBM;
+	private GameQueues gameQueues;
 	
 	public GameServerExecutionThread(Socket gameSocket, ServerDataBaseManager sDBM){
 		this.gameSocket = gameSocket;
 		this.sDBM = sDBM;
+		this.gameQueues = GameQueues.getInstance();
 	}
 	
 	public void run(){
@@ -36,10 +38,14 @@ public class GameServerExecutionThread extends Thread{
 				break;
 			case "LEAVE_QUEUES":
 				User leavingUser = (User)objectInputStream.readObject();
+				gameQueues.leaveQueues(leavingUser);
 				break;
 			case "JOIN_QUEUES":
 				User joiningUser = (User)objectInputStream.readObject();
 				Playmode[] joiningPlaymodes = (Playmode[])objectInputStream.readObject();
+				for (int i = 0; i < joiningPlaymodes.length; i++) {
+					gameQueues.addUserIntoQueue(joiningUser, joiningPlaymodes[i]);
+				}
 				break;
 			default:
 				break;

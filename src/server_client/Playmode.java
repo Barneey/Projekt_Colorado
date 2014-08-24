@@ -1,6 +1,7 @@
 package server_client;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Playmode implements Serializable{
@@ -8,13 +9,12 @@ public class Playmode implements Serializable{
 	private int pid;
 	private String titel;
 	private String descText;
-	private Integer[] teamSizes;
+	private ArrayList<Integer> teamSizes;
 	
-	public Playmode(int pid, String titel, String descText, Integer[] teamSizes){
+	public Playmode(int pid, String titel, String descText){
 		this.pid = pid;
 		this.titel = titel;
 		this.descText = descText;
-		this.teamSizes = teamSizes;
 	}
 	
 	public int getPid() {
@@ -30,6 +30,10 @@ public class Playmode implements Serializable{
 	}
 	
 	public Integer[] getTeamSizes(){
-		return teamSizes;
+		return teamSizes.toArray(new Integer[0]);
+	}
+
+	public void addPlaymodeTeam(int size) {
+		teamSizes.add(size);
 	}
 }
