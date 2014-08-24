@@ -2,6 +2,8 @@ package client;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -28,6 +30,7 @@ public class PlaymodePanel extends JPanel{
 		add(Box.createVerticalStrut(10));
 		add(new JLabel(playmode.getDescText()));
 		add(Box.createRigidArea(new Dimension(300,0)));
+		addMouseListener(new MLPlaypanel());
 	}
 	
 	public boolean isSelected(){
@@ -37,5 +40,38 @@ public class PlaymodePanel extends JPanel{
 	public Playmode getPlaymode(){
 		return this.playmode;
 	}
+	
+	public class MLPlaypanel implements MouseListener{
 
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			jchckSelected.setSelected(!isSelected());
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 }

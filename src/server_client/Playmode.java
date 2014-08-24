@@ -12,6 +12,7 @@ public class Playmode implements Serializable{
 	private ArrayList<Integer> teamSizes;
 	
 	public Playmode(int pid, String titel, String descText){
+		this.teamSizes = new ArrayList<>();
 		this.pid = pid;
 		this.titel = titel;
 		this.descText = descText;

@@ -40,7 +40,7 @@ public class PlayPanel extends JPanel{
 		
 		playmodePanel = new JPanel();
 		playmodePanel.setLayout(new BoxLayout(playmodePanel, BoxLayout.Y_AXIS));
-		playmodePanel.setPreferredSize(new Dimension(1, 1));
+//		playmodePanel.setPreferredSize(new Dimension(1, 1));
 		add(playmodePanel);
 		
 		jbttnJoinGameQueues = new JButton("Join Queue");
