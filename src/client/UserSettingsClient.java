@@ -29,6 +29,8 @@ public class UserSettingsClient {
 	private String sDir;
 	private boolean showTimestamp;
 	private String sShowTimestamp;
+	private int layoutType;
+	private String sLayoutType;
 	
 	protected UserSettingsClient() {
 		this.xstream = new XStream(new StaxDriver());
@@ -40,6 +42,8 @@ public class UserSettingsClient {
 		sSavedUsername = "savedUSername";
 		showTimestamp = true;
 		sShowTimestamp = "showTimestamp";
+		layoutType = LookManager.GREEN_LAYOUT;
+		sLayoutType = "layoutType";
 		loadUserSettings();
 	}
 	
@@ -48,6 +52,7 @@ public class UserSettingsClient {
 		userSettings.put(sSavedUsername, String.valueOf(savedUsername));
 		userSettings.put(sUsername, username);
 		userSettings.put(sShowTimestamp, String.valueOf(showTimestamp));
+		userSettings.put(sLayoutType, String.valueOf(layoutType));
 	}
 	
 	private void loadUserSettings(){
@@ -69,6 +74,7 @@ public class UserSettingsClient {
 		this.username = userSettings.get(sUsername);
 		this.savedUsername = Boolean.parseBoolean(userSettings.get(sSavedUsername));
 		this.showTimestamp = Boolean.parseBoolean(userSettings.get(sShowTimestamp));
+		this.layoutType = Integer.parseInt(userSettings.get(sLayoutType));
 	}
 	
 	public boolean saveUserSettings(){
@@ -116,5 +122,13 @@ public class UserSettingsClient {
 
 	public void setShowTimestamp(boolean showTimestamp) {
 		this.showTimestamp = showTimestamp;
+	}
+	
+	public int getLayoutType(){
+		return this.layoutType;
+	}
+	
+	public void setLayoutType(int layoutType){
+		this.layoutType = layoutType;
 	}
 }

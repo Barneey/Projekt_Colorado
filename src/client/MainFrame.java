@@ -111,7 +111,8 @@ public class MainFrame extends JFrame{
             setLocation(p);
         }
         super.paint(g);
-    }
+//        g.drawImage(ImageLoader.getInstance().loadMainFrameOverlay(), 9, 32, null);
+	}
 	
 	private class MLMainFrame implements MouseListener{
 

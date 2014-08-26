@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import server_client.User;
@@ -24,29 +23,29 @@ public class MenuPanel extends JPanel{
 		this.contentPanel = contentPanel;
 		Dimension buttonSize = new Dimension(150,70);
 
-		JButton jbttnPlay = new JButton("Play");
+		JGCButton jbttnPlay = new JGCButton("Play");
 		jbttnPlay.setPreferredSize(buttonSize);
 		jbttnPlay.addActionListener(new ALPlay());
 		add(jbttnPlay);
 		
-		JButton jbttnProfile = new JButton("Profile");
+		JGCButton jbttnProfile = new JGCButton("Profile");
 		jbttnProfile.setEnabled(false);
 		jbttnProfile.setPreferredSize(buttonSize);
 		jbttnProfile.addActionListener(new ALProfile());
 		add(jbttnProfile);
 		
-		JButton jbttnRanking = new JButton("Ranking");
+		JGCButton jbttnRanking = new JGCButton("Ranking");
 		jbttnRanking.setPreferredSize(buttonSize);
 		jbttnRanking.addActionListener(new ALRanking());
 		add(jbttnRanking);
 		
-		JButton jbttnShop = new JButton("Shop");
+		JGCButton jbttnShop = new JGCButton("Shop");
 		jbttnShop.setEnabled(false);
 		jbttnShop.setPreferredSize(buttonSize);
 		jbttnShop.addActionListener(new ALShop());
 		add(jbttnShop);
 		
-		JButton jbttnSettings = new JButton("Settings");
+		JGCButton jbttnSettings = new JGCButton("Settings");
 		jbttnSettings.setEnabled(false);
 		jbttnSettings.setPreferredSize(buttonSize);
 		jbttnSettings.addActionListener(new ALSettings());

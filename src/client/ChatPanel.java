@@ -46,7 +46,7 @@ public class ChatPanel extends JPanel{
 		this.dbCon = DatabaseConnection.getInstance();
 		this.user = user;
 		this.updater = new ChannelListUpdater();
-		this.imgLdr = ImageLoader.getInstance();
+		this.imgLdr = new ImageLoader();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
