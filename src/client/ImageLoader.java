@@ -1,7 +1,10 @@
 package client;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -14,6 +17,18 @@ public class ImageLoader {
 	
 	public ImageLoader(){
 		
+	}
+	
+	private Image scaleImage(Image image, Dimension size){
+		int imageWidth = biHeader.getWidth();
+		double scalingFactorWidth = (double)this.getWidth() / imageWidth;
+		int imageHeight = biHeader.getHeight();
+		double scalingFactorHeight = (double)this.getHeight() / imageHeight;
+		biHeaderScaled = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+		AffineTransform at = new AffineTransform();
+		at.scale(scalingFactorWidth, scalingFactorHeight);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		biHeaderScaled = scaleOp.filter(biHeader, biHeaderScaled);
 	}
 	
 	public BufferedImage loadRCoins(){
