@@ -13,13 +13,39 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 public class ImageLoader {
+
+	public static final String RCOINS = "images/menu/rCoins.png";
+	public static final String VCOINS = "images/menu/vCoins.png";
+	public static final String REFRESH_BUTTON_INAKTIVE = "images/menu/refreshButton_inaktive.png";
+	public static final String REFRESH_BUTTON_AKTIVE = "images/menu/refreshButton_aktive.gif";
 	
 	
 	public ImageLoader(){
 		
 	}
 	
-	public BufferedImage scaleImage(BufferedImage image, Dimension size){
+	
+
+	public BufferedImage loadBufferedImage(String image){
+		try {
+			return ImageIO.read(new File(image));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+
+	public Image loadImage(String image){
+		try {
+			return Toolkit.getDefaultToolkit().createImage(image);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Image scaleImage(BufferedImage image, Dimension size){
 		int imageWidth = image.getWidth();
 		double scalingFactorWidth = (double)size.getWidth() / imageWidth;
 		int imageHeight = image.getHeight();
@@ -29,42 +55,6 @@ public class ImageLoader {
 		at.scale(scalingFactorWidth, scalingFactorHeight);
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		return scaleOp.filter(image, imageScaled);
-	}
-	
-	public BufferedImage loadRCoins(){
-		try {
-			return ImageIO.read(new File("rCoins.png"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public BufferedImage loadVCoins(){
-		try {
-			return ImageIO.read(new File("vCoins.png"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public BufferedImage loadRefreshButtonInactive(){
-		try {
-			return ImageIO.read(new File("refreshButton_inaktive.png"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Image loadRefreshButtonActive(){
-		try {
-			return Toolkit.getDefaultToolkit().createImage("refreshButton_aktive.gif");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 	
 	public Image loadMainFrameOverlay(){
