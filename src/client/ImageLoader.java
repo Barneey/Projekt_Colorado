@@ -19,16 +19,16 @@ public class ImageLoader {
 		
 	}
 	
-	private Image scaleImage(Image image, Dimension size){
-		int imageWidth = biHeader.getWidth();
-		double scalingFactorWidth = (double)this.getWidth() / imageWidth;
-		int imageHeight = biHeader.getHeight();
-		double scalingFactorHeight = (double)this.getHeight() / imageHeight;
-		biHeaderScaled = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+	public BufferedImage scaleImage(BufferedImage image, Dimension size){
+		int imageWidth = image.getWidth();
+		double scalingFactorWidth = (double)size.getWidth() / imageWidth;
+		int imageHeight = image.getHeight();
+		double scalingFactorHeight = (double)size.getHeight() / imageHeight;
+		BufferedImage imageScaled = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
 		AffineTransform at = new AffineTransform();
 		at.scale(scalingFactorWidth, scalingFactorHeight);
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-		biHeaderScaled = scaleOp.filter(biHeader, biHeaderScaled);
+		return scaleOp.filter(image, imageScaled);
 	}
 	
 	public BufferedImage loadRCoins(){
