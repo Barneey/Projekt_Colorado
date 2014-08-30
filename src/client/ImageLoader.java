@@ -18,13 +18,11 @@ public class ImageLoader {
 	public static final String VCOINS = "images/menu/vCoins.png";
 	public static final String REFRESH_BUTTON_INAKTIVE = "images/menu/refreshButton_inaktive.png";
 	public static final String REFRESH_BUTTON_AKTIVE = "images/menu/refreshButton_aktive.gif";
-	
-	
-	public ImageLoader(){
-		
-	}
-	
-	
+	public static final String GREEM_MAINFRAME_OVERLAY = "images/layouts/green/mainframeOverlay.png";
+	public static final String GREEN_BUTTON_ACTIVE = "images/layouts/green/button/jbutton_active.png";
+	public static final String GREEN_BUTTON_HOVER = "images/layouts/green/button/jbutton_hover.png";
+	public static final String GREEN_BUTTON_INACTIVE = "images/layouts/green/button/jbutton_inactive.png";
+	public static final String GREEN_BUTTON_PRESSED = "images/layouts/green/button/jbutton_pressed.png";
 
 	public BufferedImage loadBufferedImage(String image){
 		try {
@@ -33,8 +31,7 @@ public class ImageLoader {
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
+	}	
 
 	public Image loadImage(String image){
 		try {
@@ -56,51 +53,5 @@ public class ImageLoader {
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		return scaleOp.filter(image, imageScaled);
 	}
-	
-	public Image loadMainFrameOverlay(){
-		try {
-			return ImageIO.read(new File("mainframeOverlay.png"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public Icon loadButtonIcon(int layoutType) {
-		try {
-			return new ImageIcon(ImageIO.read(new File("images/layouts/green/button/jbutton_active.png")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Icon loadButtonRolloverIcon(int layoutType) {
-		try {
-			return new ImageIcon(ImageIO.read(new File("images/layouts/green/button/jbutton_hover.png")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Icon loadButtonPressedIcon(int layoutType) {
-		try {
-			return new ImageIcon(ImageIO.read(new File("images/layouts/green/button/jbutton_inactive.png")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Icon loadButtonDisabledIcon(int layoutType) {
-		try {
-			return new ImageIcon(ImageIO.read(new File("images/layouts/green/button/jbutton_pressed.png")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	
 }
