@@ -23,7 +23,8 @@ public class ImageLoader {
 	public static final String GREEN_BUTTON_HOVER = "images/layouts/green/button/jbutton_hover.png";
 	public static final String GREEN_BUTTON_INACTIVE = "images/layouts/green/button/jbutton_inactive.png";
 	public static final String GREEN_BUTTON_PRESSED = "images/layouts/green/button/jbutton_pressed.png";
-
+	public static final String GREEN_MAINFRAME_HEADER = "images/layouts/green/mainframeOverlay.png";
+	
 	public BufferedImage loadBufferedImage(String image){
 		try {
 			return ImageIO.read(new File(image));
