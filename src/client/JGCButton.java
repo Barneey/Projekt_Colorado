@@ -14,10 +14,10 @@ public class JGCButton extends JButton{
 	}
 	
 	public void setLayout(int layoutType){
-		setIcon(imgLdr.loadButtonIcon(layoutType));
-		setRolloverIcon(imgLdr.loadButtonRolloverIcon(layoutType));
-		setPressedIcon(imgLdr.loadButtonPressedIcon(layoutType));
-		setDisabledIcon(imgLdr.loadButtonDisabledIcon(layoutType));
+		setIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_ACTIVE));
+		setRolloverIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_HOVER));
+		setPressedIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_PRESSED));
+		setDisabledIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_INACTIVE));
 		setHorizontalTextPosition(JButton.CENTER);
 		setVerticalTextPosition(JButton.CENTER);
 	}

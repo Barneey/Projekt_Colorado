@@ -69,7 +69,7 @@ public class ChatPanel extends JPanel{
 			
 			jbttnRefresh = new JButton();
 			
-			bffredImgRefreshButtonInactive = imgLdr.loadRefreshButtonInactive();
+			bffredImgRefreshButtonInactive = imgLdr.loadBufferedImage(ImageLoader.REFRESH_BUTTON_INAKTIVE);
 			refreshButtonLabeled = (bffredImgRefreshButtonInactive == null); 
 			if(refreshButtonLabeled){
 				jbttnRefresh.setText("Refresh");
@@ -77,7 +77,7 @@ public class ChatPanel extends JPanel{
 			}else{
 				jbttnRefresh.setIcon(new ImageIcon(bffredImgRefreshButtonInactive));
 				jbttnRefresh.setPreferredSize(new Dimension(20,25));
-				ImgRefreshButtonActive = imgLdr.loadRefreshButtonActive();
+				ImgRefreshButtonActive = imgLdr.loadBufferedImage(ImageLoader.REFRESH_BUTTON_AKTIVE);
 			}
 			jbttnRefresh.addMouseListener(new MLAutoRefresh());
 			jpnlUpperPanel.add(jbttnRefresh);

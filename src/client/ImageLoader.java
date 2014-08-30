@@ -42,6 +42,15 @@ public class ImageLoader {
 		return null;
 	}
 	
+	public ImageIcon loadIcon(String image){
+		try {
+			return new ImageIcon(ImageIO.read(new File(image)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public Image scaleImage(BufferedImage image, Dimension size){
 		int imageWidth = image.getWidth();
 		double scalingFactorWidth = (double)size.getWidth() / imageWidth;
