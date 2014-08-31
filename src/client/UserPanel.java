@@ -28,6 +28,10 @@ public class UserPanel extends JPanel{
 	public UserPanel(User user){
 		setLayout(null);
 		
+		ImageLoader imgLdr = new ImageLoader();
+		rCoinsImage = imgLdr.loadBufferedImage(ImageLoader.RCOINS);
+		vCoinsImage = imgLdr.loadBufferedImage(ImageLoader.VCOINS);
+		
 		jlbMainInformation = new JLabel("[" + user.getLevel() + "] " + (user.getNick() == null ? "???" : user.getNick()));
 		jlbMainInformation.setFont(JGSystem.FONT_SMALL);
 		jlbMainInformation.setSize(100, 30);
@@ -40,16 +44,12 @@ public class UserPanel extends JPanel{
 		jprgLevelProgress.setLocation(10, 45);
 		this.add(jprgLevelProgress);
 		
-		loadImageRCoins();
-		
 		jlbRealMoney = new JLabel("" + user.getrCoins(), SwingConstants.RIGHT);
 		jlbRealMoney.setFont(JGSystem.FONT_SMALL);
 		jlbRealMoney.setSize(60, 30);
 		jlbRealMoney.setLocation(140, 10);
 		this.add(jlbRealMoney);
 		
-		loadImageVCoins();
-
 		jlbInGameMoney = new JLabel("" + user.getvCoins(), SwingConstants.RIGHT);
 		jlbInGameMoney.setFont(JGSystem.FONT_SMALL);
 		jlbInGameMoney.setSize(60, 30);
@@ -77,25 +77,6 @@ public class UserPanel extends JPanel{
 		jprgLevelProgress.setValue(user.getCurrentExp());
 		jlbRealMoney.setText("" + user.getrCoins());
 		jlbInGameMoney.setText("" + user.getvCoins());
-//		DateFormat dtfLastLogin = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-//		String lastLoginDate = dtfLastLogin.format(user.getLastLogin());
-//		jlbLastLogin.setText("Last Login: " + lastLoginDate);
-	}
-	
-	private void loadImageRCoins(){
-		try {
-			rCoinsImage = ImageIO.read(new File("rCoins.png"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void loadImageVCoins(){
-		try {
-			vCoinsImage = ImageIO.read(new File("vCoins.png"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
    @Override
