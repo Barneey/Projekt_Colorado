@@ -12,6 +12,8 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.apache.derby.tools.sysinfo;
+
 public class ImageLoader {
 
 	public static final String RCOINS = "images/menu/rCoins.png";
@@ -34,6 +36,18 @@ public class ImageLoader {
 		return null;
 	}	
 
+	public BufferedImage scaleBufferedImage(BufferedImage image, Dimension size){
+		int imageWidth = image.getWidth();
+		double scalingFactorWidth = (double)size.getWidth() / imageWidth;
+		int imageHeight = image.getHeight();
+		double scalingFactorHeight = (double)size.getHeight() / imageHeight;
+		AffineTransform at = new AffineTransform();
+		at.scale(scalingFactorWidth, scalingFactorHeight);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		return scaleOp.filter(image, null);
+
+	}
+	
 	public Image loadImage(String image){
 		try {
 			return Toolkit.getDefaultToolkit().createImage(image);
@@ -51,17 +65,4 @@ public class ImageLoader {
 		}
 		return null;
 	}
-	
-	public Image scaleImage(BufferedImage image, Dimension size){
-		int imageWidth = image.getWidth();
-		double scalingFactorWidth = (double)size.getWidth() / imageWidth;
-		int imageHeight = image.getHeight();
-		double scalingFactorHeight = (double)size.getHeight() / imageHeight;
-		BufferedImage imageScaled = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-		AffineTransform at = new AffineTransform();
-		at.scale(scalingFactorWidth, scalingFactorHeight);
-		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-		return scaleOp.filter(image, imageScaled);
-	}
-	
 }

@@ -1,5 +1,8 @@
 package client;
 
+import java.awt.Dimension;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 
@@ -10,17 +13,26 @@ public class JGCButton extends JButton{
 
 	public JGCButton(String text){
 		super(text);
-		setLayout(1);
 	}
 	
 	public void setLayout(int layoutType){
-		setIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_ACTIVE));
-		setRolloverIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_HOVER));
-		setPressedIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_PRESSED));
-		setDisabledIcon(imgLdr.loadIcon(ImageLoader.GREEN_BUTTON_INACTIVE));
+		switch (layoutType) {
+		case LookManager.GREEN_LAYOUT:
+			setIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_ACTIVE), getPreferredSize())));
+			setRolloverIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_HOVER), getPreferredSize())));
+			setPressedIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_PRESSED), getPreferredSize())));
+			setDisabledIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_INACTIVE), getPreferredSize())));
+			break;
+
+		default:
+			break;
+		}
 		setHorizontalTextPosition(JButton.CENTER);
 		setVerticalTextPosition(JButton.CENTER);
 	}
-	// TODO IMAGE LOADER GETS METHODS TO SCALE IMAGES
-	// TODO SCALE IMAGES WHEN PREFFERED SIZE IS CHANGED etc
+	
+	public void setPreferredSize(Dimension preferredSize){
+		super.setPreferredSize(preferredSize);
+		setLayout(UserSettingsClient.getInstance().getLayoutType());
+	}
 }

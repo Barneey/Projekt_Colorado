@@ -77,7 +77,7 @@ public class ChatPanel extends JPanel{
 			}else{
 				jbttnRefresh.setIcon(new ImageIcon(bffredImgRefreshButtonInactive));
 				jbttnRefresh.setPreferredSize(new Dimension(20,25));
-				ImgRefreshButtonActive = imgLdr.loadBufferedImage(ImageLoader.REFRESH_BUTTON_AKTIVE);
+				ImgRefreshButtonActive = imgLdr.loadImage(ImageLoader.REFRESH_BUTTON_AKTIVE);
 			}
 			jbttnRefresh.addMouseListener(new MLAutoRefresh());
 			jpnlUpperPanel.add(jbttnRefresh);
