@@ -31,7 +31,7 @@ public class ChatPanel extends JPanel{
 	private JTextField jtxtChannelName;
 	private JList<ChatChannel> jlstChannels;
 	private DatabaseConnection dbCon;
-	private JButton jbttnJoin;
+	private JGCButton jbttnJoin;
 	private JButton jbttnRefresh;
 	private User user;
 	private ChannelListUpdater updater;
@@ -52,7 +52,6 @@ public class ChatPanel extends JPanel{
 		
 		JPanel jpnlUpperPanel = new JPanel();
 			jpnlUpperPanel.setLayout(new BoxLayout(jpnlUpperPanel, BoxLayout.X_AXIS));
-			jpnlUpperPanel.setPreferredSize(new Dimension(220,25));
 			
 			jtxtChannelName = new JTextField(20);
 			jtxtChannelName.setDocument(new LengthRestrictedDocument(20));
@@ -62,21 +61,20 @@ public class ChatPanel extends JPanel{
 			jtxtChannelName.setText("Deu-1");
 			jpnlUpperPanel.add(jtxtChannelName);
 		
-			jbttnJoin = new JButton("Join");
-			jbttnJoin.setPreferredSize(new Dimension(70, 25));
+			jbttnJoin = new JGCButton("Join");
+			jbttnJoin.setPreferredSize(new Dimension(50, 25));
 			jbttnJoin.addActionListener(new ALJoinChannel());
 			jpnlUpperPanel.add(jbttnJoin);
 			
 			jbttnRefresh = new JButton();
-			
 			bffredImgRefreshButtonInactive = imgLdr.loadBufferedImage(ImageLoader.REFRESH_BUTTON_INAKTIVE);
 			refreshButtonLabeled = (bffredImgRefreshButtonInactive == null); 
 			if(refreshButtonLabeled){
 				jbttnRefresh.setText("Refresh");
-				jbttnRefresh.setPreferredSize(new Dimension(50, 25));
+				jbttnRefresh.setPreferredSize(new Dimension(20, 25));
 			}else{
 				jbttnRefresh.setIcon(new ImageIcon(bffredImgRefreshButtonInactive));
-				jbttnRefresh.setPreferredSize(new Dimension(20,25));
+				jbttnRefresh.setPreferredSize(new Dimension(20, 25));
 				ImgRefreshButtonActive = imgLdr.loadImage(ImageLoader.REFRESH_BUTTON_AKTIVE);
 			}
 			jbttnRefresh.addMouseListener(new MLAutoRefresh());

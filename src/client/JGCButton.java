@@ -18,12 +18,12 @@ public class JGCButton extends JButton{
 	public void setLayout(int layoutType){
 		switch (layoutType) {
 		case LookManager.GREEN_LAYOUT:
-			setIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_ACTIVE), getPreferredSize())));
-			setRolloverIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_HOVER), getPreferredSize())));
-			setPressedIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_PRESSED), getPreferredSize())));
-			setDisabledIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_INACTIVE), getPreferredSize())));
+			Dimension size = (getSize().height == 0 ? getPreferredSize() : getSize());
+			setIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_ACTIVE), size)));
+			setRolloverIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_HOVER), size)));
+			setPressedIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_PRESSED), size)));
+			setDisabledIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_INACTIVE), size)));
 			break;
-
 		default:
 			break;
 		}

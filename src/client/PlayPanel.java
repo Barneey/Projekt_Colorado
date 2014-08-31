@@ -23,8 +23,8 @@ public class PlayPanel extends JPanel{
 	private GameConnection gameCon;
 	private ArrayList<PlaymodePanel> alstPlaymodePanels;
 	private JPanel playmodePanel;
-	private JButton jbttnJoinGameQueues;
-	private JButton jbttnLeaveGameQueues;
+	private JGCButton jbttnJoinGameQueues;
+	private JGCButton jbttnLeaveGameQueues;
 	private User user;
 	private JLabel jlblMessage;
 	
@@ -43,12 +43,13 @@ public class PlayPanel extends JPanel{
 //		playmodePanel.setPreferredSize(new Dimension(1, 1));
 		add(playmodePanel);
 		
-		jbttnJoinGameQueues = new JButton("Join Queue");
+		jbttnJoinGameQueues = new JGCButton("Join Queue");
 		jbttnJoinGameQueues.setPreferredSize(buttonSize);
 		jbttnJoinGameQueues.addActionListener(new ALJoinQueues());
 		add(jbttnJoinGameQueues);
 		
-		jbttnLeaveGameQueues = new JButton("Leave Queue");
+		jbttnLeaveGameQueues = new JGCButton("Leave Queue");
+		jbttnLeaveGameQueues.setEnabled(false);
 		jbttnLeaveGameQueues.setPreferredSize(buttonSize);
 		jbttnLeaveGameQueues.addActionListener(new ALLeaveQueues());
 		add(jbttnLeaveGameQueues);
@@ -81,6 +82,7 @@ public class PlayPanel extends JPanel{
 	
 	public class ALJoinQueues implements ActionListener{
 		public void actionPerformed(ActionEvent ae){
+			
 			ArrayList<Playmode> alstPlaymodes = new ArrayList<>();
 			if(alstPlaymodePanels.size() > 0){
 				for (int i = 0; i < alstPlaymodePanels.size(); i++) {

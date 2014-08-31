@@ -45,7 +45,6 @@ public class ImageLoader {
 		at.scale(scalingFactorWidth, scalingFactorHeight);
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		return scaleOp.filter(image, null);
-
 	}
 	
 	public Image loadImage(String image){
