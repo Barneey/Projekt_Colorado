@@ -41,12 +41,17 @@ public class PlaymodePanel extends JPanel{
 		return this.playmode;
 	}
 	
+	public void setEnabled(boolean b){
+		jchckSelected.setEnabled(b);
+	}
+	
 	public class MLPlaypanel implements MouseListener{
 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
-			jchckSelected.setSelected(!isSelected());
-			
+			if(jchckSelected.isEnabled()){
+				jchckSelected.setSelected(!isSelected());
+			}
 		}
 
 		@Override

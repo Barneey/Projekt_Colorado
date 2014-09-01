@@ -80,24 +80,37 @@ public class PlayPanel extends JPanel{
 		}
 	}
 	
+	private void setPlaymodeSelection(boolean b){
+		for (int i = 0; i < alstPlaymodePanels.size(); i++) {
+				alstPlaymodePanels.get(i).setEnabled(b);;
+		}
+	}
+	
 	public class ALJoinQueues implements ActionListener{
 		public void actionPerformed(ActionEvent ae){
-			
+			jlblMessage.setText("");
 			ArrayList<Playmode> alstPlaymodes = new ArrayList<>();
 			if(alstPlaymodePanels.size() > 0){
 				for (int i = 0; i < alstPlaymodePanels.size(); i++) {
-					alstPlaymodes.add(alstPlaymodePanels.get(i).getPlaymode());
+					if(alstPlaymodePanels.get(i).isSelected()){
+						alstPlaymodes.add(alstPlaymodePanels.get(i).getPlaymode());
+					}
 				}
-				try {
-					gameCon.joinQueues(user, alstPlaymodes.toArray(new Playmode[0]));
-					jbttnJoinGameQueues.setEnabled(false);
-					jbttnLeaveGameQueues.setEnabled(true);
-				} catch (SocketTimeoutException e) {
-					jlblMessage.setText("Connection timed out");
-				} catch (UnknownHostException e) {
-					jlblMessage.setText("Server not found");
-				} catch (IOException e) {
-					jlblMessage.setText("Internal Error: IO");
+				if(alstPlaymodes.size() <= 0){
+					jlblMessage.setText("Please select at least one gamemode!");
+				}else{
+					try {
+						gameCon.joinQueues(user, alstPlaymodes.toArray(new Playmode[0]));
+						jbttnJoinGameQueues.setEnabled(false);
+						jbttnLeaveGameQueues.setEnabled(true);
+						setPlaymodeSelection(false);
+					} catch (SocketTimeoutException e) {
+						jlblMessage.setText("Connection timed out");
+					} catch (UnknownHostException e) {
+						jlblMessage.setText("Server not found");
+					} catch (IOException e) {
+						jlblMessage.setText("Internal Error: IO");
+					}
 				}
 			}
 		}
@@ -109,6 +122,7 @@ public class PlayPanel extends JPanel{
 				gameCon.leaveQueues(user);
 				jbttnJoinGameQueues.setEnabled(true);
 				jbttnLeaveGameQueues.setEnabled(false);
+				setPlaymodeSelection(false);
 			} catch (SocketTimeoutException e) {
 				jlblMessage.setText("Connection timed out");
 			} catch (UnknownHostException e) {
