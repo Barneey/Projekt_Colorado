@@ -39,7 +39,7 @@ public class GameQueues {
 	
 	public boolean addUserIntoQueue(User user, Playmode playmode){
 		boolean playmodeExists = gameQueueMap.get(playmode.getPid()) != null;
-		if(playmodeExists){
+		if(playmodeExists){ 
 			gameQueueMap.get(playmode.getPid()).add(user);
 		}
 		return playmodeExists;
