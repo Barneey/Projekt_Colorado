@@ -41,6 +41,7 @@ public class GameQueues {
 		boolean playmodeExists = gameQueueMap.get(playmode.getPid()) != null;
 		if(playmodeExists){ 
 			gameQueueMap.get(playmode.getPid()).add(user);
+			// TODO check if a gamemode is full
 		}
 		return playmodeExists;
 	}
