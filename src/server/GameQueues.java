@@ -40,8 +40,16 @@ public class GameQueues {
 	public boolean addUserIntoQueue(User user, Playmode playmode){
 		boolean playmodeExists = gameQueueMap.get(playmode.getPid()) != null;
 		if(playmodeExists){ 
-			gameQueueMap.get(playmode.getPid()).add(user);
-			// TODO check if a gamemode is full
+			Queue<User> gameQueue = gameQueueMap.get(playmode.getPid());
+			gameQueue.add(user);
+			int requiredPlayer = playmode.getNeededPlayerCount();
+			if(gameQueue.size() >= requiredPlayer){
+				User[] gameUser = new User[requiredPlayer];
+				for (int i = 0; i < gameUser.length; i++) {
+					gameUser[i]=gameQueue.poll();
+				}
+				GameManager.getInstance().createNewGame(playmode, gameUser);
+			}
 		}
 		return playmodeExists;
 	}

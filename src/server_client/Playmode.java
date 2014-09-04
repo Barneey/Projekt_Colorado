@@ -33,6 +33,14 @@ public class Playmode implements Serializable{
 	public Integer[] getTeamSizes(){
 		return teamSizes.toArray(new Integer[0]);
 	}
+	
+	public int getNeededPlayerCount(){
+		int playerCount = 0;
+		for (Integer i : teamSizes) {
+			playerCount+=i;
+		}
+		return playerCount;
+	}
 
 	public void addPlaymodeTeam(int size) {
 		teamSizes.add(size);
