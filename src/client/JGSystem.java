@@ -31,7 +31,12 @@ public class JGSystem {
 	public void exit(User user){
 		 UserSettingsClient.getInstance().saveUserSettings();
 		 DatabaseConnection.getInstance().leaveAllChannels(user);
-		 System.exit(0);
+		 try {
+			 GameConnection.getInstance().leaveQueues(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
 	}
 	
 	public static JGSystem getInstance() {
