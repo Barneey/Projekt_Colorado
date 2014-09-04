@@ -47,6 +47,7 @@ public class GameQueues {
 				User[] gameUser = new User[requiredPlayer];
 				for (int i = 0; i < gameUser.length; i++) {
 					gameUser[i]=gameQueue.poll();
+					leaveQueues(gameUser[i]);
 				}
 				GameManager.getInstance().createNewGame(playmode, gameUser);
 			}

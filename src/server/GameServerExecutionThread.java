@@ -33,8 +33,10 @@ public class GameServerExecutionThread extends Thread{
 			
 			switch (order) {
 			case "GET_PLAYMODES":
-				objectOutputStream.writeObject(sDBM.getPlaymodes());
+				Playmode[] playmodes = sDBM.getPlaymodes();
+				objectOutputStream.writeObject(playmodes);
 				objectOutputStream.flush();
+				GameQueues.getInstance().setPlaymodes(playmodes);
 				break;
 			case "LEAVE_QUEUES":
 				User leavingUser = (User)objectInputStream.readObject();

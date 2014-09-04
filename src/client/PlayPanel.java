@@ -122,7 +122,7 @@ public class PlayPanel extends JPanel{
 				gameCon.leaveQueues(user);
 				jbttnJoinGameQueues.setEnabled(true);
 				jbttnLeaveGameQueues.setEnabled(false);
-				setPlaymodeSelection(false);
+				setPlaymodeSelection(true);
 			} catch (SocketTimeoutException e) {
 				jlblMessage.setText("Connection timed out");
 			} catch (UnknownHostException e) {

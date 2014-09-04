@@ -20,6 +20,6 @@ public class GameManager {
 	}
 	
 	public void createNewGame(Playmode playmode, User[] user){
-		
+		System.out.println("new game created");
 	}
 }
