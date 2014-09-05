@@ -296,7 +296,7 @@ public class ServerDataBaseManager {
 			String createGames = "CREATE TABLE games ("
 								+ "gid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
 								+ "pmID INTEGER REFERENCES PLAYMODES (pmID),"
-								+ "winner INTEGER,"
+								+ "pmtID INTEGER REFERENCES PLAYMODETEAMS (pmtID),"
 								+ "gamestart TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 			statement.executeUpdate(createGames);
 			alstLog.add("Table games created");
