@@ -20,6 +20,7 @@ import serverUtil.ServerResultFrame;
 import server_client.ChatChannel;
 import server_client.ChatMessage;
 import server_client.Playmode;
+import server_client.Team;
 import server_client.User;
 
 public class ServerDataBaseManager {
@@ -296,7 +297,7 @@ public class ServerDataBaseManager {
 			String createGames = "CREATE TABLE games ("
 								+ "gid INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
 								+ "pmID INTEGER REFERENCES PLAYMODES (pmID),"
-								+ "pmtID INTEGER REFERENCES PLAYMODETEAMS (pmtID),"
+								+ "winner INTEGER REFERENCES PLAYMODETEAMS (pmtID),"
 								+ "gamestart TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 			statement.executeUpdate(createGames);
 			alstLog.add("Table games created");
@@ -875,10 +876,29 @@ public class ServerDataBaseManager {
 		return playmodes;
 	}
 
-	public int createNewGame(Playmode playmode) {
-		int gameID = -1;
+	public Game createNewGame(Game game) {
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			String url = "jdbc:derby:" + DBName;
+			Connection connection = DriverManager.getConnection(url);
+			Statement statement = connection.createStatement();
+			
+			String createNewGame = "INSERT INTO GAMES (pmid) VALUES (" + game.getPlaymode().getPmID() + ")";
+			statement.executeUpdate(createNewGame);
+			
+			String getGameID = "SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]";
+			ResultSet rs = statement.executeQuery(getGameID);
+			if(rs.next()){
+				game.setGID(rs.getInt("[SCOPE_IDENTITY]"));
+			}else{
+				game.setGID(-1);
+			}
+			System.out.println(game.getGID());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		// TODO write Method that inserts the new game into the tables
 		// TODO returns the gameid of the game
-		return gameID;
+		return game;
 	}
 }

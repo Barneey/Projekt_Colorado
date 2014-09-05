@@ -3,24 +3,22 @@ package server_client;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import server.Team;
-
 public class Playmode implements Serializable{
 
-	private int pid;
+	private int pmID;
 	private String titel;
 	private String descText;
 	private ArrayList<Team> alstTeams;
 	
-	public Playmode(int pid, String titel, String descText){
+	public Playmode(int pmID, String titel, String descText){
 		this.alstTeams = new ArrayList<>();
-		this.pid = pid;
+		this.pmID = pmID;
 		this.titel = titel;
 		this.descText = descText;
 	}
 	
-	public int getPid() {
-		return pid;
+	public int getPmID() {
+		return pmID;
 	}
 
 	public String getTitel() {

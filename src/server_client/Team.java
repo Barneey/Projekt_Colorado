@@ -1,10 +1,9 @@
-package server;
+package server_client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import server_client.User;
-
-public class Team {
+public class Team implements Serializable{
 	
 	private ArrayList<User> alstUsers;
 	private int teamsize;

@@ -29,18 +29,18 @@ public class GameQueues {
 	public void setPlaymodes(Playmode[] playmodes){
 		if(playmodes != null){
 			for (Playmode playmode : playmodes) {
-				if(gameQueueMap.get(playmode.getPid()) == null){
+				if(gameQueueMap.get(playmode.getPmID()) == null){
 					Queue<User> gameQueue = new LinkedList<>();
-					gameQueueMap.put(playmode.getPid(), gameQueue);
+					gameQueueMap.put(playmode.getPmID(), gameQueue);
 				}
 			}
 		}
 	}
 	
 	public boolean addUserIntoQueue(User user, Playmode playmode){
-		boolean playmodeExists = gameQueueMap.get(playmode.getPid()) != null;
+		boolean playmodeExists = gameQueueMap.get(playmode.getPmID()) != null;
 		if(playmodeExists){ 
-			Queue<User> gameQueue = gameQueueMap.get(playmode.getPid());
+			Queue<User> gameQueue = gameQueueMap.get(playmode.getPmID());
 			gameQueue.add(user);
 			int requiredPlayer = playmode.getNeededPlayerCount();
 			if(gameQueue.size() >= requiredPlayer){
