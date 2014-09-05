@@ -2,17 +2,18 @@ package server_client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
+
+import server.Team;
 
 public class Playmode implements Serializable{
 
 	private int pid;
 	private String titel;
 	private String descText;
-	private ArrayList<Integer> teamSizes;
+	private ArrayList<Team> alstTeams;
 	
 	public Playmode(int pid, String titel, String descText){
-		this.teamSizes = new ArrayList<>();
+		this.alstTeams = new ArrayList<>();
 		this.pid = pid;
 		this.titel = titel;
 		this.descText = descText;
@@ -31,18 +32,22 @@ public class Playmode implements Serializable{
 	}
 	
 	public Integer[] getTeamSizes(){
-		return teamSizes.toArray(new Integer[0]);
+		return alstTeams.toArray(new Integer[0]);
 	}
 	
 	public int getNeededPlayerCount(){
 		int playerCount = 0;
-		for (Integer i : teamSizes) {
-			playerCount+=i;
+		for (Team t : alstTeams) {
+			playerCount+=t.getTeamSize();
 		}
 		return playerCount;
 	}
+	
+	public Team[] getTeams(){
+		return alstTeams.toArray(new Team[0]);
+	}
 
-	public void addPlaymodeTeam(int size) {
-		teamSizes.add(size);
+	public void addTeam(Team team) {
+		alstTeams.add(team);
 	}
 }

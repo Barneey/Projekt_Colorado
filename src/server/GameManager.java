@@ -21,6 +21,8 @@ public class GameManager {
 	
 	public void createNewGame(Playmode playmode, User[] user){
 		System.out.println("new game created");
+		// TODO add unsers into the teams in the playmode
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
+		sDBM.createNewGame(playmode);
 	}
 }

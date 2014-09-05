@@ -864,7 +864,7 @@ public class ServerDataBaseManager {
 					playmode = new Playmode(pmid, rs.getString("titel"), rs.getString("descText"));
 					alstPlaymodes.add(playmode);
 				}
-				playmode.addPlaymodeTeam(rs.getInt("size"));
+				playmode.addTeam(new Team(rs.getInt("pmtID"), rs.getInt("size")));
 			}
 			playmodes = alstPlaymodes.toArray(new Playmode[0]);
 			statement.close();
@@ -873,5 +873,12 @@ public class ServerDataBaseManager {
 			e.printStackTrace();
 		}
 		return playmodes;
+	}
+
+	public int createNewGame(Playmode playmode) {
+		int gameID = -1;
+		// TODO write Method that inserts the new game into the tables
+		// TODO returns the gameid of the game
+		return gameID;
 	}
 }
