@@ -2,6 +2,7 @@ package server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -883,17 +884,18 @@ public class ServerDataBaseManager {
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
-			String createNewGame = "INSERT INTO GAMES (pmid) VALUES (" + game.getPlaymode().getPmID() + ")";
-			statement.executeUpdate(createNewGame);
-			
-			String getGameID = "SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]";
-			ResultSet rs = statement.executeQuery(getGameID);
+			PreparedStatement pstmt = connection.prepareStatement(
+					"INSERT INTO GAMES (pmid) VALUES (" + game.getPlaymode().getPmID() + ") ", 
+				      new String[] { "GID"} ); 
+
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
 			if(rs.next()){
-				game.setGID(rs.getInt("[SCOPE_IDENTITY]"));
+				game.setGID(rs.getInt(1));
 			}else{
 				game.setGID(-1);
 			}
-			System.out.println(game.getGID());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
