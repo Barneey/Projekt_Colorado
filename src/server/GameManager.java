@@ -1,5 +1,7 @@
 package server;
 
+import java.util.HashMap;
+
 import server_client.Playmode;
 import server_client.Team;
 import server_client.User;
@@ -8,9 +10,10 @@ public class GameManager {
 	
 	
 	private static GameManager instance;
+	private HashMap<Integer, Game> games;
 	
 	private GameManager(){
-		
+		games = new HashMap<>();
 	}
 
 	public static GameManager getInstance(){
@@ -31,6 +34,6 @@ public class GameManager {
 		Game game = new Game(playmode);
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);
-		// TODO Handle the game
+		games.put(game.getGID(), game);
 	}
 }
