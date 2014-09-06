@@ -890,17 +890,19 @@ public class ServerDataBaseManager {
 
 			pstmt.executeUpdate();
 			ResultSet rs = pstmt.getGeneratedKeys();
+			int gid = -1;
 			if(rs.next()){
-				game.setGID(rs.getInt(1));
-			}else{
-				game.setGID(-1);
+				gid = rs.getInt(1);
 			}
-			
+			game.setGID(gid);
+			for (Team team : game.getPlaymode().getTeams()) {
+				for (User user : team.getUser()) {
+					statement.executeUpdate("INSERT INTO GameUserRelationships (gid, uid, pmtid) VALUES (" + gid + ", " + user.getId() + ", " + team.getPmtID() + ")");
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// TODO write Method that inserts the new game into the tables
-		// TODO returns the gameid of the game
 		return game;
 	}
 }

@@ -21,7 +21,6 @@ public class GameManager {
 	}
 	
 	public void createNewGame(Playmode playmode, User[] user) throws IndexOutOfBoundsException{
-		System.out.println("new game created");
 		int i = 0;
 		for (Team team : playmode.getTeams()) {
 			while(team.getCurrentPlayerCount() < team.getTeamSize()){
@@ -32,5 +31,6 @@ public class GameManager {
 		Game game = new Game(playmode);
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);
+		// TODO Handle the game
 	}
 }

@@ -30,4 +30,8 @@ public class Team implements Serializable{
 	public int getCurrentPlayerCount(){
 		return alstUsers.size();
 	}
+
+	public User[] getUser() {
+		return alstUsers.toArray(new User[0]);
+	}
 }
