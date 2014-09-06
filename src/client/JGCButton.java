@@ -1,6 +1,7 @@
 package client;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -9,10 +10,20 @@ import javax.swing.JButton;
 
 public class JGCButton extends JButton{
 
+	private static ArrayList<JGCButton> allObjects;
+	
 	private static ImageLoader imgLdr = new ImageLoader();
 
 	public JGCButton(String text){
 		super(text);
+		if(allObjects == null){
+			allObjects = new ArrayList<>();
+		}
+		allObjects.add(this);
+	}
+	
+	public JGCButton[] getAllObjects(){
+		return allObjects.toArray(new JGCButton[0]);
 	}
 	
 	public void setLayout(int layoutType){
