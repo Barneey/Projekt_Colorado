@@ -39,14 +39,14 @@ public class ChatPanel extends JPanel{
 	private Image ImgRefreshButtonActive;
 	private boolean refreshButtonLabeled;
 	private boolean refreshing;
-	private ImageLoader imgLdr;
+	private GUIImageLoader imgLdr;
 	
 	public ChatPanel(User user){
 		Dimension channelListSize = new Dimension(190, 450);
 		this.dbCon = DatabaseConnection.getInstance();
 		this.user = user;
 		this.updater = new ChannelListUpdater();
-		this.imgLdr = new ImageLoader();
+		this.imgLdr = new GUIImageLoader();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
@@ -67,7 +67,7 @@ public class ChatPanel extends JPanel{
 			jpnlUpperPanel.add(jbttnJoin);
 			
 			jbttnRefresh = new JButton();
-			bffredImgRefreshButtonInactive = imgLdr.loadBufferedImage(ImageLoader.REFRESH_BUTTON_INAKTIVE);
+			bffredImgRefreshButtonInactive = imgLdr.loadBufferedImage(GUIImageLoader.REFRESH_BUTTON_INAKTIVE);
 			refreshButtonLabeled = (bffredImgRefreshButtonInactive == null); 
 			if(refreshButtonLabeled){
 				jbttnRefresh.setText("Refresh");
@@ -75,7 +75,7 @@ public class ChatPanel extends JPanel{
 			}else{
 				jbttnRefresh.setIcon(new ImageIcon(bffredImgRefreshButtonInactive));
 				jbttnRefresh.setPreferredSize(new Dimension(20, 25));
-				ImgRefreshButtonActive = imgLdr.loadImage(ImageLoader.REFRESH_BUTTON_AKTIVE);
+				ImgRefreshButtonActive = imgLdr.loadImage(GUIImageLoader.REFRESH_BUTTON_AKTIVE);
 			}
 			jbttnRefresh.addMouseListener(new MLAutoRefresh());
 			jpnlUpperPanel.add(jbttnRefresh);

@@ -12,7 +12,7 @@ public class JGCButton extends JButton{
 
 	private static ArrayList<JGCButton> allObjects;
 	
-	private static ImageLoader imgLdr = new ImageLoader();
+	private static GUIImageLoader imgLdr = new GUIImageLoader();
 
 	public JGCButton(String text){
 		super(text);
@@ -30,10 +30,10 @@ public class JGCButton extends JButton{
 		switch (layoutType) {
 		case LookManager.GREEN_LAYOUT:
 			Dimension size = (getSize().height == 0 ? getPreferredSize() : getSize());
-			setIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_ACTIVE), size)));
-			setRolloverIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_HOVER), size)));
-			setPressedIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_PRESSED), size)));
-			setDisabledIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(ImageLoader.GREEN_BUTTON_INACTIVE), size)));
+			setIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(GUIImageLoader.GREEN_BUTTON_ACTIVE), size)));
+			setRolloverIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(GUIImageLoader.GREEN_BUTTON_HOVER), size)));
+			setPressedIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(GUIImageLoader.GREEN_BUTTON_PRESSED), size)));
+			setDisabledIcon(new ImageIcon(imgLdr.scaleBufferedImage(imgLdr.loadBufferedImage(GUIImageLoader.GREEN_BUTTON_INACTIVE), size)));
 			break;
 		default:
 			break;

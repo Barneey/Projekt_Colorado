@@ -28,9 +28,9 @@ public class UserPanel extends JPanel{
 	public UserPanel(User user){
 		setLayout(null);
 		
-		ImageLoader imgLdr = new ImageLoader();
-		rCoinsImage = imgLdr.loadBufferedImage(ImageLoader.RCOINS);
-		vCoinsImage = imgLdr.loadBufferedImage(ImageLoader.VCOINS);
+		GUIImageLoader imgLdr = new GUIImageLoader();
+		rCoinsImage = imgLdr.loadBufferedImage(GUIImageLoader.RCOINS);
+		vCoinsImage = imgLdr.loadBufferedImage(GUIImageLoader.VCOINS);
 		
 		jlbMainInformation = new JLabel("[" + user.getLevel() + "] " + (user.getNick() == null ? "???" : user.getNick()));
 		jlbMainInformation.setFont(JGSystem.FONT_SMALL);

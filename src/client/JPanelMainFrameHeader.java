@@ -22,8 +22,8 @@ public class JPanelMainFrameHeader extends JPanel{
 	public JPanelMainFrameHeader() {
 		super();
 		try {
-			ImageLoader imgLdr = new ImageLoader();
-			biHeader = imgLdr.loadBufferedImage(ImageLoader.GREEN_MAINFRAME_HEADER);
+			GUIImageLoader imgLdr = new GUIImageLoader();
+			biHeader = imgLdr.loadBufferedImage(GUIImageLoader.GREEN_MAINFRAME_HEADER);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
