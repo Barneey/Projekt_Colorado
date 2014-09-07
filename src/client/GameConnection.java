@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import server.Game;
 import server_client.Playmode;
 import server_client.User;
 
@@ -53,6 +54,11 @@ public class GameConnection extends ServerConnection{
 		objectOutputStream.writeObject(playmodes);
 		
 		socket.close();
+	}
+
+	public Game getGameinformation(User user) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

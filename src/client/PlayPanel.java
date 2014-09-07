@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import server.Game;
 import server_client.Playmode;
 import server_client.User;
 
@@ -27,6 +28,7 @@ public class PlayPanel extends JPanel{
 	private JGCButton jbttnLeaveGameQueues;
 	private User user;
 	private JLabel jlblMessage;
+	private NewGameRequester newGameRequester;
 	
 	public PlayPanel(Dimension d, User user){
 		this.user = user;
@@ -104,6 +106,8 @@ public class PlayPanel extends JPanel{
 						jbttnJoinGameQueues.setEnabled(false);
 						jbttnLeaveGameQueues.setEnabled(true);
 						setPlaymodeSelection(false);
+						newGameRequester = new NewGameRequester();
+						newGameRequester.start();
 					} catch (SocketTimeoutException e) {
 						jlblMessage.setText("Connection timed out");
 					} catch (UnknownHostException e) {
@@ -123,6 +127,7 @@ public class PlayPanel extends JPanel{
 				jbttnJoinGameQueues.setEnabled(true);
 				jbttnLeaveGameQueues.setEnabled(false);
 				setPlaymodeSelection(true);
+				newGameRequester.interrupt();
 			} catch (SocketTimeoutException e) {
 				jlblMessage.setText("Connection timed out");
 			} catch (UnknownHostException e) {
@@ -133,5 +138,18 @@ public class PlayPanel extends JPanel{
 		}
 	}
 	
-//	private class 
+	private class NewGameRequester extends Thread{
+		
+		public void run(){
+			boolean gameFound = false;
+			while(!gameFound){
+				Game game = gameCon.getGameinformation(user);
+				try {
+					wait(1000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }
