@@ -132,4 +132,6 @@ public class PlayPanel extends JPanel{
 			}
 		}
 	}
+	
+//	private class 
 }
