@@ -5,20 +5,21 @@ import java.awt.Point;
 public class GameObject {
 	
 	private Point location;
-	private String imagePath;
+//	private String imagePath;
+//	private HashMap<String, Boolean> conditions;
 
-	public GameObject(int x, int y, String imagePath){
+	public GameObject(int x, int y){
 		this.location = new Point(x, y);
-		this.imagePath = imagePath;
+//		this.imagePath = imagePath;
 	}
 	
-	public void setImagePath(String imagePath){
-		this.imagePath = imagePath;
-	}
-	
-	public String getImagePath(){
-		return this.imagePath;
-	}
+//	public void setImagePath(String imagePath){
+//		this.imagePath = imagePath;
+//	}
+//	
+//	public String getImagePath(){
+//		return this.imagePath;
+//	}
 	
 	public void setLocation(int x, int y){
 		location.setLocation(x, y);

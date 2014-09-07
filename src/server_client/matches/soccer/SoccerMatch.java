@@ -16,12 +16,14 @@ public class SoccerMatch extends Match{
 	public SoccerMatch(int matchType) {
 		super(matchType);
 		// Position of the ball at gamestart
-		gameObjects.put("BALL", new GameObject(100, 100, ""));
-		sImgLdr = new SoccerImageLoader();
+		gameObjects.put("BALL", new GameObject(100, 100));
 		imagesLoaded = false;
 	}
 
 	public void loadImages(){
+		if(sImgLdr == null){
+			sImgLdr = new SoccerImageLoader();
+		}
 		imgBall = sImgLdr.loadBufferedImage(SoccerImageLoader.BALL);
 		imagesLoaded = true;
 	}
