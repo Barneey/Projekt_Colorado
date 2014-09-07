@@ -58,7 +58,7 @@ public class GameQueues {
 	public void leaveQueues(User leavingUser){
 		Iterator<Entry<Integer, Queue<User>>> it = gameQueueMap.entrySet().iterator();
 		while(it.hasNext()){
-			System.out.println(it.next().getValue().remove(leavingUser));
+			it.next().getValue().remove(leavingUser);
 		}
 	}
 }
