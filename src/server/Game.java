@@ -2,8 +2,8 @@ package server;
 
 import java.util.Queue;
 
-import server_client.Match;
 import server_client.Playmode;
+import server_client.matches.Match;
 
 public class Game {
 	
