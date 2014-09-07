@@ -49,6 +49,16 @@ public class GameServerExecutionThread extends Thread{
 					gameQueues.addUserIntoQueue(joiningUser, joiningPlaymodes[i]);
 				}
 				break;
+			case "GET_GAMEINFORMATION":
+				User requestingUser = (User)objectInputStream.readObject();
+				Game game = GameManager.getInstance().getNewGame(requestingUser);
+				if(game == null){
+					objectOutputStream.writeObject(-1);
+				}else{
+					objectOutputStream.writeObject(game.getGID());	
+				}
+				objectOutputStream.flush();
+				break;
 			default:
 				break;
 			}

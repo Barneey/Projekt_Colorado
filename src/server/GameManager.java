@@ -10,10 +10,12 @@ public class GameManager {
 	
 	
 	private static GameManager instance;
-	private HashMap<Integer, Game> games;
+	private HashMap<Integer, Game> gameIDtoGame;
+	private HashMap<Integer, Game> userIDtoNewGame;
 	
 	private GameManager(){
-		games = new HashMap<>();
+		gameIDtoGame = new HashMap<>();
+		userIDtoNewGame = new HashMap<>();
 	}
 
 	public static GameManager getInstance(){
@@ -34,6 +36,13 @@ public class GameManager {
 		Game game = new Game(playmode);
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);
-		games.put(game.getGID(), game);
+		gameIDtoGame.put(game.getGID(), game);
+		for (int j = 0; j < user.length; j++) {
+			userIDtoNewGame.put(user[j].getId(), game);
+		}
+	}
+
+	public Game getNewGame(User user) {
+		return userIDtoNewGame.remove(user.getId());
 	}
 }

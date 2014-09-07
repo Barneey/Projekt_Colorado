@@ -59,7 +59,7 @@ public class GameConnection extends ServerConnection{
 		socket.close();
 	}
 
-	public Game getGameinformation(User user) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public int getGameinformation(User user) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -70,14 +70,14 @@ public class GameConnection extends ServerConnection{
 		InputStream inputStream = socket.getInputStream();
 		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 		
-		objectOutputStream.writeObject("");
+		objectOutputStream.writeObject("GET_GAMEINFORMATION");
 		objectOutputStream.writeObject(user);
 		objectOutputStream.flush();
 		
-		Game game = (Game)objectInputStream.readObject();
+		int gameID = (Integer)objectInputStream.readObject();
 		
 		socket.close();
-		return game;
+		return gameID;
 	}
 
 }
