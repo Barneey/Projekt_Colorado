@@ -143,7 +143,17 @@ public class PlayPanel extends JPanel{
 		public void run(){
 			boolean gameFound = false;
 			while(!gameFound){
-				Game game = gameCon.getGameinformation(user);
+				try {
+					Game game = gameCon.getGameinformation(user);
+				} catch (ClassNotFoundException e){
+					jlblMessage.setText("Internal Error: Class not found");
+				} catch (SocketTimeoutException e) {
+					jlblMessage.setText("Connection timed out");
+				} catch (UnknownHostException e) {
+					jlblMessage.setText("Server not found");
+				} catch (IOException e) {
+					jlblMessage.setText("Internal Error: IO");
+				}
 				try {
 					wait(1000);
 				} catch (Exception e) {
