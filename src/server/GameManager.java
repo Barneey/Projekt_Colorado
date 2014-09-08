@@ -5,6 +5,8 @@ import java.util.HashMap;
 import server_client.Playmode;
 import server_client.Team;
 import server_client.User;
+import server_client.matches.Match;
+import server_client.matches.soccer.SoccerMatch;
 
 public class GameManager {
 	
@@ -34,6 +36,8 @@ public class GameManager {
 			}
 		}
 		Game game = new Game(playmode);
+		// TODO find a way to add new games according to the playmode
+		game.addMatch(new SoccerMatch(0));
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);
 		gameIDtoGame.put(game.getGID(), game);
@@ -44,5 +48,9 @@ public class GameManager {
 
 	public Game getNewGame(User user) {
 		return userIDtoNewGame.remove(user.getId());
+	}
+
+	public Match getCurrentMatch(int gameID) {
+		return gameIDtoGame.get(gameID).getCurrentMatch();
 	}
 }

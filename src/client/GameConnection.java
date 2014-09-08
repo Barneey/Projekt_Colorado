@@ -9,9 +9,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import server.Game;
 import server_client.Playmode;
 import server_client.User;
+import server_client.matches.Match;
 
 public class GameConnection extends ServerConnection{
 	
@@ -78,6 +78,28 @@ public class GameConnection extends ServerConnection{
 		
 		socket.close();
 		return gameID;
+	}
+
+	public Match getCurrentMatch(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		
+		objectOutputStream.writeObject("GET_CURRENT_MATCH");
+		objectOutputStream.writeObject(gameID);
+		objectOutputStream.flush();
+		
+		Match currentMatch = (Match)objectInputStream.readObject();
+		
+		socket.close();
+		
+		return currentMatch;
 	}
 
 }

@@ -11,12 +11,14 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import server.Game;
 import server_client.Playmode;
 import server_client.User;
+import server_client.matches.Match;
 
 public class PlayPanel extends JPanel{
 	
@@ -29,6 +31,7 @@ public class PlayPanel extends JPanel{
 	private User user;
 	private JLabel jlblMessage;
 	private NewGameRequester newGameRequester;
+	private boolean searching;
 	
 	public PlayPanel(Dimension d, User user){
 		this.user = user;
@@ -36,6 +39,7 @@ public class PlayPanel extends JPanel{
 		dbCon = DatabaseConnection.getInstance();
 		gameCon = GameConnection.getInstance();
 		alstPlaymodePanels = new ArrayList<>();
+		searching = false;
 		jlblMessage = new JLabel();
 		jlblMessage.setPreferredSize(new Dimension(200, 25));
 		add(jlblMessage);
@@ -69,6 +73,7 @@ public class PlayPanel extends JPanel{
 					alstPlaymodePanels.add(playmodepanel);
 					playmodePanel.add(playmodepanel);
 				}
+				setPlaymodeSelection(!searching);
 			}
 		} catch (SocketTimeoutException | SocketException e ) {
 			jlblMessage.setText("Connection timed out");
@@ -106,6 +111,7 @@ public class PlayPanel extends JPanel{
 						jbttnJoinGameQueues.setEnabled(false);
 						jbttnLeaveGameQueues.setEnabled(true);
 						setPlaymodeSelection(false);
+						searching = true;
 						newGameRequester = new NewGameRequester();
 						newGameRequester.start();
 					} catch (SocketTimeoutException e) {
@@ -122,11 +128,13 @@ public class PlayPanel extends JPanel{
 	
 	public class ALLeaveQueues implements ActionListener{
 		public void actionPerformed(ActionEvent ae){
+			jlblMessage.setText("");
 			try {
 				gameCon.leaveQueues(user);
 				jbttnJoinGameQueues.setEnabled(true);
 				jbttnLeaveGameQueues.setEnabled(false);
 				setPlaymodeSelection(true);
+				searching = false;
 				newGameRequester.interrupt();
 			} catch (SocketTimeoutException e) {
 				jlblMessage.setText("Connection timed out");
@@ -150,6 +158,13 @@ public class PlayPanel extends JPanel{
 					if(gameID != -1){
 						gameFound = true;
 						jlblMessage.setText("Game found");
+						jbttnJoinGameQueues.setEnabled(false);
+						jbttnLeaveGameQueues.setEnabled(false);
+						Match currentMatch = gameCon.getCurrentMatch(gameID);
+						JFrame jframe = new JFrame();
+						jframe.add(currentMatch);
+						jframe.setVisible(true);
+						// TODO request game/match information
 					}else{
 						try {
 							sleep(333);

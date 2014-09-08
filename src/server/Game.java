@@ -1,5 +1,6 @@
 package server;
 
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 import server_client.Playmode;
@@ -14,6 +15,8 @@ public class Game {
 	
 	public Game(Playmode playmode){
 		this.playmode = playmode; 
+		upcomingMatches = new PriorityQueue<>();
+		finishedMatches = new PriorityQueue<>();
 	}
 	
 	public void setGID(int gID){

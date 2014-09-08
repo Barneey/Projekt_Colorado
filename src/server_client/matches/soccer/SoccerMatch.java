@@ -18,7 +18,6 @@ public class SoccerMatch extends Match{
 	
 	public SoccerMatch(int matchType) {
 		super(matchType);
-//		Creating the gameObjects
 		gameObjects.put("BALL", new GameObject(100, 100));
 		gameObjects.put("BACKGROUND", new GameObject(0, 0));
 		imagesLoaded = false;

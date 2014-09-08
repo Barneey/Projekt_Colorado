@@ -1,8 +1,9 @@
 package server_client.matches;
 
 import java.awt.Point;
+import java.io.Serializable;
 
-public class GameObject {
+public class GameObject implements Serializable{
 	
 	private Point location;
 //	private String imagePath;

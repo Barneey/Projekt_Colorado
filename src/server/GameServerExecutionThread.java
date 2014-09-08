@@ -59,6 +59,11 @@ public class GameServerExecutionThread extends Thread{
 				}
 				objectOutputStream.flush();
 				break;
+			case "GET_CURRENT_MATCH":
+				int gameID = (Integer)objectInputStream.readObject();
+				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID));
+				objectOutputStream.flush();
+				break;
 			default:
 				break;
 			}

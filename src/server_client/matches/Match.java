@@ -3,13 +3,10 @@ package server_client.matches;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
-
-import server_client.ImageLoader;
-import client.GUIImageLoader;
-
 
 public abstract class Match extends JPanel implements Runnable{
 	
@@ -25,7 +22,9 @@ public abstract class Match extends JPanel implements Runnable{
 	public Match(int matchType){
 		this.matchType = matchType;
 		super.setSize(720, 405);
-		offscreen = createImage(getWidth(), getHeight());
+		System.out.println(getWidth() + " " + getHeight());
+//		offscreen = createImage(getWidth(), getHeight());
+		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreen.getGraphics();
 		gameObjects = new HashMap<>();
 	}
