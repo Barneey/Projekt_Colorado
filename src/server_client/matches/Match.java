@@ -15,14 +15,13 @@ public abstract class Match extends JPanel implements Runnable{
 	public static final int UNDERDOG = 2;
 	public static final int TEST = 3;
 	private int matchType;
-	protected Image offscreen;
-	protected Graphics offscreenGraphics;
+	protected transient Image offscreen;
+	protected transient Graphics offscreenGraphics;
 	protected HashMap<String, GameObject> gameObjects;
 	
 	public Match(int matchType){
 		this.matchType = matchType;
 		super.setSize(720, 405);
-		System.out.println(getWidth() + " " + getHeight());
 //		offscreen = createImage(getWidth(), getHeight());
 		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreen.getGraphics();

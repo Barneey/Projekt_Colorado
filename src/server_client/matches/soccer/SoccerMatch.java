@@ -42,6 +42,9 @@ public class SoccerMatch extends Match{
 			loadImages();
 		}
 		// Clear screen
+		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+		offscreenGraphics = offscreen.getGraphics();
+		
 		offscreenGraphics.clearRect(0, 0, getWidth(), getHeight());
 		// Draw components
 		drawGameObject(gameObjects.get("BACKGROUND"), imgBackground);

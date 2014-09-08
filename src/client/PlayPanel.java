@@ -1,5 +1,6 @@
 package client;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -161,8 +162,12 @@ public class PlayPanel extends JPanel{
 						jbttnJoinGameQueues.setEnabled(false);
 						jbttnLeaveGameQueues.setEnabled(false);
 						Match currentMatch = gameCon.getCurrentMatch(gameID);
+						// Put in a Method
 						JFrame jframe = new JFrame();
+						jframe.setLayout(null);
 						jframe.add(currentMatch);
+						jframe.setSize(currentMatch.getSize().width + 16, currentMatch.getSize().height + 39);
+						jframe.setLocationRelativeTo(null);
 						jframe.setVisible(true);
 						// TODO request game/match information
 					}else{
