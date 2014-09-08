@@ -1,12 +1,17 @@
 package server_client.matches;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
+
+import server_client.Playmode;
 
 public abstract class Match extends JPanel implements Runnable{
 	
@@ -18,11 +23,12 @@ public abstract class Match extends JPanel implements Runnable{
 	protected transient Image offscreen;
 	protected transient Graphics offscreenGraphics;
 	protected HashMap<String, GameObject> gameObjects;
+	protected Playmode playmode;
 	
-	public Match(int matchType){
+	public Match(int matchType, Playmode playmode){
 		this.matchType = matchType;
+		this.playmode = playmode;
 		super.setSize(720, 405);
-//		offscreen = createImage(getWidth(), getHeight());
 		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreen.getGraphics();
 		gameObjects = new HashMap<>();
@@ -30,6 +36,30 @@ public abstract class Match extends JPanel implements Runnable{
 	
 	public abstract void paint(Graphics g);
 	public abstract void loadImages();
+	
+	protected void drawGameObject(GameObject gameObject, Image image){
+		if(gameObject != null && image != null){
+			offscreenGraphics.drawImage(image, gameObject.getX(), gameObject.getY(), this);
+		}
+	}
+	
+	protected void drawString(String string, Color c, Font font, Point location){
+		Color cCopy = offscreenGraphics.getColor();
+		Font fontCopy = offscreenGraphics.getFont();
+		if(c != null){
+			offscreenGraphics.setColor(c);
+		}
+		if(font != null){
+			offscreenGraphics.setFont(font);
+		}
+		offscreenGraphics.drawString(string, location.x, location.y);
+		if(c != null){
+			offscreenGraphics.setColor(cCopy);
+		}
+		if(font != null){
+			offscreenGraphics.setFont(fontCopy);
+		}
+	}
 	
 	public void update(Graphics g){
 		paint(g);

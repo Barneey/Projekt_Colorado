@@ -37,7 +37,7 @@ public class GameManager {
 		}
 		Game game = new Game(playmode);
 		// TODO find a way to add new games according to the playmode
-		game.addMatch(new SoccerMatch(0));
+		game.addMatch(new SoccerMatch(0, playmode));
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);
 		gameIDtoGame.put(game.getGID(), game);
