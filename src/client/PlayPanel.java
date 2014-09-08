@@ -168,6 +168,7 @@ public class PlayPanel extends JPanel{
 						jframe.add(currentMatch);
 						jframe.setSize(currentMatch.getSize().width + 16, currentMatch.getSize().height + 39);
 						jframe.setLocationRelativeTo(null);
+						(new Thread(currentMatch)).start();
 						jframe.setVisible(true);
 						// TODO request game/match information
 					}else{

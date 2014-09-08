@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
@@ -70,6 +69,15 @@ public class SoccerMatch extends Match{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		while(true){
+			try {
+				Thread.sleep(100);
+				GameObject player = gameObjects.get("PLAYER1");
+				player.setLocation(player.getX()+5, player.getY());
+				repaint();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
