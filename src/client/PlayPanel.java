@@ -161,16 +161,8 @@ public class PlayPanel extends JPanel{
 						jlblMessage.setText("Game found");
 						jbttnJoinGameQueues.setEnabled(false);
 						jbttnLeaveGameQueues.setEnabled(false);
-						Match currentMatch = gameCon.getCurrentMatch(gameID);
 						// Put in a Method
-						JFrame jframe = new JFrame();
-						jframe.setLayout(null);
-						jframe.add(currentMatch);
-						jframe.setSize(currentMatch.getSize().width + 16, currentMatch.getSize().height + 39);
-						jframe.setLocationRelativeTo(null);
-						(new Thread(currentMatch)).start();
-						jframe.setVisible(true);
-						// TODO request game/match information
+						new PlayFrame(gameID);
 					}else{
 						try {
 							sleep(333);
