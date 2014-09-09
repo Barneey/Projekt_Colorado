@@ -71,9 +71,9 @@ public class SoccerMatch extends Match{
 	public void run() {
 		while(true){
 			try {
-				Thread.sleep(100);
+				Thread.sleep(20);
 				GameObject player = gameObjects.get("PLAYER1");
-				player.setLocation(player.getX()+5, player.getY());
+				player.setLocation(player.getX()+1, player.getY());
 				repaint();
 			} catch (Exception e) {
 				e.printStackTrace();

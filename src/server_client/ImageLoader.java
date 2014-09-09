@@ -27,6 +27,9 @@ public class ImageLoader {
 		double scalingFactorWidth = (double)size.getWidth() / imageWidth;
 		int imageHeight = image.getHeight();
 		double scalingFactorHeight = (double)size.getHeight() / imageHeight;
+		if(scalingFactorHeight == 1.0 && scalingFactorWidth == 1.0){
+			return image;
+		}
 		AffineTransform at = new AffineTransform();
 		at.scale(scalingFactorWidth, scalingFactorHeight);
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
