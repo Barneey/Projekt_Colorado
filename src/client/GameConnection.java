@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
@@ -102,9 +103,19 @@ public class GameConnection extends ServerConnection{
 		return currentMatch;
 	}
 
-	public void setMatchLoaded(int gameID, int id, boolean b) {
-		// TODO Auto-generated method stub
+	public void setMatchLoaded(int gameID, int id, boolean b) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		objectOutputStream.writeObject("SET_MATCH_LOADED");
+		objectOutputStream.writeObject(gameID);
+		objectOutputStream.writeObject(id);
+		objectOutputStream.flush();
+		
+		socket.close();
 	}
-
 }
