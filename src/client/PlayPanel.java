@@ -161,8 +161,7 @@ public class PlayPanel extends JPanel{
 						jlblMessage.setText("Game found");
 						jbttnJoinGameQueues.setEnabled(false);
 						jbttnLeaveGameQueues.setEnabled(false);
-						// Put in a Method
-						new PlayFrame(gameID);
+						new PlayFrame(gameID, user);
 					}else{
 						try {
 							sleep(333);

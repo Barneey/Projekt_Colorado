@@ -102,4 +102,9 @@ public class GameConnection extends ServerConnection{
 		return currentMatch;
 	}
 
+	public void setMatchLoaded(int gameID, int id, boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
