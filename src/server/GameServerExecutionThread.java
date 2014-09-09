@@ -59,11 +59,19 @@ public class GameServerExecutionThread extends Thread{
 				}
 				objectOutputStream.flush();
 				break;
-			case "GET_CURRENT_MATCH":
+			case "GET_CURRENT_MATCH":{
 				int gameID = (Integer)objectInputStream.readObject();
 				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID));
 				objectOutputStream.flush();
 				break;
+			}
+			case "SET_MATCH_LOADED":{
+				int gameID = (Integer)objectInputStream.readObject();
+				int userID = (Integer)objectInputStream.readObject();
+				boolean matchLoaded = (Boolean)objectInputStream.readObject();
+				GameManager.getInstance().setMatchLoaded(gameID, userID, matchLoaded);
+				break;
+			}
 			default:
 				break;
 			}

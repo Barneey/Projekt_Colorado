@@ -8,10 +8,14 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.swing.JPanel;
 
 import server_client.Playmode;
+import server_client.Team;
+import server_client.User;
 
 public abstract class Match extends JPanel implements Runnable{
 	
@@ -23,11 +27,18 @@ public abstract class Match extends JPanel implements Runnable{
 	protected transient Image offscreen;
 	protected transient Graphics offscreenGraphics;
 	protected HashMap<String, GameObject> gameObjects;
+	protected HashMap<Integer, Boolean> userIDtoMatchLoaded;
 	protected Playmode playmode;
 	
 	public Match(int matchType, Playmode playmode){
 		this.matchType = matchType;
 		this.playmode = playmode;
+		this.userIDtoMatchLoaded = new HashMap<>();
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				userIDtoMatchLoaded.put(user.getId(), false);
+			}
+		}
 		super.setSize(720, 405);
 		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreen.getGraphics();
@@ -75,5 +86,24 @@ public abstract class Match extends JPanel implements Runnable{
 	
 	public int getMatchType(){
 		return this.matchType;
+	}
+	
+	public Team[] getTeams(){
+		return playmode.getTeams();
+	}
+	
+	public void setMatchLoaded(int userID, boolean matchLoaded){
+		userIDtoMatchLoaded.put(userID, matchLoaded);
+	}
+	
+	public boolean isLoaded(){
+		Iterator<Entry<Integer, Boolean>> it = userIDtoMatchLoaded.entrySet().iterator();
+		while(it.hasNext()){
+			if(!it.next().getValue()){
+				return false;
+			}
+			it.remove();
+		}
+		return true;
 	}
 }

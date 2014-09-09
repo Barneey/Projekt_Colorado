@@ -38,6 +38,10 @@ public class Game {
 	public Match getCurrentMatch(){
 		return upcomingMatches.peek();
 	}
+
+	public void setMatchLoaded(int userID, boolean matchLoaded) {
+		getCurrentMatch().setMatchLoaded(userID, matchLoaded);
+	}
 	
 	public boolean nextMatch(){
 		if(upcomingMatches.peek() != null){

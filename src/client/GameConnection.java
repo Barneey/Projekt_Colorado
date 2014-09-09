@@ -114,6 +114,7 @@ public class GameConnection extends ServerConnection{
 		objectOutputStream.writeObject("SET_MATCH_LOADED");
 		objectOutputStream.writeObject(gameID);
 		objectOutputStream.writeObject(id);
+		objectOutputStream.writeObject(b);
 		objectOutputStream.flush();
 		
 		socket.close();

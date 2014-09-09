@@ -53,4 +53,12 @@ public class GameManager {
 	public Match getCurrentMatch(int gameID) {
 		return gameIDtoGame.get(gameID).getCurrentMatch();
 	}
+
+	public void setMatchLoaded(int gameID, int userID, boolean matchLoaded) {
+		gameIDtoGame.get(gameID).setMatchLoaded(userID, matchLoaded);
+	}
+	
+	public boolean isMatchLoaded(){
+		return false;
+	}
 }
