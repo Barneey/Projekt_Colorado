@@ -119,4 +119,48 @@ public class GameConnection extends ServerConnection{
 		
 		socket.close();
 	}
+
+	public boolean isEveryoneFinishedLoading(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		
+		objectOutputStream.writeObject("IS_MATCH_FULLY_LOADED");
+		objectOutputStream.writeObject(gameID);
+		objectOutputStream.flush();
+		
+		boolean isMatchFullyLoaded = (Boolean)objectInputStream.readObject();
+		
+		socket.close();
+		
+		return isMatchFullyLoaded;
+	}
+
+	public boolean isGameFinished(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		
+		objectOutputStream.writeObject("IS_GAME_FINISHED");
+		objectOutputStream.writeObject(gameID);
+		objectOutputStream.flush();
+		
+		boolean isMatchFullyLoaded = (Boolean)objectInputStream.readObject();
+		
+		socket.close();
+		
+		return isMatchFullyLoaded;
+	}
 }

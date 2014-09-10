@@ -67,8 +67,13 @@ public class SoccerMatch extends Match{
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
+	protected void showGameInfo(){
+		repaint();
+	}
+	
 	@Override
 	public void run() {
+		showGameInfo();
 		while(true){
 			try {
 				Thread.sleep(20);

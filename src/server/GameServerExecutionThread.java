@@ -72,6 +72,18 @@ public class GameServerExecutionThread extends Thread{
 				GameManager.getInstance().setMatchLoaded(gameID, userID, matchLoaded);
 				break;
 			}
+			case "IS_MATCH_FULLY_LOADED":{
+				int gameID = (Integer)objectInputStream.readObject();
+				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID).isLoaded());
+				objectOutputStream.flush();
+				break;
+			}
+			case "IS_GAME_FINISHED":{
+				int gameID = (Integer)objectInputStream.readObject();
+				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID) == null);
+				objectOutputStream.flush();
+				break;
+			}
 			default:
 				break;
 			}

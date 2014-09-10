@@ -47,6 +47,7 @@ public abstract class Match extends JPanel implements Runnable{
 	
 	public abstract void paint(Graphics g);
 	public abstract void loadImages();
+	protected abstract void showGameInfo();
 	
 	protected void drawGameObject(GameObject gameObject, Image image){
 		if(gameObject != null && image != null){

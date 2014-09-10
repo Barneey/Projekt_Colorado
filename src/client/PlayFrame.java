@@ -19,13 +19,13 @@ public class PlayFrame extends JFrame{
 	private GameConnection gameCon;
 	private int gameID;
 	private User user;
+	private Match currentMatch;
 	
 	public PlayFrame(int gameID,  User user){
 		gameCon = GameConnection.getInstance();
 		this.gameID = gameID;
 		this.user = user;
 		
-		Match currentMatch;
 		try {
 			currentMatch = gameCon.getCurrentMatch(gameID);
 			setLayout(new BorderLayout());
@@ -35,12 +35,49 @@ public class PlayFrame extends JFrame{
 			setLocationRelativeTo(null);
 			setVisible(true);
 			
-			currentMatch.loadImages();
-			gameCon.setMatchLoaded(gameID, user.getId(), true);
-			remove(jlblMessage);
-			add(currentMatch);
-			
-			(new Thread(currentMatch)).start();
+
+			boolean everyoneFinishedLoading = false;
+			boolean matchRunning = false;
+			boolean matchLoaded = false;
+			boolean gameFinished = false;
+			while(!gameFinished){
+				if(!matchLoaded){
+					currentMatch.loadImages();
+					gameCon.setMatchLoaded(gameID, user.getId(), true);
+					matchLoaded = true;
+					jlblMessage.setText("Waiting for other players...");
+				}
+				while(!everyoneFinishedLoading){
+					everyoneFinishedLoading = gameCon.isEveryoneFinishedLoading(gameID);
+					try {
+						Thread.sleep(66);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}	
+				}
+				if(!matchRunning && everyoneFinishedLoading){
+					remove(jlblMessage);
+					add(currentMatch);
+					(new Thread(currentMatch)).start();	
+					matchRunning = true;
+				}
+				if(matchRunning){
+					if(gameCon.isGameFinished(gameID)){
+						gameFinished = true;
+						dispose();
+						// TODO handle game finished;
+					}else{
+						if(!gameCon.isEveryoneFinishedLoading(gameID)){
+							// Neues Match muss geladen werden
+						}
+					}
+					try {
+						Thread.sleep(66);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}	
+				}
+			}
 		} catch (SocketTimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,7 +91,5 @@ public class PlayFrame extends JFrame{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		setLocationRelativeTo(null);
-		setVisible(true);
 	}
 }
