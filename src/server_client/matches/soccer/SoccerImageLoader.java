@@ -1,5 +1,7 @@
 package server_client.matches.soccer;
 
+import java.awt.image.BufferedImage;
+
 import server_client.ImageLoader;
 
 public class SoccerImageLoader extends ImageLoader{
@@ -14,4 +16,5 @@ public class SoccerImageLoader extends ImageLoader{
 											"images/games/soccer/ball315.png"};
 	public static final String PLAYERR0 = "images/games/soccer/playerR0.png";
 	public static final String BACKGROUND = "images/games/soccer/background.jpg";
+
 }

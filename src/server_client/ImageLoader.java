@@ -36,6 +36,15 @@ public class ImageLoader {
 		return scaleOp.filter(image, null);
 	}
 	
+	public BufferedImage rotateBufferedImage(BufferedImage bf, int rotateDegree) {
+		double rotationRequired = Math.toRadians(rotateDegree);
+		double locationX = bf.getWidth() / 2;
+		double locationY = bf.getHeight() / 2;
+		AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
+		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+		return op.filter(bf, null);
+	}
+	
 	public Image loadImage(String image){
 		try {
 			return Toolkit.getDefaultToolkit().createImage(image);
