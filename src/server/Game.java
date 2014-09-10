@@ -1,5 +1,7 @@
 package server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -12,11 +14,13 @@ public class Game {
 	private Playmode playmode;
 	private Queue<Match> upcomingMatches;
 	private Queue<Match> finishedMatches;
+	private ArrayList<Integer> alstLeftUser;
 	
 	public Game(Playmode playmode){
 		this.playmode = playmode; 
-		upcomingMatches = new PriorityQueue<>();
-		finishedMatches = new PriorityQueue<>();
+		this.upcomingMatches = new PriorityQueue<>();
+		this.finishedMatches = new PriorityQueue<>();
+		this.alstLeftUser = new ArrayList<>();
 	}
 	
 	public void setGID(int gID){
@@ -32,6 +36,7 @@ public class Game {
 	}
 	
 	public void addMatch(Match match){
+		match.setPlaymode(playmode);
 		upcomingMatches.add(match);
 	}
 	
@@ -44,10 +49,17 @@ public class Game {
 	}
 	
 	public boolean nextMatch(){
-		if(upcomingMatches.peek() != null){
+		Match upcomingMatch = null;
+		if((upcomingMatch = upcomingMatches.poll()) != null){
+			upcomingMatch.setLeftUser(alstLeftUser.toArray(new Integer[0]));
 			finishedMatches.add(upcomingMatches.poll());	
 			return true;
 		}
 		return false;
+	}
+
+	public void leaveUser(int userID) {
+		alstLeftUser.add(userID);
+		getCurrentMatch().setLeftUser(alstLeftUser.toArray(new Integer[0]));
 	}
 }

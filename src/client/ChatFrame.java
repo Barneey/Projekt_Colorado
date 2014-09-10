@@ -187,7 +187,7 @@ public class ChatFrame extends JFrame{
 		public void actionPerformed(ActionEvent ae){
 			String message = jtxtfldEnterMessage.getText();
 			if(validateMessage(message)){
-				ChatMessage chatMessage = new ChatMessage(user.getNick(), user.getId(), channel.getChannelID(), jtxtfldEnterMessage.getText());
+				ChatMessage chatMessage = new ChatMessage(user.getNick(), user.getID(), channel.getChannelID(), jtxtfldEnterMessage.getText());
 				writtenMessages.add(chatMessage);
 				jtxtfldEnterMessage.setText("");
 				lastMessage = message;

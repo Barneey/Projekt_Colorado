@@ -530,7 +530,7 @@ public class ServerDataBaseManager {
 			String sqlStatement = "SELECT * FROM users WHERE juser='" + user.getUsername() + "' AND jpassword='" + new String(user.getPassword()) + "'";
 			ResultSet rs = statement.executeQuery(sqlStatement);
 			if (rs.next()) {
-				user.setId(rs.getInt("uid"));
+				user.setID(rs.getInt("uid"));
 				user.setValidLogin(true);
 				user.setNick(rs.getString("jnick"));
 				user.setLevel(rs.getInt("level"));
@@ -583,7 +583,7 @@ public class ServerDataBaseManager {
 									+ "rcoins=" + user.getrCoins() + ","
 									+ "vcoins=" + user.getvCoins() + ","
 									+ "jlastloggin='" + lastLoginDate + "' "
-									+ "WHERE uid=" + user.getId();
+									+ "WHERE uid=" + user.getID();
 			statement.executeUpdate(sqlStatement);
 			statement.close();
 			connection.close();
@@ -642,7 +642,7 @@ public class ServerDataBaseManager {
 			}
 			
 			String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
-											+"VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
+											+"VALUES (" + user.getID() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
 
 			statement.executeUpdate(joinUserInChannelUpdate);
 			
@@ -662,14 +662,14 @@ public class ServerDataBaseManager {
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
-			String selectUserFromChannel = "SELECT * FROM USERCHATRELATIONS WHERE userID =" + user.getId() + " "
+			String selectUserFromChannel = "SELECT * FROM USERCHATRELATIONS WHERE userID =" + user.getID() + " "
 										+ "AND channelID = " + chatChannel.getChannelID();
 			
 			ResultSet rs = statement.executeQuery(selectUserFromChannel);
 			
 			if(!rs.next()){
 				String joinUserInChannelUpdate = "INSERT INTO USERCHATRELATIONS (userID, channelID, relationshiptype) "
-												+ "VALUES (" + user.getId() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
+												+ "VALUES (" + user.getID() + ", " + chatChannel.getChannelID() +", (SELECT ucrtID FROM UserChannelRelationshipTypes WHERE rtype = 'online' ))";
 
 				statement.executeUpdate(joinUserInChannelUpdate);
 			}
@@ -699,7 +699,7 @@ public class ServerDataBaseManager {
 			ArrayList<User> alstUsers = new ArrayList<>();
 			while(rs.next()){
 				User user = new User(rs.getString("juser"), null);
-				user.setId(rs.getInt("uid"));
+				user.setID(rs.getInt("uid"));
 				user.setValidLogin(true);
 				user.setNick(rs.getString("jnick"));
 				user.setLevel(rs.getInt("level"));
@@ -779,7 +779,7 @@ public class ServerDataBaseManager {
 			String url = "jdbc:derby:" + DBName;
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
-			String deleteStatement = "DELETE FROM userchatrelations WHERE userID=" + user.getId() + " "
+			String deleteStatement = "DELETE FROM userchatrelations WHERE userID=" + user.getID() + " "
 									+ "AND channelID = " + channel.getChannelID();
 			
 			statement.executeUpdate(deleteStatement);
@@ -812,7 +812,7 @@ public class ServerDataBaseManager {
 			Connection connection = DriverManager.getConnection(url);
 			Statement statement = connection.createStatement();
 			
-			String deleteStatement = "DELETE FROM userchatrelations WHERE userID=" + user.getId();
+			String deleteStatement = "DELETE FROM userchatrelations WHERE userID=" + user.getID();
 			
 			statement.executeUpdate(deleteStatement);
 		
@@ -897,7 +897,7 @@ public class ServerDataBaseManager {
 			game.setGID(gid);
 			for (Team team : game.getPlaymode().getTeams()) {
 				for (User user : team.getUser()) {
-					statement.executeUpdate("INSERT INTO GameUserRelationships (gid, uid, pmtid) VALUES (" + gid + ", " + user.getId() + ", " + team.getPmtID() + ")");
+					statement.executeUpdate("INSERT INTO GameUserRelationships (gid, uid, pmtid) VALUES (" + gid + ", " + user.getID() + ", " + team.getPmtID() + ")");
 				}
 			}
 		} catch (Exception e) {

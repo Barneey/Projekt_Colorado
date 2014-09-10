@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -29,6 +30,7 @@ public abstract class Match extends JPanel implements Runnable{
 	protected HashMap<String, GameObject> gameObjects;
 	protected HashMap<Integer, Boolean> userIDtoMatchLoaded;
 	protected Playmode playmode;
+	protected Integer[] leftUser;
 	
 	public Match(int matchType, Playmode playmode){
 		this.matchType = matchType;
@@ -36,7 +38,7 @@ public abstract class Match extends JPanel implements Runnable{
 		this.userIDtoMatchLoaded = new HashMap<>();
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				userIDtoMatchLoaded.put(user.getId(), false);
+				userIDtoMatchLoaded.put(user.getID(), false);
 			}
 		}
 		super.setSize(720, 405);
@@ -106,5 +108,16 @@ public abstract class Match extends JPanel implements Runnable{
 			it.remove();
 		}
 		return true;
+	}
+
+	public void setPlaymode(Playmode playmode) {
+		this.playmode = playmode;
+	}
+
+	public void setLeftUser(Integer[] leftUser) {
+		this.leftUser = leftUser;
+		for (Integer i : this.leftUser) {
+			userIDtoMatchLoaded.remove(i);
+		}
 	}
 }

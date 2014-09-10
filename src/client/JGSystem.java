@@ -33,6 +33,7 @@ public class JGSystem {
 		 DatabaseConnection.getInstance().leaveAllChannels(user);
 		 try {
 			 GameConnection.getInstance().leaveQueues(user);
+			 GameConnection.getInstance().leaveGames(user.getID());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

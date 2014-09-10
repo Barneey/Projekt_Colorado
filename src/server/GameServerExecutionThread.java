@@ -84,6 +84,16 @@ public class GameServerExecutionThread extends Thread{
 				objectOutputStream.flush();
 				break;
 			}
+			case "LEAVE_GAME":{
+				int gameID = (Integer)objectInputStream.readObject();
+				int userID = (Integer)objectInputStream.readObject();
+				GameManager.getInstance().leaveGame(gameID, userID);
+				break;
+			}
+			case "LEAVE_GAMES":{
+//				int userID
+				break;
+			}
 			default:
 				break;
 			}

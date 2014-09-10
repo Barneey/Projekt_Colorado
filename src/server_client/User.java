@@ -7,7 +7,7 @@ import java.util.Date;
 public class User implements Serializable, Comparable<User>{
 	
 	private static final long serialVersionUID = -6199635274651607854L;
-	private int id;
+	private int ID;
 	private String username;
 	private char[] password;
 	private boolean validLogin;
@@ -30,7 +30,7 @@ public class User implements Serializable, Comparable<User>{
 			this.lastLogin = new Date();
 		}
 		this.validLogin = false;
-		this.id = -1;
+		this.ID = -1;
 	}
 
 	public String getUsername() {
@@ -73,12 +73,12 @@ public class User implements Serializable, Comparable<User>{
 		this.nick = nick;
 	}
 
-	public int getId() {
-		return id;
+	public int getID() {
+		return ID;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setID(int ID) {
+		this.ID = ID;
 	}
 
 	public int getrCoins() {
@@ -139,7 +139,7 @@ public class User implements Serializable, Comparable<User>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + ID;
 		result = prime * result + ((nick == null) ? 0 : nick.hashCode());
 		return result;
 	}
@@ -153,7 +153,7 @@ public class User implements Serializable, Comparable<User>{
 		if (!(obj instanceof User))
 			return false;
 		User other = (User) obj;
-		if (id != other.id)
+		if (ID != other.ID)
 			return false;
 		if (nick == null) {
 			if (other.nick != null)

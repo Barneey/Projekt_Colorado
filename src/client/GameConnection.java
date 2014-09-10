@@ -163,4 +163,35 @@ public class GameConnection extends ServerConnection{
 		
 		return isMatchFullyLoaded;
 	}
+
+	public void leaveGame(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		objectOutputStream.writeObject("LEAVE_GAME");
+		objectOutputStream.writeObject(gameID);
+		objectOutputStream.writeObject(userID);
+		objectOutputStream.flush();
+		
+		socket.close();
+	}
+	
+	public void leaveGames(int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		objectOutputStream.writeObject("LEAVE_GAMES");
+		objectOutputStream.writeObject(userID);
+		objectOutputStream.flush();
+		
+		socket.close();
+	}
 }
