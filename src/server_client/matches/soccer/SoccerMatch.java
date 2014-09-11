@@ -64,7 +64,10 @@ public class SoccerMatch extends Match{
 		if(sImgLdr == null){
 			sImgLdr = new SoccerImageLoader();
 		}
-		gameObjects.get("").
+		GameObject ball = gameObjects.get("BALL");
+		ball.addAnimation("STAND", null);
+		BufferedImage[] ballStand = {sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), new Dimension(20,20))};
+//				.addAnimation("STAND", );
 //		imgBalls = new BufferedImage[SoccerImageLoader.BALLS.length];
 //		for (int i = 0; i < SoccerImageLoader.BALLS.length; i++) {
 //			imgBalls[i] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[i]), new Dimension(20,20));
@@ -80,15 +83,15 @@ public class SoccerMatch extends Match{
 		if(!imagesLoaded){
 			loadImages();
 		}
-		// Clear screen
+		 // Clear screen
 		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreen.getGraphics();
 		
 		offscreenGraphics.clearRect(0, 0, getWidth(), getHeight());
 		// Draw components
-		drawGameObject(gameObjects.get("BACKGROUND"), imgBackground);
-		drawGameObject(gameObjects.get("BALL"), imgBalls[0]);
-		drawGameObject(gameObjects.get("PLAYER1"), imgPlayers[0]);
+//		drawGameObject(gameObjects.get("BACKGROUND"), imgBackground);
+//		drawGameObject(gameObjects.get("BALL"), imgBalls[0]);
+//		drawGameObject(gameObjects.get("PLAYER1"), imgPlayers[0]);
 		drawString(String.valueOf(score[0]), Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 120, 40));
 		
 		g.drawImage(offscreen, 0, 0, this);

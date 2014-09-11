@@ -82,13 +82,6 @@ public class GameObject implements Serializable{
 	public void setSpeed(double speed) {
 		this.speed = speed;
 	}
-	
-//	
-//	
-//	public void addAnimation(String name, ){
-//		
-//	}
-
 
 	public int getAnimationCounter() {
 		return animationCounter;
@@ -112,5 +105,9 @@ public class GameObject implements Serializable{
 
 	public void setSize(Dimension size) {
 		this.size = size;
+	}
+
+	public void addAnimation(String string, BufferedImage[] images) {
+		this.animations.put(string, images);
 	}
 }
