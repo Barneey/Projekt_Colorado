@@ -30,7 +30,7 @@ public class SoccerMatch extends Match{
 		int teamNumber = this.playmode.getTeams().length;
 		fieldSize = new Dimension(626, 307);
 		fieldStart = new Point(47, 49);
-		gameObjects.put("BALL", new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(20,20)));
+		gameObjects.put("BALL", new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20)));
 		gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
 		// Check playmode and create Objects
 		if(playmode.getTitel().equals("TEAM")){
@@ -67,37 +67,49 @@ public class SoccerMatch extends Match{
 		BufferedImage[] ballStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize()))};
 		ball.addAnimation("STAND", ballStand);
 		
-		
-
 		GameObject background = gameObjects.get("BACKGROUND");
 		BufferedImage[] backgroundStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BACKGROUND), background.getSize()))};
 		background.addAnimation("STAND", backgroundStand);
-//		imgBalls = new BufferedImage[SoccerImageLoader.BALLS.length];
-//		for (int i = 0; i < SoccerImageLoader.BALLS.length; i++) {
-//			imgBalls[i] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[i]), new Dimension(20,20));
-//		}
-//		imgBackground = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BACKGROUND), getSize());
-//		imgPlayers = new BufferedImage[1];
-//		imgPlayers[0] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYERR0), new Dimension(30, 30));
+		
+		
+		if(playmode.getTitel().equals("Test")){
+			boolean firstRun = true;
+			BufferedImage[] playerStand = new BufferedImage[1];;
+			BufferedImage[] playerMove = new BufferedImage[0];
+			for (Team team : playmode.getTeams()) {
+				for (User user : team.getUser()) {
+					GameObject playerObject = gameObjects.get("PLAYER" + user.getID());
+					if(firstRun){
+						firstRun = false;
+						playerStand[0] = (sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYER_STAND), playerObject.getSize()));
+					}
+					playerObject.addAnimation("STAND", playerStand);
+					playerObject.addAnimation("MOVE", playerMove);
+				}
+			}
+		}
+		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+		offscreenGraphics = offscreen.getGraphics();
 		imagesLoaded = true;
 	}
 	
 	@Override
 	public void paint(Graphics g) {
-//		if(!imagesLoaded){
+		if(!imagesLoaded){
 			loadImages();
-//		}
+		}
 		 // Clear screen
-		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-		offscreenGraphics = offscreen.getGraphics();
 		
 		offscreenGraphics.clearRect(0, 0, getWidth(), getHeight());
 		// Draw components
 		drawGameObject(gameObjects.get("BACKGROUND"));
 		drawGameObject(gameObjects.get("BALL"));
-//		drawGameObject(gameObjects.get("PLAYER1"), imgPlayers[0]);
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				drawGameObject(gameObjects.get("PLAYER" + user.getID()));
+			}
+		}
 		drawString(String.valueOf(score[0]), Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 120, 40));
-		
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
@@ -110,8 +122,8 @@ public class SoccerMatch extends Match{
 		showGameInfo();
 		while(true){
 			try {
-				Thread.sleep(50);
-//				score[0] = score[0] + 1;
+				Thread.sleep(40);
+				score[0] = score[0] + 1;
 				GameObject player = gameObjects.get("PLAYER" + playmode.getTeams()[0].getUser()[0].getID());
 				player.setLocation(player.getX()+1, player.getY());
 				repaint();

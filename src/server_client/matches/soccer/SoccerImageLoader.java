@@ -14,7 +14,7 @@ public class SoccerImageLoader extends ImageLoader{
 											"images/games/soccer/ball225.png",
 											"images/games/soccer/ball270.png",
 											"images/games/soccer/ball315.png"};
-	public static final String PLAYERR0 = "images/games/soccer/playerR0.png";
+	public static final String PLAYER_STAND = "images/games/soccer/playerR0.png";
 	public static final String BACKGROUND = "images/games/soccer/background.jpg";
 
 }
