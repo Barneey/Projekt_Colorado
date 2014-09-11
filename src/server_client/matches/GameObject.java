@@ -17,8 +17,8 @@ public class GameObject implements Serializable{
 	private int viewDegree;
 	private double speed;
 	private Dimension size;
-	private transient HashMap<String, BufferedImage[]> animations;
-	private String currentAnimation;
+	private HashMap<String, BufferedImage[]> animations;
+	private String currentAnimationType;
 	private int animationCounter;
 	
 	public GameObject(int x, int y, Dimension size){
@@ -27,7 +27,7 @@ public class GameObject implements Serializable{
 		this.viewDegree = 0;
 		this.setSpeed(0.0);
 		this.animations = new HashMap<>();
-		this.setCurrentAnimationType("");
+		this.currentAnimationType = "";
 		this.animationCounter = 0;
 	}
 	
@@ -93,12 +93,12 @@ public class GameObject implements Serializable{
 		this.animationCounter = animationCounter;
 	}
 
-	public String getCurrentAnimation() {
-		return currentAnimation;
+	public String getCurrentAnimationType() {
+		return currentAnimationType;
 	}
 
-	public void setCurrentAnimationType(String currentAnimation) {
-		this.currentAnimation = currentAnimation;
+	public void setCurrentAnimationType(String currentAnimationType) {
+		this.currentAnimationType = currentAnimationType;
 	}
 
 	public Dimension getSize() {
@@ -110,6 +110,9 @@ public class GameObject implements Serializable{
 	}
 
 	public void addAnimation(String string, BufferedImage[] images) {
+		if(this.currentAnimationType.equals("")){
+			this.currentAnimationType = string;
+		}
 		if(this.animations == null){
 			this.animations = new HashMap<>();
 		}
@@ -120,8 +123,8 @@ public class GameObject implements Serializable{
 	}
 
 	public Image getCurrentImage() {
-		BufferedImage[] images = this.animations.get(getCurrentAnimation());
-		if(images == null){
+		BufferedImage[] images = this.animations.get(currentAnimationType);
+		if((images = this.animations.get(currentAnimationType)) == null || images.length == 0){
 			return null;
 		}
 		return images[(int)Math.round(images.length / 100.0 * this.animationCounter)];

@@ -30,7 +30,6 @@ public class SoccerMatch extends Match{
 		int teamNumber = this.playmode.getTeams().length;
 		fieldSize = new Dimension(626, 307);
 		fieldStart = new Point(47, 49);
-//		gameObjects.put("BALL", new GameObject(getWidth()/2 - 20/2, getHeight()/2 - 20/2, new Dimension(20,20)));
 		gameObjects.put("BALL", new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(20,20)));
 		gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
 		// Check playmode and create Objects
@@ -65,9 +64,14 @@ public class SoccerMatch extends Match{
 			sImgLdr = new SoccerImageLoader();
 		}
 		GameObject ball = gameObjects.get("BALL");
-		ball.addAnimation("STAND", null);
-		BufferedImage[] ballStand = {sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize())};
+		BufferedImage[] ballStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize()))};
 		ball.addAnimation("STAND", ballStand);
+		
+		
+
+		GameObject background = gameObjects.get("BACKGROUND");
+		BufferedImage[] backgroundStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BACKGROUND), background.getSize()))};
+		background.addAnimation("STAND", backgroundStand);
 //		imgBalls = new BufferedImage[SoccerImageLoader.BALLS.length];
 //		for (int i = 0; i < SoccerImageLoader.BALLS.length; i++) {
 //			imgBalls[i] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[i]), new Dimension(20,20));
@@ -80,9 +84,9 @@ public class SoccerMatch extends Match{
 	
 	@Override
 	public void paint(Graphics g) {
-		if(!imagesLoaded){
+//		if(!imagesLoaded){
 			loadImages();
-		}
+//		}
 		 // Clear screen
 		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreen.getGraphics();
@@ -106,7 +110,8 @@ public class SoccerMatch extends Match{
 		showGameInfo();
 		while(true){
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(50);
+//				score[0] = score[0] + 1;
 				GameObject player = gameObjects.get("PLAYER" + playmode.getTeams()[0].getUser()[0].getID());
 				player.setLocation(player.getX()+1, player.getY());
 				repaint();
