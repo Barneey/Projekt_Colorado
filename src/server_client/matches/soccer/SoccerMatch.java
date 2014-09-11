@@ -46,7 +46,7 @@ public class SoccerMatch extends Match{
 				gameObjects.put("PLAYER" + user[i].getID(), new GameObject(fieldStart.x + fieldSize.width - (xOffset + (i / 2 == 0 ? xOffset : 0)), fieldStart.y + fieldSize.height - (yOffset + yOffset * (i/2)), new Dimension(30,30)));
 			}			
 		}
-		if(playmode.getTitel().equals("TEST")){
+		if(playmode.getTitel().equals("Test")){
 			for (Team team : playmode.getTeams()) {
 				for (User user : team.getUser()) {
 					gameObjects.put("PLAYER" + user.getID(), new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(30,30)));
@@ -89,8 +89,8 @@ public class SoccerMatch extends Match{
 		
 		offscreenGraphics.clearRect(0, 0, getWidth(), getHeight());
 		// Draw components
-//		drawGameObject(gameObjects.get("BACKGROUND"), imgBackground);
-//		drawGameObject(gameObjects.get("BALL"), imgBalls[0]);
+		drawGameObject(gameObjects.get("BACKGROUND"));
+		drawGameObject(gameObjects.get("BALL"));
 //		drawGameObject(gameObjects.get("PLAYER1"), imgPlayers[0]);
 		drawString(String.valueOf(score[0]), Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 120, 40));
 		
@@ -106,8 +106,8 @@ public class SoccerMatch extends Match{
 		showGameInfo();
 		while(true){
 			try {
-				Thread.sleep(20);
-				GameObject player = gameObjects.get("PLAYER1");
+				Thread.sleep(2000);
+				GameObject player = gameObjects.get("PLAYER" + playmode.getTeams()[0].getUser()[0].getID());
 				player.setLocation(player.getX()+1, player.getY());
 				repaint();
 			} catch (Exception e) {

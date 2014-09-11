@@ -1,6 +1,7 @@
 package server_client.matches;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
@@ -25,7 +26,8 @@ public class GameObject implements Serializable{
 		this.setSize(size);
 		this.viewDegree = 0;
 		this.setSpeed(0.0);
-		this.setCurrentAnimation("");
+		this.animations = new HashMap<>();
+		this.setCurrentAnimationType("");
 		this.animationCounter = 0;
 	}
 	
@@ -95,7 +97,7 @@ public class GameObject implements Serializable{
 		return currentAnimation;
 	}
 
-	public void setCurrentAnimation(String currentAnimation) {
+	public void setCurrentAnimationType(String currentAnimation) {
 		this.currentAnimation = currentAnimation;
 	}
 
@@ -108,6 +110,20 @@ public class GameObject implements Serializable{
 	}
 
 	public void addAnimation(String string, BufferedImage[] images) {
+		if(this.animations == null){
+			this.animations = new HashMap<>();
+		}
+		if(images == null){
+			images = new BufferedImage[0];
+		}
 		this.animations.put(string, images);
+	}
+
+	public Image getCurrentImage() {
+		BufferedImage[] images = this.animations.get(getCurrentAnimation());
+		if(images == null){
+			return null;
+		}
+		return images[(int)Math.round(images.length / 100.0 * this.animationCounter)];
 	}
 }
