@@ -37,6 +37,9 @@ public class ImageLoader {
 	}
 	
 	public BufferedImage rotateBufferedImage(BufferedImage bf, int rotateDegree) {
+		if(rotateDegree % 360 == 0){
+			return bf;
+		}
 		double rotationRequired = Math.toRadians(rotateDegree);
 		double locationX = bf.getWidth() / 2;
 		double locationY = bf.getHeight() / 2;

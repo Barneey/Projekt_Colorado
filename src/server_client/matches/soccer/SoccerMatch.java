@@ -17,7 +17,7 @@ import server_client.matches.Match;
 public class SoccerMatch extends Match{
 	
 	private SoccerImageLoader sImgLdr;
-	private BufferedImage imgBackground;
+//	private BufferedImage imgBackground;
 //	private BufferedImage[] imgBalls;
 //	private BufferedImage[] imgPlayers;
 	private boolean imagesLoaded;
@@ -28,11 +28,11 @@ public class SoccerMatch extends Match{
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
 		int teamNumber = this.playmode.getTeams().length;
+		fieldSize = new Dimension(626, 307);
+		fieldStart = new Point(47, 49);
 //		gameObjects.put("BALL", new GameObject(getWidth()/2 - 20/2, getHeight()/2 - 20/2, new Dimension(20,20)));
 		gameObjects.put("BALL", new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(20,20)));
 		gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
-		fieldSize = new Dimension(626, 307);
-		fieldStart = new Point(47, 49);
 		// Check playmode and create Objects
 		if(playmode.getTitel().equals("TEAM")){
 			User[] user = playmode.getTeams()[0].getUser();
@@ -66,8 +66,8 @@ public class SoccerMatch extends Match{
 		}
 		GameObject ball = gameObjects.get("BALL");
 		ball.addAnimation("STAND", null);
-		BufferedImage[] ballStand = {sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), new Dimension(20,20))};
-//				.addAnimation("STAND", );
+		BufferedImage[] ballStand = {sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize())};
+		ball.addAnimation("STAND", ballStand);
 //		imgBalls = new BufferedImage[SoccerImageLoader.BALLS.length];
 //		for (int i = 0; i < SoccerImageLoader.BALLS.length; i++) {
 //			imgBalls[i] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[i]), new Dimension(20,20));
