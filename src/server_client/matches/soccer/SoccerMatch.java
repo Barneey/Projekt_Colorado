@@ -81,6 +81,7 @@ public class SoccerMatch extends Match{
 				if(firstRun){
 					firstRun = false;
 					playerStand[0] = (sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYER_STAND), playerObject.getSize()));
+//					playerMove[0] = 
 				}
 				playerObject.addAnimation("STAND", playerStand);
 				playerObject.addAnimation("MOVE", playerMove);
