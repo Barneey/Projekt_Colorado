@@ -72,7 +72,7 @@ public class PlayFrame extends JFrame{
 						dispose();
 					}else{
 						if(!gameCon.isEveryoneFinishedLoading(gameID)){
-							// Neues Match muss geladen werden
+							// TODO Neues Match muss geladen werden
 						}
 					}
 					try {
