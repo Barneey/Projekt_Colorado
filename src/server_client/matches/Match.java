@@ -18,7 +18,7 @@ import server_client.Playmode;
 import server_client.Team;
 import server_client.User;
 
-public abstract class Match extends JPanel implements Runnable{
+public abstract class Match extends JPanel implements Runnable, KeyListener {
 	
 	public static final int FFA = 0;
 	public static final int TEAM = 1;
