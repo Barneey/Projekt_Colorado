@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,7 +18,7 @@ import server_client.Playmode;
 import server_client.Team;
 import server_client.User;
 
-public abstract class Match extends JPanel implements Runnable{
+public abstract class Match extends JPanel implements Runnable, KeyListener{
 	
 	public static final int FFA = 0;
 	public static final int TEAM = 1;
@@ -30,6 +31,7 @@ public abstract class Match extends JPanel implements Runnable{
 	protected HashMap<Integer, Boolean> userIDtoMatchLoaded;
 	protected Playmode playmode;
 	protected Integer[] leftUser;
+	protected int userID;
 	
 	public Match(int matchType, Playmode playmode){
 		this.matchType = matchType;
@@ -49,6 +51,10 @@ public abstract class Match extends JPanel implements Runnable{
 	public abstract void paint(Graphics g);
 	public abstract void loadImages();
 	protected abstract void showGameInfo();
+	
+	protected void setUserID(int userID){
+		this.userID = userID;
+	}
 	
 	protected void drawGameObject(GameObject gameObject){
 		if(gameObject != null){

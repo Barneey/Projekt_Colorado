@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import server_client.Playmode;
@@ -28,6 +29,7 @@ public class SoccerMatch extends Match{
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
 		int teamNumber = this.playmode.getTeams().length;
+		this.userID = -1;
 		fieldSize = new Dimension(626, 307);
 		fieldStart = new Point(47, 49);
 		gameObjects.put("BALL", new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20)));
@@ -121,13 +123,43 @@ public class SoccerMatch extends Match{
 		while(true){
 			try {
 				Thread.sleep(40);
-				score[0] = score[0] + 1;
-				GameObject player = gameObjects.get("PLAYER" + playmode.getTeams()[0].getUser()[0].getID());
-				player.setLocation(player.getX()+1, player.getY());
+				
+				
+				
+				
+//				GameObject player = gameObjects.get("PLAYER" + playmode.getTeams()[0].getUser()[0].getID());
+//				player.setLocation(player.getX()+1, player.getY());
 				repaint();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void keyPressed(KeyEvent e) {
+		GameObject player = gameObjects.get("PLAYER" + userID);
+		if(player != null){
+		
+			switch (e.getKeyCode()) {
+			case 37:
+				// Left
+				
+				break;
+	
+			default:
+				break;
+			}
+		}
+	}
+		
+
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
