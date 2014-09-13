@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 import server_client.Playmode;
@@ -116,8 +117,19 @@ public class SoccerMatch extends Match{
 	}
 
 	protected void showGameInfo(){
+		addKeyListener(new KLSoccerMatch());
 		repaint();
-		this.addKeyListener(this);
+	}
+	
+	private void updateGameObjects(){
+		// TODO send player object to server, update 
+		// TODO call animateGameObject
+		player = gameObjects.get("PLAYER" + userID);
+		animateGameObject(player);
+	}
+	
+	private void animateGameObject(GameObject gameObject){
+		gameObject.animate();
 	}
 	
 	@Override
@@ -128,80 +140,79 @@ public class SoccerMatch extends Match{
 				Thread.sleep(40);
 				
 				
-				// TODO send update to Server
-
-				player = gameObjects.get("PLAYER" + userID);
+				updateGameObjects();
 				
-//				GameObject player = gameObjects.get("PLAYER" + playmode.getTeams()[0].getUser()[0].getID());
-//				player.setLocation(player.getX()+1, player.getY());
 				repaint();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
-	public void keyPressed(KeyEvent e) {
-		if(player == null){
-			player = gameObjects.get("PLAYER" + userID);
+	
+	private class KLSoccerMatch implements KeyListener{
+		public void keyPressed(KeyEvent e) {
+			if(player == null){
+				player = gameObjects.get("PLAYER" + userID);
+			}
+			System.out.println(e.getKeyChar());
+			switch (e.getKeyCode()) {
+			case 37:
+				// Left
+				player.setViewDegree(180);
+				player.setCurrentAnimationType(animationMove);
+				break;
+			case 38:
+				// Up
+				player.setViewDegree(270);
+				player.setCurrentAnimationType(animationMove);
+				break;
+			case 39:
+				// Right
+				player.setViewDegree(0);
+				player.setCurrentAnimationType(animationMove);
+				break;
+			case 40:
+				// Down
+				player.setViewDegree(90);
+				player.setCurrentAnimationType(animationMove);
+				break;
+	
+			default:
+				break;
+			}
 		}
-		switch (e.getKeyCode()) {
-		case 37:
-			// Left
-			player.setViewDegree(180);
-			player.setCurrentAnimationType(animationMove);
-			break;
-		case 38:
-			// Up
-			player.setViewDegree(270);
-			player.setCurrentAnimationType(animationMove);
-			break;
-		case 39:
-			// Right
-			player.setViewDegree(0);
-			player.setCurrentAnimationType(animationMove);
-			break;
-		case 40:
-			// Down
-			player.setViewDegree(90);
-			player.setCurrentAnimationType(animationMove);
-			break;
-
-		default:
-			break;
+				
+	
+		public void keyReleased(KeyEvent e) {
+			if(player == null){
+				player = gameObjects.get("PLAYER" + userID);
+			}
+			switch (e.getKeyCode()) {
+			case 37:
+				// Left
+				player.setCurrentAnimationType(animationStand);
+				break;
+			case 38:
+				// Up
+				player.setCurrentAnimationType(animationStand);
+				break;
+			case 39:
+				// Right
+				player.setCurrentAnimationType(animationStand);
+				break;
+			case 40:
+				// Down
+				player.setCurrentAnimationType(animationStand);
+				break;
+	
+			default:
+				break;
+			}
 		}
-	}
-		
-
-	public void keyReleased(KeyEvent e) {
-		if(player == null){
-			player = gameObjects.get("PLAYER" + userID);
+	
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
 		}
-		switch (e.getKeyCode()) {
-		case 37:
-			// Left
-			player.setCurrentAnimationType(animationStand);
-			break;
-		case 38:
-			// Up
-			player.setCurrentAnimationType(animationStand);
-			break;
-		case 39:
-			// Right
-			player.setCurrentAnimationType(animationStand);
-			break;
-		case 40:
-			// Down
-			player.setCurrentAnimationType(animationStand);
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 }

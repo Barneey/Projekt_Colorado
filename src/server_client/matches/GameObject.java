@@ -20,6 +20,7 @@ public class GameObject implements Serializable{
 	private HashMap<String, BufferedImage[]> animations;
 	private String currentAnimationType;
 	private int animationCounter;
+	private transient Image currentImage;
 	
 	public GameObject(int x, int y, Dimension size){
 		this.location = new Point(x, y);
@@ -29,6 +30,7 @@ public class GameObject implements Serializable{
 		this.animations = new HashMap<>();
 		this.currentAnimationType = "";
 		this.animationCounter = 0;
+		this.currentImage = null;
 	}
 	
 	public void setObjectData(GameObject o){
@@ -66,7 +68,7 @@ public class GameObject implements Serializable{
 		this.viewDegree = viewDegree;
 	}
 	
-	public void rotateImages(int rotateDegree){
+	private void rotateImages(int rotateDegree){
 		Iterator<Entry<String, BufferedImage[]>> it = animations.entrySet().iterator();
 		SoccerImageLoader sImgLdr = new SoccerImageLoader();
 		while(it.hasNext()){
@@ -125,8 +127,16 @@ public class GameObject implements Serializable{
 	public Image getCurrentImage() {
 		BufferedImage[] images = this.animations.get(currentAnimationType);
 		if((images = this.animations.get(currentAnimationType)) == null || images.length == 0){
-			return null;
+			return currentImage;
 		}
-		return images[(int)Math.round(images.length / 100.0 * this.animationCounter)];
+		currentImage = images[(int)Math.floor(images.length / 100.0 * this.animationCounter)];
+		return currentImage;
+	}
+
+	public void animate() {
+		this.animationCounter++;
+		if(this.animationCounter >= 100){
+			this.animationCounter = 0;
+		}
 	}
 }
