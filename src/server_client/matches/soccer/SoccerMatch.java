@@ -18,20 +18,22 @@ import server_client.matches.Match;
 public class SoccerMatch extends Match{
 	
 	private SoccerImageLoader sImgLdr;
-//	private BufferedImage imgBackground;
-//	private BufferedImage[] imgBalls;
-//	private BufferedImage[] imgPlayers;
 	private boolean imagesLoaded;
 	private int[] score;
 	private Dimension fieldSize;
 	private Point fieldStart;
+	private String animationStand;
+	private String animationMove;
+	private GameObject player;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
 		int teamNumber = this.playmode.getTeams().length;
 		this.userID = -1;
-		fieldSize = new Dimension(626, 307);
-		fieldStart = new Point(47, 49);
+		this.animationStand = "STAND";
+		this.animationMove = "MOVE";
+		this.fieldSize = new Dimension(626, 307);
+		this.fieldStart = new Point(47, 49);
 		gameObjects.put("BALL", new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20)));
 		gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
 		// Check playmode and create Objects
@@ -67,11 +69,11 @@ public class SoccerMatch extends Match{
 		}
 		GameObject ball = gameObjects.get("BALL");
 		BufferedImage[] ballStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize()))};
-		ball.addAnimation("STAND", ballStand);
+		ball.addAnimation(animationStand, ballStand);
 		
 		GameObject background = gameObjects.get("BACKGROUND");
 		BufferedImage[] backgroundStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BACKGROUND), background.getSize()))};
-		background.addAnimation("STAND", backgroundStand);
+		background.addAnimation(animationStand, backgroundStand);
 		
 		
 		boolean firstRun = true;
@@ -85,8 +87,8 @@ public class SoccerMatch extends Match{
 					playerStand[0] = (sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYER_STAND), playerObject.getSize()));
 //					playerMove[0] = 
 				}
-				playerObject.addAnimation("STAND", playerStand);
-				playerObject.addAnimation("MOVE", playerMove);
+				playerObject.addAnimation(animationStand, playerStand);
+				playerObject.addAnimation(animationMove, playerMove);
 			}
 		}
 		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -115,6 +117,7 @@ public class SoccerMatch extends Match{
 
 	protected void showGameInfo(){
 		repaint();
+		this.addKeyListener(this);
 	}
 	
 	@Override
@@ -125,7 +128,9 @@ public class SoccerMatch extends Match{
 				Thread.sleep(40);
 				
 				
-				
+				// TODO send update to Server
+
+				player = gameObjects.get("PLAYER" + userID);
 				
 //				GameObject player = gameObjects.get("PLAYER" + playmode.getTeams()[0].getUser()[0].getID());
 //				player.setLocation(player.getX()+1, player.getY());
@@ -137,25 +142,62 @@ public class SoccerMatch extends Match{
 	}
 
 	public void keyPressed(KeyEvent e) {
-		GameObject player = gameObjects.get("PLAYER" + userID);
-		if(player != null){
-		
-			switch (e.getKeyCode()) {
-			case 37:
-				// Left
-				player.setViewDegree(180);
-				break;
-	
-			default:
-				break;
-			}
+		if(player == null){
+			player = gameObjects.get("PLAYER" + userID);
+		}
+		switch (e.getKeyCode()) {
+		case 37:
+			// Left
+			player.setViewDegree(180);
+			player.setCurrentAnimationType(animationMove);
+			break;
+		case 38:
+			// Up
+			player.setViewDegree(270);
+			player.setCurrentAnimationType(animationMove);
+			break;
+		case 39:
+			// Right
+			player.setViewDegree(0);
+			player.setCurrentAnimationType(animationMove);
+			break;
+		case 40:
+			// Down
+			player.setViewDegree(90);
+			player.setCurrentAnimationType(animationMove);
+			break;
+
+		default:
+			break;
 		}
 	}
 		
 
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		if(player == null){
+			player = gameObjects.get("PLAYER" + userID);
+		}
+		switch (e.getKeyCode()) {
+		case 37:
+			// Left
+			player.setCurrentAnimationType(animationStand);
+			break;
+		case 38:
+			// Up
+			player.setCurrentAnimationType(animationStand);
+			break;
+		case 39:
+			// Right
+			player.setCurrentAnimationType(animationStand);
+			break;
+		case 40:
+			// Down
+			player.setCurrentAnimationType(animationStand);
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	public void keyTyped(KeyEvent e) {
