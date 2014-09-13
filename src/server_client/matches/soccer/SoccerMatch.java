@@ -143,7 +143,7 @@ public class SoccerMatch extends Match{
 			switch (e.getKeyCode()) {
 			case 37:
 				// Left
-				
+				player.setViewDegree(180);
 				break;
 	
 			default:

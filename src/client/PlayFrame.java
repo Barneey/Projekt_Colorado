@@ -24,11 +24,11 @@ public class PlayFrame extends JFrame{
 	private Match currentMatch;
 	
 	public PlayFrame(int gameID,  User user){
-		gameCon = GameConnection.getInstance();
+		this.gameCon = GameConnection.getInstance();
 		this.gameID = gameID;
 		this.user = user;
 		this.addWindowListener(new WLPlayFrame());
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		try {
 			currentMatch = gameCon.getCurrentMatch(gameID);
 			setLayout(new BorderLayout());
@@ -60,6 +60,7 @@ public class PlayFrame extends JFrame{
 				}
 				if(!matchRunning && everyoneFinishedLoading){
 					remove(jlblMessage);
+					currentMatch.setUserID(user.getID());
 					add(currentMatch);
 					(new Thread(currentMatch)).start();	
 					matchRunning = true;

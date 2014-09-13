@@ -52,7 +52,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener{
 	public abstract void loadImages();
 	protected abstract void showGameInfo();
 	
-	protected void setUserID(int userID){
+	public void setUserID(int userID){
 		this.userID = userID;
 	}
 	
