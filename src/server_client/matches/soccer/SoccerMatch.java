@@ -6,8 +6,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
 
 import server_client.Playmode;
 import server_client.Team;
@@ -26,10 +27,12 @@ public class SoccerMatch extends Match{
 	private String animationStand;
 	private String animationMove;
 	private GameObject player;
+	private Set<Integer> pressedKeys;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
 		int teamNumber = this.playmode.getTeams().length;
+		this.pressedKeys = new HashSet<>();
 		this.userID = -1;
 		this.animationStand = "STAND";
 		this.animationMove = "MOVE";
@@ -125,7 +128,6 @@ public class SoccerMatch extends Match{
 		// TODO send player object to server, update 
 		// TODO call animateGameObject
 		player = gameObjects.get("PLAYER" + userID);
-		System.out.println(player.getViewDegree());
 		animateGameObject(player);
 	}
 	
@@ -139,10 +141,7 @@ public class SoccerMatch extends Match{
 		while(true){
 			try {
 				Thread.sleep(40);
-				
-				
 				updateGameObjects();
-				
 				repaint();
 				requestFocusInWindow();
 			} catch (Exception e) {
@@ -155,27 +154,8 @@ public class SoccerMatch extends Match{
 		if(player == null){
 			player = gameObjects.get("PLAYER" + userID);
 		}
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_LEFT:
-			player.setViewDegree(180);
-			player.setCurrentAnimationType(animationMove);
-			break;
-		case KeyEvent.VK_UP:
-			player.setViewDegree(270);
-			player.setCurrentAnimationType(animationMove);
-			break;
-		case KeyEvent.VK_RIGHT:
-			player.setViewDegree(0);
-			player.setCurrentAnimationType(animationMove);
-			break;
-		case KeyEvent.VK_DOWN:
-			player.setViewDegree(90);
-			player.setCurrentAnimationType(animationMove);
-			break;
-
-		default:
-			break;
-		}
+		pressedKeys.add(e.getKeyCode());
+		setMovementForPlayer();
 	}
 			
 
@@ -183,31 +163,66 @@ public class SoccerMatch extends Match{
 		if(player == null){
 			player = gameObjects.get("PLAYER" + userID);
 		}
-		switch (e.getKeyCode()) {
-		case 37:
-			// Left
-			player.setCurrentAnimationType(animationStand);
-			break;
-		case 38:
-			// Up
-			player.setCurrentAnimationType(animationStand);
-			break;
-		case 39:
-			// Right
-			player.setCurrentAnimationType(animationStand);
-			break;
-		case 40:
-			// Down
-			player.setCurrentAnimationType(animationStand);
-			break;
-
-		default:
-			break;
-		}
+		pressedKeys.remove(e.getKeyCode());
+		setMovementForPlayer();
 	}
 
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void setMovementForPlayer(){
+		if(player == null){
+			player = gameObjects.get("PLAYER" + userID);
+		}
+		if(pressedKeys.size() == 0){
+			player.setSpeed(0);
+			player.setCurrentAnimationType(animationStand);
+		}
+		if(pressedKeys.size() == 1){
+			if(pressedKeys.contains(KeyEvent.VK_LEFT)){
+				player.setViewDegree(180);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+			if(pressedKeys.contains(KeyEvent.VK_UP)){
+				player.setViewDegree(270);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+			if(pressedKeys.contains(KeyEvent.VK_RIGHT)){
+				player.setViewDegree(0);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+			if(pressedKeys.contains(KeyEvent.VK_DOWN)){
+				player.setViewDegree(90);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+		}
+		if(pressedKeys.size() == 2){
+			if(pressedKeys.contains(KeyEvent.VK_LEFT) && pressedKeys.contains(KeyEvent.VK_UP)){
+				player.setViewDegree(225);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+			if(pressedKeys.contains(KeyEvent.VK_UP) && pressedKeys.contains(KeyEvent.VK_RIGHT)){
+				player.setViewDegree(315);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+			if(pressedKeys.contains(KeyEvent.VK_RIGHT) && pressedKeys.contains(KeyEvent.VK_DOWN)){
+				player.setViewDegree(45);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+			if(pressedKeys.contains(KeyEvent.VK_DOWN) && pressedKeys.contains(KeyEvent.VK_LEFT)){
+				player.setViewDegree(135);
+				player.setSpeed(3);
+				player.setCurrentAnimationType(animationMove);
+			}
+		}
 	}
 }

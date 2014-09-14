@@ -5,7 +5,9 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -17,7 +19,7 @@ public class GameObject implements Serializable{
 	private int viewDegree;
 	private double speed;
 	private Dimension size;
-	private HashMap<String, BufferedImage[]> animations;
+	private Hashtable<String, BufferedImage[]> animations;
 	private String currentAnimationType;
 	private int animationCounter;
 	private transient Image currentImage;
@@ -27,7 +29,7 @@ public class GameObject implements Serializable{
 		this.setSize(size);
 		this.viewDegree = 0;
 		this.setSpeed(0.0);
-		this.animations = new HashMap<>();
+		this.animations = new Hashtable<>();
 		this.currentAnimationType = "";
 		this.animationCounter = 0;
 		this.currentImage = null;
@@ -69,14 +71,20 @@ public class GameObject implements Serializable{
 	}
 	
 	private void rotateImages(int rotateDegree){
+
+		Hashtable<String, BufferedImage[]> copyAnimations = new Hashtable<>();
 		Iterator<Entry<String, BufferedImage[]>> it = animations.entrySet().iterator();
 		SoccerImageLoader sImgLdr = new SoccerImageLoader();
 		while(it.hasNext()){
 			Entry<String, BufferedImage[]> entry = it.next();
+			ArrayList<BufferedImage> tempImages = new ArrayList<>();
 			for (BufferedImage bf : entry.getValue()) {
-				bf = sImgLdr.rotateBufferedImage(bf, rotateDegree);
+				tempImages.add(sImgLdr.rotateBufferedImage(bf, rotateDegree));
 			}
+			
+			copyAnimations.put(entry.getKey(), tempImages.toArray(new BufferedImage[0]));
 		}
+		animations = copyAnimations;
 	}
 
 	public double getSpeed() {
@@ -116,7 +124,7 @@ public class GameObject implements Serializable{
 			this.currentAnimationType = string;
 		}
 		if(this.animations == null){
-			this.animations = new HashMap<>();
+			this.animations = new Hashtable<>();
 		}
 		if(images == null){
 			images = new BufferedImage[0];
@@ -134,6 +142,7 @@ public class GameObject implements Serializable{
 	}
 
 	public void animate() {
+		location.setLocation(speed * Math.cos(Math.toRadians(viewDegree)) + location.x, speed * Math.sin(Math.toRadians(viewDegree)) + location.y);
 		this.animationCounter++;
 		if(this.animationCounter >= 100){
 			this.animationCounter = 0;
