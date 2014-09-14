@@ -28,12 +28,14 @@ public class SoccerMatch extends Match{
 	private String animationMove;
 	private GameObject player;
 	private Set<Integer> pressedKeys;
+	private int playerAnimationTimer;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
 		int teamNumber = this.playmode.getTeams().length;
 		this.pressedKeys = new HashSet<>();
 		this.userID = -1;
+		this.playerAnimationTimer = 6;
 		this.animationStand = "STAND";
 		this.animationMove = "MOVE";
 		this.fieldSize = new Dimension(626, 307);
@@ -47,20 +49,22 @@ public class SoccerMatch extends Match{
 			int yOffset = fieldSize.height / ((user.length + 1) / 2);
 			for(int i = 0; i < user.length; i++){
 				GameObject newPlayer = new GameObject(fieldStart.x + xOffset + (i / 2 == 0 ? xOffset : 0), fieldStart.y + yOffset + yOffset * (i/2), new Dimension(30,30));
-				newPlayer.setAnimationCounterMax(3);
+				newPlayer.setAnimationCounterMax(playerAnimationTimer);
 				gameObjects.put("PLAYER" + user[i].getID(), newPlayer);
 			}
 			user = playmode.getTeams()[1].getUser();
 			for(int i = 0; i < user.length; i++){
 				GameObject newPlayer = new GameObject(fieldStart.x + fieldSize.width - (xOffset + (i / 2 == 0 ? xOffset : 0)), fieldStart.y + fieldSize.height - (yOffset + yOffset * (i/2)), new Dimension(30,30));
-				newPlayer.setAnimationCounterMax(3);
+				newPlayer.setAnimationCounterMax(playerAnimationTimer);
 				gameObjects.put("PLAYER" + user[i].getID(), newPlayer);
 			}			
 		}
 		if(playmode.getTitel().equals("Test")){
 			for (Team team : playmode.getTeams()) {
 				for (User user : team.getUser()) {
-					gameObjects.put("PLAYER" + user.getID(), new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(21,21)));
+					GameObject newPlayer = new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(21,21));
+					newPlayer.setAnimationCounterMax(playerAnimationTimer);
+					gameObjects.put("PLAYER" + user.getID(), newPlayer);
 				}
 			}
 		}
