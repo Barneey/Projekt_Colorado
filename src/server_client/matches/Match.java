@@ -37,6 +37,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.matchType = matchType;
 		this.playmode = playmode;
 		this.userIDtoMatchLoaded = new HashMap<>();
+		this.addKeyListener(this);
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				userIDtoMatchLoaded.put(user.getID(), false);

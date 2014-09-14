@@ -121,7 +121,6 @@ public class SoccerMatch extends Match{
 
 	protected void showGameInfo(){
 		repaint();
-		addKeyListener(this);
 	}
 	
 	private void updateGameObjects(){
