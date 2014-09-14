@@ -22,6 +22,7 @@ public class GameObject implements Serializable{
 	private Hashtable<String, BufferedImage[]> animations;
 	private String currentAnimationType;
 	private int animationCounter;
+	private int animationCounterMax;
 	private transient Image currentImage;
 	
 	public GameObject(int x, int y, Dimension size){
@@ -32,6 +33,7 @@ public class GameObject implements Serializable{
 		this.animations = new Hashtable<>();
 		this.currentAnimationType = "";
 		this.animationCounter = 0;
+		this.animationCounterMax = 100;
 		this.currentImage = null;
 	}
 	
@@ -63,7 +65,7 @@ public class GameObject implements Serializable{
 	}
 
 	public void setViewDegree(int viewDegree) {
-		int difference = this.viewDegree - viewDegree;
+		int difference = viewDegree - this.viewDegree;
 		if(difference != 0){
 			rotateImages(difference);
 		}
@@ -137,15 +139,23 @@ public class GameObject implements Serializable{
 		if((images = this.animations.get(currentAnimationType)) == null || images.length == 0){
 			return currentImage;
 		}
-		currentImage = images[(int)Math.floor(images.length / 100.0 * this.animationCounter)];
+		currentImage = images[(int)Math.floor(images.length / (double)this.animationCounterMax * this.animationCounter)];
 		return currentImage;
 	}
 
 	public void animate() {
 		location.setLocation(speed * Math.cos(Math.toRadians(viewDegree)) + location.x, speed * Math.sin(Math.toRadians(viewDegree)) + location.y);
 		this.animationCounter++;
-		if(this.animationCounter >= 100){
+		if(this.animationCounter >= this.animationCounterMax){
 			this.animationCounter = 0;
 		}
+	}
+
+	public int getAnimationCounterMax() {
+		return animationCounterMax;
+	}
+
+	public void setAnimationCounterMax(int animationCounterMax) {
+		this.animationCounterMax = animationCounterMax;
 	}
 }

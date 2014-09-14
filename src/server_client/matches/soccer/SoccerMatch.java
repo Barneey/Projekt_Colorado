@@ -56,7 +56,7 @@ public class SoccerMatch extends Match{
 		if(playmode.getTitel().equals("Test")){
 			for (Team team : playmode.getTeams()) {
 				for (User user : team.getUser()) {
-					gameObjects.put("PLAYER" + user.getID(), new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(30,30)));
+					gameObjects.put("PLAYER" + user.getID(), new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(21,21)));
 				}
 			}
 		}
@@ -82,14 +82,16 @@ public class SoccerMatch extends Match{
 		
 		boolean firstRun = true;
 		BufferedImage[] playerStand = new BufferedImage[1];;
-		BufferedImage[] playerMove = new BufferedImage[0];
+		BufferedImage[] playerMove = new BufferedImage[3];
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				GameObject playerObject = gameObjects.get("PLAYER" + user.getID());
 				if(firstRun){
 					firstRun = false;
 					playerStand[0] = (sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYER_STAND), playerObject.getSize()));
-//					playerMove[0] = 
+					for(int i = 0; i < SoccerImageLoader.PLAYER_MOVE.length; i++){
+						playerMove[i] = (sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYER_MOVE[i]), playerObject.getSize()));
+					}
 				}
 				playerObject.addAnimation(animationStand, playerStand);
 				playerObject.addAnimation(animationMove, playerMove);

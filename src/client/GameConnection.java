@@ -30,7 +30,7 @@ public class GameConnection extends ServerConnection{
 		return instance;
 	}
 
-	public void leaveQueues(User user) throws UnknownHostException, IOException, SocketTimeoutException{
+	public synchronized void leaveQueues(User user) throws UnknownHostException, IOException, SocketTimeoutException{
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -45,7 +45,7 @@ public class GameConnection extends ServerConnection{
 	
 	}
 
-	public void joinQueues(User user, Playmode[] playmodes) throws UnknownHostException, IOException, SocketTimeoutException {
+	public synchronized void joinQueues(User user, Playmode[] playmodes) throws UnknownHostException, IOException, SocketTimeoutException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -60,7 +60,7 @@ public class GameConnection extends ServerConnection{
 		socket.close();
 	}
 
-	public int getGameinformation(User user) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized int getGameinformation(User user) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -81,7 +81,7 @@ public class GameConnection extends ServerConnection{
 		return gameID;
 	}
 
-	public Match getCurrentMatch(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized Match getCurrentMatch(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -103,7 +103,7 @@ public class GameConnection extends ServerConnection{
 		return currentMatch;
 	}
 
-	public void setMatchLoaded(int gameID, int id, boolean b) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized void setMatchLoaded(int gameID, int id, Boolean b) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -120,7 +120,7 @@ public class GameConnection extends ServerConnection{
 		socket.close();
 	}
 
-	public boolean isEveryoneFinishedLoading(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized boolean isEveryoneFinishedLoading(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -142,7 +142,7 @@ public class GameConnection extends ServerConnection{
 		return isMatchFullyLoaded;
 	}
 
-	public boolean isGameFinished(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized boolean isGameFinished(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -164,7 +164,7 @@ public class GameConnection extends ServerConnection{
 		return isMatchFullyLoaded;
 	}
 
-	public void leaveGame(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized void leaveGame(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -180,7 +180,7 @@ public class GameConnection extends ServerConnection{
 		socket.close();
 	}
 	
-	public void leaveGames(int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized void leaveGames(int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
