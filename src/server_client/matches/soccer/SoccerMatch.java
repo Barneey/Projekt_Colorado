@@ -122,7 +122,9 @@ public class SoccerMatch extends Match{
 		drawGameObject(gameObjects.get("BALL"));
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				drawGameObject(gameObjects.get("PLAYER" + user.getID()));
+				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				drawGameObject(player);
+				drawString(user.getNick(), Color.CYAN, new Font(Font.SERIF, Font.PLAIN, 15), new Point(player.getX(), player.getY() - 15));
 			}
 		}
 		drawString(String.valueOf(score[0]), Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 120, 40));
