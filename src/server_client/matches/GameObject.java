@@ -73,7 +73,6 @@ public class GameObject implements Serializable{
 	}
 	
 	private void rotateImages(int rotateDegree){
-
 		Hashtable<String, BufferedImage[]> copyAnimations = new Hashtable<>();
 		Iterator<Entry<String, BufferedImage[]>> it = animations.entrySet().iterator();
 		SoccerImageLoader sImgLdr = new SoccerImageLoader();
@@ -84,7 +83,6 @@ public class GameObject implements Serializable{
 				BufferedImage tempImage = sImgLdr.rotateBufferedImage(bf, rotateDegree);
 				tempImages.add(tempImage);
 			}
-			
 			copyAnimations.put(entry.getKey(), tempImages.toArray(new BufferedImage[0]));
 		}
 		animations = copyAnimations;

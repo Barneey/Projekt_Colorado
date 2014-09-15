@@ -69,10 +69,9 @@ public class SoccerMatch extends Match{
 			}
 		}
 		imagesLoaded = false;
-		score = new int[teamNumber];
-		for (int i = 0; i < score.length; i++) {
-			score[i]=0;
-		}
+		score = new int[2];
+		score[0] = 0;
+		score[1] = 0;
 	}
 
 	public void loadImages(){
@@ -89,7 +88,7 @@ public class SoccerMatch extends Match{
 		
 		
 		boolean firstRun = true;
-		BufferedImage[] playerStand = new BufferedImage[1];;
+		BufferedImage[] playerStand = new BufferedImage[1];
 		BufferedImage[] playerMove = new BufferedImage[3];
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
@@ -127,7 +126,7 @@ public class SoccerMatch extends Match{
 				drawString(user.getNick().substring(0, 10), Color.CYAN, new Font(Font.SERIF, Font.PLAIN, 10), new Point(player.getX(), player.getY() - 5));
 			}
 		}
-		drawString(String.valueOf(score[0]), Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 120, 40));
+		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 12, 40));
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
