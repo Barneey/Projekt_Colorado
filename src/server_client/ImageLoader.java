@@ -40,12 +40,18 @@ public class ImageLoader {
 		if(rotateDegree % 360 == 0){
 			return bf;
 		}
+		int imageWidth = bf.getWidth();
+		int imageHeight = bf.getHeight();
 		double rotationRequired = Math.toRadians(rotateDegree);
 		double locationX = bf.getWidth() / 2;
 		double locationY = bf.getHeight() / 2;
 		AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-		return op.filter(bf, null);
+		bf = op.filter(bf, null);
+		if(rotateDegree % 90 != 0){
+			bf = bf.getSubimage(0,0,imageWidth, imageHeight);
+		}
+		return bf;
 	}
 	
 	public Image loadImage(String image){

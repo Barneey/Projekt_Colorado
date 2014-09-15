@@ -81,7 +81,8 @@ public class GameObject implements Serializable{
 			Entry<String, BufferedImage[]> entry = it.next();
 			ArrayList<BufferedImage> tempImages = new ArrayList<>();
 			for (BufferedImage bf : entry.getValue()) {
-				tempImages.add(sImgLdr.scaleBufferedImage(sImgLdr.rotateBufferedImage(bf, rotateDegree), this.getSize()));
+				BufferedImage tempImage = sImgLdr.rotateBufferedImage(bf, rotateDegree);
+				tempImages.add(tempImage);
 			}
 			
 			copyAnimations.put(entry.getKey(), tempImages.toArray(new BufferedImage[0]));
