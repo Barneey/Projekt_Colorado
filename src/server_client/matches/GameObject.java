@@ -120,7 +120,7 @@ public class GameObject implements Serializable{
 		this.size = size;
 	}
 
-	public void addAnimation(String string, BufferedImage[] images) {
+	public synchronized void addAnimation(String string, BufferedImage[] images) {
 		if(this.currentAnimationType.equals("")){
 			this.currentAnimationType = string;
 		}

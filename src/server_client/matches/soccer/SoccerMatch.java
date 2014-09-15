@@ -29,10 +29,13 @@ public class SoccerMatch extends Match{
 	private GameObject player;
 	private Set<Integer> pressedKeys;
 	private int playerAnimationTimer;
+	private transient BufferedImage[] ballStand;
+	private transient BufferedImage[] backgroundStand;
+	private transient BufferedImage[] playerStand;
+	private transient BufferedImage[] playerMove;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
-		int teamNumber = this.playmode.getTeams().length;
 		this.pressedKeys = new HashSet<>();
 		this.userID = -1;
 		this.playerAnimationTimer = 6;
@@ -78,18 +81,30 @@ public class SoccerMatch extends Match{
 		if(sImgLdr == null){
 			sImgLdr = new SoccerImageLoader();
 		}
+		
 		GameObject ball = gameObjects.get("BALL");
-		BufferedImage[] ballStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize()))};
+		if(ballStand == null){
+			ballStand = new BufferedImage[1];
+		}
+		ballStand[0] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize());
 		ball.addAnimation(animationStand, ballStand);
 		
+		
 		GameObject background = gameObjects.get("BACKGROUND");
-		BufferedImage[] backgroundStand = {(sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BACKGROUND), background.getSize()))};
+		if(backgroundStand == null){
+			backgroundStand = new BufferedImage[1];
+		}
+		backgroundStand[0] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BACKGROUND), background.getSize());
 		background.addAnimation(animationStand, backgroundStand);
 		
 		
 		boolean firstRun = true;
-		BufferedImage[] playerStand = new BufferedImage[1];
-		BufferedImage[] playerMove = new BufferedImage[3];
+		if(playerStand == null){
+			playerStand = new BufferedImage[1];
+		}
+		if(playerMove == null){
+			playerMove = new BufferedImage[3];
+		}
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				GameObject playerObject = gameObjects.get("PLAYER" + user.getID());
@@ -107,6 +122,42 @@ public class SoccerMatch extends Match{
 		offscreen = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreen.getGraphics();
 		imagesLoaded = true;
+	}
+	
+	private void renewImages(){
+		
+		Runnable thread = new Runnable() {
+			
+			@Override
+			public void run() {
+				boolean firstRun = true;
+				for (Team team : playmode.getTeams()) {
+					for (User user : team.getUser()) {
+						GameObject playerObject = gameObjects.get("PLAYER" + user.getID());
+						if(firstRun){
+							firstRun = false;
+							playerStand[0] = (sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYER_STAND), playerObject.getSize()));
+							for(int i = 0; i < SoccerImageLoader.PLAYER_MOVE.length; i++){
+								playerMove[i] = (sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.PLAYER_MOVE[i]), playerObject.getSize()));
+							}
+						}
+						BufferedImage[] tempPlayerStand = new BufferedImage[playerStand.length];
+						for (int i = 0; i < playerStand.length; i++) {
+							tempPlayerStand[i] = sImgLdr.rotateBufferedImage(playerStand[i], playerObject.getViewDegree());
+						}
+						BufferedImage[] tempPlayerMove = new BufferedImage[playerMove.length];
+						for (int i = 0; i < playerMove.length; i++) {
+							tempPlayerMove[i] = sImgLdr.rotateBufferedImage(playerMove[i], playerObject.getViewDegree());
+						}
+						
+						playerObject.addAnimation(animationStand, tempPlayerStand);
+						playerObject.addAnimation(animationMove, tempPlayerMove);
+					}
+				}
+			}
+		};
+		(new Thread(thread)).start();
+		
 	}
 	
 	@Override
@@ -148,8 +199,14 @@ public class SoccerMatch extends Match{
 	@Override
 	public void run() {
 		showGameInfo();
+//		int counter = 0;
 		while(true){
 			try {
+//				counter++;
+//				if(counter >= 25){
+//					counter=0;
+					renewImages();
+//				}
 				Thread.sleep(40);
 				updateGameObjects();
 				repaint();

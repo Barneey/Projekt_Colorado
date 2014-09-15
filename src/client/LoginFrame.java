@@ -169,7 +169,6 @@ public class LoginFrame extends JFrame
 		jlbRegistryLink.setLocation(startX + 200, startY + 185);
 		jlbRegistryLink.addMouseListener(new MLLink(REGISTER_LINK));
 		this.add(jlbRegistryLink);
-		
 
 		this.getRootPane().setDefaultButton(jbttnLogin);
 		this.addWindowListener(new WLLoginFrame());
