@@ -177,7 +177,7 @@ public class SoccerMatch extends Match{
 				drawString(user.getNick().substring(0, 10), Color.CYAN, new Font(Font.SERIF, Font.PLAIN, 10), new Point(player.getX(), player.getY() - 5));
 			}
 		}
-		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 12, 40));
+		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 14, 40));
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
@@ -199,14 +199,9 @@ public class SoccerMatch extends Match{
 	@Override
 	public void run() {
 		showGameInfo();
-//		int counter = 0;
 		while(true){
 			try {
-//				counter++;
-//				if(counter >= 25){
-//					counter=0;
-					renewImages();
-//				}
+				renewImages();
 				Thread.sleep(40);
 				updateGameObjects();
 				repaint();
