@@ -15,9 +15,7 @@ import server_client.matches.soccer.SoccerImageLoader;
 
 public class GameObject implements Serializable{
 	
-	private Point location;
-	private int viewDegree;
-	private double speed;
+	private GameObjectInformation information;
 	private Dimension size;
 	private Hashtable<String, BufferedImage[]> animations;
 	private String currentAnimationType;
@@ -26,9 +24,8 @@ public class GameObject implements Serializable{
 	private transient Image currentImage;
 	
 	public GameObject(int x, int y, Dimension size){
-		this.location = new Point(x, y);
+		this.information = new GameObjectInformation(x, y, 0);
 		this.setSize(size);
-		this.viewDegree = 0;
 		this.setSpeed(0.0);
 		this.animations = new Hashtable<>();
 		this.currentAnimationType = "";
@@ -37,39 +34,36 @@ public class GameObject implements Serializable{
 		this.currentImage = null;
 	}
 	
-	public void setObjectData(GameObject o){
-		this.location = o.getLocation();
-		this.viewDegree = o.getViewDegree();
-		this.speed = o.getSpeed();
-		this.animationCounter = o.getAnimationCounter();
+	public void setGameInformation(GameObjectInformation goi){
+		this.information = goi;
 	}
 	
 	public void setLocation(int x, int y){
-		location.setLocation(x, y);
+		information.setLocation(x, y);
 	}
 	
 	public Point getLocation(){
-		return this.location;
+		return information.getLocation();
 	}
 	
 	public int getX(){
-		return this.location.x;
+		return this.information.getLocation().x;
 	}
 	
 	public int getY(){
-		return this.location.y;
+		return this.information.getLocation().y;
 	}
 
 	public int getViewDegree() {
-		return viewDegree;
+		return this.information.getViewDegree();
 	}
 
 	public void setViewDegree(int viewDegree) {
-		int difference = viewDegree - this.viewDegree;
+		int difference = viewDegree - this.information.getViewDegree();
 		if(difference != 0){
 			rotateImages(difference);
 		}
-		this.viewDegree = viewDegree;
+		this.information.setViewDegree(viewDegree);
 	}
 	
 	private void rotateImages(int rotateDegree){
@@ -89,11 +83,11 @@ public class GameObject implements Serializable{
 	}
 
 	public double getSpeed() {
-		return speed;
+		return information.getSpeed();
 	}
 
 	public void setSpeed(double speed) {
-		this.speed = speed;
+		this.information.setSpeed(speed);
 	}
 
 	public int getAnimationCounter() {
@@ -143,7 +137,7 @@ public class GameObject implements Serializable{
 	}
 
 	public void animate() {
-		location.setLocation(speed * Math.cos(Math.toRadians(viewDegree)) + location.x, speed * Math.sin(Math.toRadians(viewDegree)) + location.y);
+		information.setLocation(information.getSpeed() * Math.cos(Math.toRadians(information.getViewDegree())) + getX(), information.getSpeed() * Math.sin(Math.toRadians(this.information.getViewDegree())) + getY());
 		this.animationCounter++;
 		if(this.animationCounter >= this.animationCounterMax){
 			this.animationCounter = 0;
@@ -156,5 +150,9 @@ public class GameObject implements Serializable{
 
 	public void setAnimationCounterMax(int animationCounterMax) {
 		this.animationCounterMax = animationCounterMax;
+	}
+
+	public GameObjectInformation getInformation() {
+		return this.information;
 	}
 }

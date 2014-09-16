@@ -9,9 +9,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import server_client.Playmode;
 import server_client.User;
+import server_client.matches.GameObject;
+import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
 
 public class GameConnection extends ServerConnection{
@@ -114,7 +117,7 @@ public class GameConnection extends ServerConnection{
 		objectOutputStream.writeObject("SET_MATCH_LOADED");
 		objectOutputStream.writeObject(gameID);
 		objectOutputStream.writeObject(id);
-		objectOutputStream.writeObject(b);
+		objectOutputStream.writeBoolean(b);
 		objectOutputStream.flush();
 		
 		socket.close();
@@ -193,5 +196,30 @@ public class GameConnection extends ServerConnection{
 		objectOutputStream.flush();
 		
 		socket.close();
+	}
+
+	public synchronized HashMap<String, GameObjectInformation> updateGameObjects(HashMap<String, GameObjectInformation> clientPlayerObjects, int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+
+		objectOutputStream.writeObject("UPDATE_GAME_INFORMATION");
+		objectOutputStream.writeObject(clientPlayerObjects);
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.flush();
+		
+		HashMap<String, GameObjectInformation> gameObjectInformation = new HashMap<>();
+		
+		gameObjectInformation = (HashMap<String, GameObjectInformation>)objectInputStream.readObject();
+		
+		socket.close();
+		
+		return gameObjectInformation;
 	}
 }

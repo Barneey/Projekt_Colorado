@@ -2,6 +2,7 @@ package server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -25,6 +26,10 @@ public class Game {
 	
 	public void setGID(int gID){
 		this.gID = gID;
+		Iterator<Match> it = upcomingMatches.iterator();
+		while(it.hasNext()){
+			it.next().setGameID(gID);
+		}
 	}
 
 	public int getGID() {
@@ -37,6 +42,7 @@ public class Game {
 	
 	public void addMatch(Match match){
 		match.setPlaymode(playmode);
+		match.setGameID(this.gID);
 		upcomingMatches.add(match);
 	}
 	

@@ -32,8 +32,10 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected Playmode playmode;
 	protected Integer[] leftUser;
 	protected int userID;
+	protected int gameID;
 	
 	public Match(int matchType, Playmode playmode){
+		this.gameID = -1;
 		this.matchType = matchType;
 		this.playmode = playmode;
 		this.userIDtoMatchLoaded = new HashMap<>();
@@ -52,6 +54,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	public abstract void paint(Graphics g);
 	public abstract void loadImages();
 	protected abstract void showGameInfo();
+	protected abstract void updateGameObjects();
 	
 	public void setUserID(int userID){
 		this.userID = userID;
@@ -79,6 +82,10 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		if(font != null){
 			offscreenGraphics.setFont(fontCopy);
 		}
+	}
+	
+	protected void animateGameObject(GameObject gameObject){
+		gameObject.animate();
 	}
 	
 	public void update(Graphics g){
@@ -125,5 +132,31 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		for (Integer i : this.leftUser) {
 			userIDtoMatchLoaded.remove(i);
 		}
+	}
+
+	public int getGameID() {
+		return gameID;
+	}
+
+	public void setGameID(int gameID) {
+		this.gameID = gameID;
+	}
+
+	public void updateGameInformation(HashMap<String, GameObjectInformation> gameObjectInformation) {
+		Iterator<Entry<String, GameObjectInformation>> it = gameObjectInformation.entrySet().iterator();
+		while(it.hasNext()){
+			Entry<String, GameObjectInformation> entry = it.next();
+			gameObjects.get(entry.getKey()).setGameInformation(entry.getValue());
+		}
+	}
+
+	public HashMap<String, GameObjectInformation> getGameInformation() {
+		HashMap<String, GameObjectInformation> matchInformation = new HashMap<>();
+		Iterator<Entry<String, GameObject>> it = gameObjects.entrySet().iterator();
+		while(it.hasNext()){
+			Entry<String, GameObject> entry = it.next();
+			matchInformation.put(entry.getKey(), entry.getValue().getInformation());
+		}
+		return matchInformation;
 	}
 }

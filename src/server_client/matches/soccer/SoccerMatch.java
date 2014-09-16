@@ -7,13 +7,21 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import client.GameConnection;
 import server_client.Playmode;
 import server_client.Team;
 import server_client.User;
 import server_client.matches.GameObject;
+import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
 
 
@@ -174,7 +182,7 @@ public class SoccerMatch extends Match{
 			for (User user : team.getUser()) {
 				GameObject player = gameObjects.get("PLAYER" + user.getID());
 				drawGameObject(player);
-				drawString(user.getNick().substring(0, 10), Color.CYAN, new Font(Font.SERIF, Font.PLAIN, 10), new Point(player.getX(), player.getY() - 5));
+				drawString((user.getNick().length() >= 10 ? user.getNick().substring(0, 9) : user.getNick()), Color.CYAN, new Font(Font.SERIF, Font.PLAIN, 10), new Point(player.getX(), player.getY() - 5));
 			}
 		}
 		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 14, 40));
@@ -185,15 +193,32 @@ public class SoccerMatch extends Match{
 		repaint();
 	}
 	
-	private void updateGameObjects(){
-		// TODO send player object to server, update 
-		// TODO call animateGameObject
+	protected void updateGameObjects(){
 		player = gameObjects.get("PLAYER" + userID);
-		animateGameObject(player);
-	}
-	
-	private void animateGameObject(GameObject gameObject){
-		gameObject.animate();
+		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
+		clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
+		try {
+			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(clientPlayerObjects, gameID);
+			Iterator<Entry<String, GameObjectInformation>> it = clientPlayerObjects.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String, GameObjectInformation> entry = it.next();
+				gameObjects.get(entry.getKey()).setGameInformation(entry.getValue());
+			}
+		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				animateGameObject(gameObjects.get("PLAYER" + user.getID()));
+			}
+		}
+		animateGameObject(gameObjects.get("BALL"));
 	}
 	
 	@Override
@@ -220,7 +245,6 @@ public class SoccerMatch extends Match{
 		setMovementForPlayer();
 	}
 			
-
 	public void keyReleased(KeyEvent e) {
 		if(player == null){
 			player = gameObjects.get("PLAYER" + userID);

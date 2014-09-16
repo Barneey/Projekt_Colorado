@@ -5,9 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 import server_client.Playmode;
 import server_client.User;
+import server_client.matches.GameObjectInformation;
 
 public class GameServerExecutionThread extends Thread{
 	
@@ -32,6 +34,13 @@ public class GameServerExecutionThread extends Thread{
 			String order = (String)objectInputStream.readObject();
 			
 			switch (order) {
+			case "UPDATE_GAME_INFORMATION":{
+				HashMap<String, GameObjectInformation> gameObjectInformation = (HashMap<String, GameObjectInformation>)objectInputStream.readObject();
+				int gameID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().updateGameInformation(gameObjectInformation, gameID));
+				objectOutputStream.flush();
+				break;	
+				}
 			case "GET_PLAYMODES":
 				Playmode[] playmodes = sDBM.getPlaymodes();
 				objectOutputStream.writeObject(playmodes);
@@ -68,7 +77,7 @@ public class GameServerExecutionThread extends Thread{
 			case "SET_MATCH_LOADED":{
 				int gameID = (Integer)objectInputStream.readObject();
 				int userID = (Integer)objectInputStream.readObject();
-				boolean matchLoaded = (Boolean)objectInputStream.readObject();
+				boolean matchLoaded = objectInputStream.readBoolean();
 				GameManager.getInstance().setMatchLoaded(gameID, userID, matchLoaded);
 				break;
 			}
