@@ -59,13 +59,13 @@ public class SoccerMatch extends Match{
 			int xOffset = fieldSize.width / 30;
 			int yOffset = fieldSize.height / ((user.length + 1) / 2);
 			for(int i = 0; i < user.length; i++){
-				GameObject newPlayer = new GameObject(fieldStart.x + xOffset + (i / 2 == 0 ? xOffset : 0), fieldStart.y + yOffset + yOffset * (i/2), new Dimension(30,30));
+				GameObject newPlayer = new GameObject(fieldStart.x + xOffset + (i / 2 == 0 ? xOffset : 0), fieldStart.y + yOffset + yOffset * (i/2), new Dimension(21,21));
 				newPlayer.setAnimationCounterMax(playerAnimationTimer);
 				gameObjects.put("PLAYER" + user[i].getID(), newPlayer);
 			}
 			user = playmode.getTeams()[1].getUser();
 			for(int i = 0; i < user.length; i++){
-				GameObject newPlayer = new GameObject(fieldStart.x + fieldSize.width - (xOffset + (i / 2 == 0 ? xOffset : 0)), fieldStart.y + fieldSize.height - (yOffset + yOffset * (i/2)), new Dimension(30,30));
+				GameObject newPlayer = new GameObject(fieldStart.x + fieldSize.width - (xOffset + (i / 2 == 0 ? xOffset : 0)), fieldStart.y + fieldSize.height - (yOffset + yOffset * (i/2)), new Dimension(21,21));
 				newPlayer.setAnimationCounterMax(playerAnimationTimer);
 				gameObjects.put("PLAYER" + user[i].getID(), newPlayer);
 			}			
@@ -224,9 +224,15 @@ public class SoccerMatch extends Match{
 	@Override
 	public void run() {
 		showGameInfo();
+		int counter = 0;
 		while(true){
 			try {
-				renewImages();
+				counter++;
+				if(counter >= 10){
+					counter = 0;
+					renewImages();
+				}
+//				renewImages();
 				Thread.sleep(40);
 				updateGameObjects();
 				repaint();

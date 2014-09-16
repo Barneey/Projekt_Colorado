@@ -22,7 +22,7 @@ public class CashServerExecutionThread extends Thread{
 		this.sDBM = sDBM;
 	}
 	
-	public void run(){
+	public synchronized void run(){
 		try {
 			InputStream inputStream = cashSocket.getInputStream();
 			ObjectInputStream objectInputStream = new ObjectInputStream(

@@ -23,7 +23,7 @@ public class GameServerExecutionThread extends Thread{
 		this.gameQueues = GameQueues.getInstance();
 	}
 	
-	public void run(){
+	public synchronized void run(){
 		try {
 			InputStream inputStream = gameSocket.getInputStream();
 			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
