@@ -187,7 +187,7 @@ public class LoginFrame extends JFrame
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new LoginFrame();
+		new LoginFrame(); 
 	}
 	
 	private void login(){
