@@ -55,6 +55,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	public abstract void loadImages();
 	protected abstract void showGameInfo();
 	protected abstract void updateGameObjects();
+	protected abstract void updateGame();
 	
 	public void setUserID(int userID){
 		this.userID = userID;
@@ -84,8 +85,12 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		}
 	}
 	
+	protected void animateGameObject(GameObject gameObject, boolean relocate){
+		gameObject.animate(relocate);
+	}
+	
 	protected void animateGameObject(GameObject gameObject){
-		gameObject.animate();
+		gameObject.animate(true);
 	}
 	
 	public void update(Graphics g){
@@ -148,6 +153,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 			Entry<String, GameObjectInformation> entry = it.next();
 			gameObjects.get(entry.getKey()).setGameInformation(entry.getValue());
 		}
+		updateGame();
 	}
 
 	public HashMap<String, GameObjectInformation> getGameInformation() {

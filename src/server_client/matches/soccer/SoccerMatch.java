@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -37,6 +38,8 @@ public class SoccerMatch extends Match{
 	private GameObject player;
 	private Set<Integer> pressedKeys;
 	private int playerAnimationTimer;
+	private double ballSpeed;
+	private double ballSpeedReduction;
 	private transient BufferedImage[] ballStand;
 	private transient BufferedImage[] ballMove;
 	private transient BufferedImage[] backgroundStand;
@@ -48,14 +51,19 @@ public class SoccerMatch extends Match{
 		this.pressedKeys = new HashSet<>();
 		this.userID = -1;
 		this.playerAnimationTimer = 6;
+		this.ballSpeed = 5.0;
+		this.ballSpeedReduction = 0.2;
 		this.animationStand = "STAND";
 		this.animationMove = "MOVE";
 		this.fieldSize = new Dimension(626, 307);
 		this.fieldStart = new Point(47, 49);
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
-		ball.setSpeedReduction(0.1);
+		ball.setSpeedReduction(ballSpeedReduction);
+		ball.setAnimationCounterMax(8);
 		this.gameObjects.put("BALL", ball);
 		this.gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
+		this.gameObjects.put("GOAL1", new GameObject(45, 162, new Dimension(3, 82)));
+		this.gameObjects.put("GOAL2", new GameObject(674, 162, new Dimension(3, 82)));
 		// Check playmode and create Objects
 		if(playmode.getTitel().equals("TEAM")){
 			User[] user = playmode.getTeams()[0].getUser();
@@ -206,6 +214,7 @@ public class SoccerMatch extends Match{
 		player = gameObjects.get("PLAYER" + userID);
 		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
 		clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
+//		clientPlayerObjects.put("BALL", gameObjects.get("BALL").getInformation());
 		try {
 			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(clientPlayerObjects, gameID);
 			Iterator<Entry<String, GameObjectInformation>> it = clientPlayerObjects.entrySet().iterator();
@@ -222,21 +231,40 @@ public class SoccerMatch extends Match{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				animateGameObject(gameObjects.get("PLAYER" + user.getID()));
+			}
+		}
+		animateGameObject(gameObjects.get("BALL"), false);
+
+//		GameObject goal1 = gameObjects.get("GOAL1");
+//		if(ball.correspondsWith(goal1)){
+//			score[1]++;
+//		}else{
+//			GameObject goal2 = gameObjects.get("GOAL2");
+//			if(ball.correspondsWith(goal2)){
+//				score[0]++;
+//			}
+//		}
+	}
+	
+	protected void updateGame(){
 		GameObject ball = gameObjects.get("BALL");
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				GameObject animatingPlayer = gameObjects.get("PLAYER" + user.getID());
-				animateGameObject(animatingPlayer);
-				if(animatingPlayer.correspondsWith(ball)){
-					ball.setViewDegree(animatingPlayer.getViewDegree());
-					ball.setSpeed(6);
+				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				if(player.correspondsWith(ball)){
+					ball.setViewDegree(player.getViewDegree());
+					ball.setSpeed(ballSpeed);
 					ball.setCurrentAnimationType(animationMove);
 				}
 			}
 		}
-		animateGameObject(ball);
 		if(ball.getSpeed() <= 0.0){
 			ball.setCurrentAnimationType(animationStand);
+		}else{
+			ball.relocate();
 		}
 	}
 	
@@ -263,6 +291,9 @@ public class SoccerMatch extends Match{
 	}
 	
 	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_SPACE){
+//			System.out.println(MouseInfo.getPointerInfo().getLocation().x + " " + MouseInfo.getPointerInfo().getLocation().y);
+		}
 		if(player == null){
 			player = gameObjects.get("PLAYER" + userID);
 		}

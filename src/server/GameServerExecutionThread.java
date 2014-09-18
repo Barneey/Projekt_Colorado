@@ -75,8 +75,8 @@ public class GameServerExecutionThread extends Thread{
 				break;
 			}
 			case "SET_MATCH_LOADED":{
-				int gameID = (Integer)objectInputStream.readObject();
-				int userID = (Integer)objectInputStream.readObject();
+				int gameID = objectInputStream.readInt();
+				int userID = objectInputStream.readInt();
 				boolean matchLoaded = objectInputStream.readBoolean();
 				GameManager.getInstance().setMatchLoaded(gameID, userID, matchLoaded);
 				break;
@@ -106,6 +106,7 @@ public class GameServerExecutionThread extends Thread{
 			default:
 				break;
 			}
+			gameSocket.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

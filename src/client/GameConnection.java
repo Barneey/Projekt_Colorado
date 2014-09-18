@@ -115,8 +115,8 @@ public class GameConnection extends ServerConnection{
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 		
 		objectOutputStream.writeObject("SET_MATCH_LOADED");
-		objectOutputStream.writeObject(gameID);
-		objectOutputStream.writeObject(id);
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.writeInt(id);
 		objectOutputStream.writeBoolean(b);
 		objectOutputStream.flush();
 		

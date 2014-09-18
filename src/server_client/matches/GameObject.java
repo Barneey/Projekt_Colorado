@@ -146,9 +146,10 @@ public class GameObject implements Serializable{
 				(this.getY()) <= (go.getY() + go.getSize().height);
 	}
 	
-	public void animate() {
-		information.setLocation(information.getSpeed() * Math.cos(Math.toRadians(information.getViewDegree())) + getX(), information.getSpeed() * Math.sin(Math.toRadians(this.information.getViewDegree())) + getY());
-		calculateSpeed();
+	public void animate(boolean relocate) {
+		if(relocate){
+			relocate();
+		}
 		this.animationCounter++;
 		if(this.animationCounter >= this.animationCounterMax){
 			this.animationCounter = 0;
@@ -176,5 +177,10 @@ public class GameObject implements Serializable{
 
 	public GameObjectInformation getInformation() {
 		return this.information;
+	}
+
+	public void relocate() {
+		information.setLocation(information.getSpeed() * Math.cos(Math.toRadians(information.getViewDegree())) + getX(), information.getSpeed() * Math.sin(Math.toRadians(this.information.getViewDegree())) + getY());
+		calculateSpeed();
 	}
 }
