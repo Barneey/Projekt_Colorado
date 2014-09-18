@@ -127,6 +127,10 @@ public class GameObject implements Serializable{
 		this.animations.put(string, images);
 	}
 
+	public void setCurrentImage(BufferedImage image){
+		this.currentImage = image;
+	}
+	
 	public Image getCurrentImage() {
 		BufferedImage[] images = this.animations.get(currentAnimationType);
 		if((images = this.animations.get(currentAnimationType)) == null || images.length == 0){

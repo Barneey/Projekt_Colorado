@@ -38,6 +38,7 @@ public class SoccerMatch extends Match{
 	private Set<Integer> pressedKeys;
 	private int playerAnimationTimer;
 	private transient BufferedImage[] ballStand;
+	private transient BufferedImage[] ballMove;
 	private transient BufferedImage[] backgroundStand;
 	private transient BufferedImage[] playerStand;
 	private transient BufferedImage[] playerMove;
@@ -92,11 +93,18 @@ public class SoccerMatch extends Match{
 		
 		GameObject ball = gameObjects.get("BALL");
 		if(ballStand == null){
-			ballStand = new BufferedImage[1];
+			ballStand = new BufferedImage[0];
 		}
-		ballStand[0] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALLS[0]), ball.getSize());
 		ball.addAnimation(animationStand, ballStand);
-		
+
+		if(ballMove == null){
+			ballMove = new BufferedImage[SoccerImageLoader.BALL_MOVE.length];
+		}
+		for (int i = 0; i < SoccerImageLoader.BALL_MOVE.length; i++) {
+			ballMove[i] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BALL_MOVE[i]), ball.getSize());
+		}
+		ball.addAnimation(animationMove, ballMove);
+		ball.setCurrentImage(ballMove[0]);
 		
 		GameObject background = gameObjects.get("BACKGROUND");
 		if(backgroundStand == null){
@@ -104,7 +112,6 @@ public class SoccerMatch extends Match{
 		}
 		backgroundStand[0] = sImgLdr.scaleBufferedImage(sImgLdr.loadBufferedImage(SoccerImageLoader.BACKGROUND), background.getSize());
 		background.addAnimation(animationStand, backgroundStand);
-		
 		
 		boolean firstRun = true;
 		if(playerStand == null){
