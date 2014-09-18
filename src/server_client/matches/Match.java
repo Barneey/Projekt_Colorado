@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -29,6 +30,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected transient Graphics offscreenGraphics;
 	protected HashMap<String, GameObject> gameObjects;
 	protected HashMap<Integer, Boolean> userIDtoMatchLoaded;
+	protected HashMap<Integer, ArrayList<String>> userIDtoGameEvents;
 	protected Playmode playmode;
 	protected Integer[] leftUser;
 	protected int userID;
@@ -39,10 +41,12 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.matchType = matchType;
 		this.playmode = playmode;
 		this.userIDtoMatchLoaded = new HashMap<>();
+		this.userIDtoGameEvents = new HashMap<>();
 		this.addKeyListener(this);
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				userIDtoMatchLoaded.put(user.getID(), false);
+				userIDtoGameEvents.put(user.getID(), new ArrayList<String>());
 			}
 		}
 		super.setSize(720, 405);
@@ -56,6 +60,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected abstract void showGameInfo();
 	protected abstract void updateGameObjects();
 	protected abstract void updateGame();
+	protected abstract void executeGameEvents(String[] events);
 	
 	public void setUserID(int userID){
 		this.userID = userID;
@@ -95,6 +100,16 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	
 	public void update(Graphics g){
 		paint(g);
+	}
+	
+	public void addGameEvent(String event){
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				ArrayList<String> events = userIDtoGameEvents.get(user.getID());
+				events.add(event);
+				userIDtoGameEvents.put(user.getID(), events);
+			}
+		}
 	}
 	
 	public void setSize(int width, int height){
@@ -164,5 +179,12 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 			matchInformation.put(entry.getKey(), entry.getValue().getInformation());
 		}
 		return matchInformation;
+	}
+
+	public String[] getEventsFor(int userID) {
+		ArrayList<String> alstEvents = userIDtoGameEvents.get(userID);
+		String[] aEvents = alstEvents.toArray(new String[0]);
+		userIDtoGameEvents.put(userID, new ArrayList<String>());
+		return aEvents;
 	}
 }

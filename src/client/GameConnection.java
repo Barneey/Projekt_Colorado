@@ -222,4 +222,29 @@ public class GameConnection extends ServerConnection{
 		
 		return gameObjectInformation;
 	}
+
+	public String[] getGameEvents(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		String[] gameEvents = new String[0];
+		
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+
+		objectOutputStream.writeObject("GET_GAME_EVENTS");
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.writeInt(userID);
+		objectOutputStream.flush();
+		
+		gameEvents = (String[])objectInputStream.readObject();
+		
+		socket.close();
+		
+		return gameEvents;
+	}
 }

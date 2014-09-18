@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -214,7 +213,6 @@ public class SoccerMatch extends Match{
 		player = gameObjects.get("PLAYER" + userID);
 		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
 		clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
-//		clientPlayerObjects.put("BALL", gameObjects.get("BALL").getInformation());
 		try {
 			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(clientPlayerObjects, gameID);
 			Iterator<Entry<String, GameObjectInformation>> it = clientPlayerObjects.entrySet().iterator();
@@ -237,16 +235,17 @@ public class SoccerMatch extends Match{
 			}
 		}
 		animateGameObject(gameObjects.get("BALL"), false);
-
-//		GameObject goal1 = gameObjects.get("GOAL1");
-//		if(ball.correspondsWith(goal1)){
-//			score[1]++;
-//		}else{
-//			GameObject goal2 = gameObjects.get("GOAL2");
-//			if(ball.correspondsWith(goal2)){
-//				score[0]++;
-//			}
-//		}
+		try{
+			executeGameEvents(GameConnection.getInstance().getGameEvents(gameID, userID));
+		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}			
 	}
 	
 	protected void updateGame(){
@@ -310,8 +309,6 @@ public class SoccerMatch extends Match{
 	}
 
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	private void setMovementForPlayer(){
@@ -366,5 +363,10 @@ public class SoccerMatch extends Match{
 				player.setCurrentAnimationType(animationMove);
 			}
 		}
+	}
+
+	@Override
+	protected void executeGameEvents(String[] events) {
+		// TODO
 	}
 }

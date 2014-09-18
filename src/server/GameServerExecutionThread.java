@@ -41,6 +41,12 @@ public class GameServerExecutionThread extends Thread{
 				objectOutputStream.flush();
 				break;	
 				}
+			case "GET_GAME_EVENTS":{
+				int gameID = objectInputStream.readInt();
+				int userID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().getGameEvents(gameID, userID));
+				break;
+				}
 			case "GET_PLAYMODES":
 				Playmode[] playmodes = sDBM.getPlaymodes();
 				objectOutputStream.writeObject(playmodes);
