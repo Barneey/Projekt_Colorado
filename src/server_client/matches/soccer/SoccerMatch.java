@@ -44,6 +44,8 @@ public class SoccerMatch extends Match{
 	private transient BufferedImage[] backgroundStand;
 	private transient BufferedImage[] playerStand;
 	private transient BufferedImage[] playerMove;
+	private final int EVENT_GOAL_TEAM_1 = 1;
+	private final int EVENT_GOAL_TEAM_2 = 2;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
@@ -265,6 +267,31 @@ public class SoccerMatch extends Match{
 		}else{
 			ball.relocate();
 		}
+		GameObject goal1 = gameObjects.get("GOAL1");
+		if(ball.correspondsWith(goal1)){
+			addGameEvent(EVENT_GOAL_TEAM_2);
+		}else{
+			GameObject goal2 = gameObjects.get("GOAL2");
+			if(ball.correspondsWith(goal2)){
+				addGameEvent(EVENT_GOAL_TEAM_1);
+			}
+		}
+	}
+	
+	@Override
+	protected void executeGameEvents(Integer[] events) {
+		for (Integer integer : events) {
+			switch (integer) {
+			case EVENT_GOAL_TEAM_1:
+				score[1]++;
+				break;
+			case EVENT_GOAL_TEAM_2:
+				score[0]++;
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	@Override
@@ -278,7 +305,6 @@ public class SoccerMatch extends Match{
 					counter = 0;
 					renewImages();
 				}
-//				renewImages();
 				Thread.sleep(40);
 				updateGameObjects();
 				repaint();
@@ -363,10 +389,5 @@ public class SoccerMatch extends Match{
 				player.setCurrentAnimationType(animationMove);
 			}
 		}
-	}
-
-	@Override
-	protected void executeGameEvents(String[] events) {
-		// TODO
 	}
 }

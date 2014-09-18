@@ -84,7 +84,7 @@ public class GameManager {
 		return currentMatch.getGameInformation();
 	}
 
-	public String[] getGameEvents(int gameID, int userID) {
+	public Integer[] getGameEvents(int gameID, int userID) {
 		Match currentMatch = getCurrentMatch(gameID);
 		return currentMatch.getEventsFor(userID);
 		
