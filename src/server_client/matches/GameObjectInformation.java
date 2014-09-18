@@ -8,10 +8,14 @@ public class GameObjectInformation implements Serializable{
 	private Point location;
 	private int viewDegree;
 	private double speed;
+	private String currentAnimationType;
+	private double speedReduction;
 
 	public GameObjectInformation(int x, int y, int viewDegree){
 		this.location = new Point(x, y);
 		this.viewDegree = viewDegree;
+		this.currentAnimationType = "";
+		this.speedReduction = 0.0;
 	}
 	
 	public Point getLocation() {
@@ -36,5 +40,21 @@ public class GameObjectInformation implements Serializable{
 	}
 	public void setSpeed(double speed) {
 		this.speed = speed;
+	}
+
+	public String getCurrentAnimationType() {
+		return currentAnimationType;
+	}
+
+	public void setCurrentAnimationType(String currentAnimationType) {
+		this.currentAnimationType = currentAnimationType;
+	}
+
+	public double getSpeedReduction() {
+		return speedReduction;
+	}
+
+	public void setSpeedReduction(double speedReduction) {
+		this.speedReduction = speedReduction;
 	}
 }

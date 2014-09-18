@@ -3,6 +3,7 @@ package server_client.matches;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ public class GameObject implements Serializable{
 	private GameObjectInformation information;
 	private Dimension size;
 	private Hashtable<String, BufferedImage[]> animations;
-	private String currentAnimationType;
 	private int animationCounter;
 	private int animationCounterMax;
 	private transient Image currentImage;
@@ -28,7 +28,6 @@ public class GameObject implements Serializable{
 		this.setSize(size);
 		this.setSpeed(0.0);
 		this.animations = new Hashtable<>();
-		this.currentAnimationType = "";
 		this.animationCounter = 0;
 		this.animationCounterMax = 100;
 		this.currentImage = null;
@@ -99,11 +98,11 @@ public class GameObject implements Serializable{
 	}
 
 	public String getCurrentAnimationType() {
-		return currentAnimationType;
+		return this.information.getCurrentAnimationType();
 	}
 
 	public void setCurrentAnimationType(String currentAnimationType) {
-		this.currentAnimationType = currentAnimationType;
+		this.information.setCurrentAnimationType(currentAnimationType);
 	}
 
 	public Dimension getSize() {
@@ -115,8 +114,8 @@ public class GameObject implements Serializable{
 	}
 
 	public synchronized void addAnimation(String string, BufferedImage[] images) {
-		if(this.currentAnimationType.equals("")){
-			this.currentAnimationType = string;
+		if(this.getCurrentAnimationType().equals("")){
+			this.setCurrentAnimationType(string);
 		}
 		if(this.animations == null){
 			this.animations = new Hashtable<>();
@@ -132,22 +131,41 @@ public class GameObject implements Serializable{
 	}
 	
 	public Image getCurrentImage() {
-		BufferedImage[] images = this.animations.get(currentAnimationType);
-		if((images = this.animations.get(currentAnimationType)) == null || images.length == 0){
+		BufferedImage[] images = null;
+		if((images = this.animations.get(this.information.getCurrentAnimationType())) == null || images.length == 0){
 			return currentImage;
 		}
 		currentImage = images[(int)Math.floor(images.length / (double)this.animationCounterMax * this.animationCounter)];
 		return currentImage;
 	}
 
+	public boolean correspondsWith(GameObject go){
+		return (this.getX() + this.size.width) >= (go.getX()) &&
+				(this.getX() <= (go.getX() + go.getSize().width)) &&
+				(this.getY() + this.size.height) >= (go.getY()) &&
+				(this.getY()) <= (go.getY() + go.getSize().height);
+	}
+	
 	public void animate() {
 		information.setLocation(information.getSpeed() * Math.cos(Math.toRadians(information.getViewDegree())) + getX(), information.getSpeed() * Math.sin(Math.toRadians(this.information.getViewDegree())) + getY());
+		calculateSpeed();
 		this.animationCounter++;
 		if(this.animationCounter >= this.animationCounterMax){
 			this.animationCounter = 0;
 		}
 	}
+	
+	private void calculateSpeed(){
+		this.information.setSpeed(this.information.getSpeed() - this.information.getSpeedReduction());
+		if(this.information.getSpeed() < 0.0){
+			this.information.setSpeed(0.0);
+		}
+	}
 
+	public void setSpeedReduction(double reduction){
+		this.information.setSpeedReduction(reduction);
+	}
+	
 	public int getAnimationCounterMax() {
 		return animationCounterMax;
 	}

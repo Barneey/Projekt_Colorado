@@ -52,8 +52,10 @@ public class SoccerMatch extends Match{
 		this.animationMove = "MOVE";
 		this.fieldSize = new Dimension(626, 307);
 		this.fieldStart = new Point(47, 49);
-		gameObjects.put("BALL", new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20)));
-		gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
+		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
+		ball.setSpeedReduction(0.1);
+		this.gameObjects.put("BALL", ball);
+		this.gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
 		// Check playmode and create Objects
 		if(playmode.getTitel().equals("TEAM")){
 			User[] user = playmode.getTeams()[0].getUser();
@@ -220,12 +222,22 @@ public class SoccerMatch extends Match{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		GameObject ball = gameObjects.get("BALL");
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				animateGameObject(gameObjects.get("PLAYER" + user.getID()));
+				GameObject animatingPlayer = gameObjects.get("PLAYER" + user.getID());
+				animateGameObject(animatingPlayer);
+				if(animatingPlayer.correspondsWith(ball)){
+					ball.setViewDegree(animatingPlayer.getViewDegree());
+					ball.setSpeed(6);
+					ball.setCurrentAnimationType(animationMove);
+				}
 			}
 		}
-		animateGameObject(gameObjects.get("BALL"));
+		animateGameObject(ball);
+		if(ball.getSpeed() <= 0.0){
+			ball.setCurrentAnimationType(animationStand);
+		}
 	}
 	
 	@Override
