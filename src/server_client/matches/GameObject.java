@@ -223,7 +223,7 @@ public class GameObject implements Serializable{
 	public void positionOver(GameObject go) {
 		this.setViewDegree(go.getViewDegree());
 		this.setX((int)go.getLocation().getX());
-		this.setY((int)(go.getLocation().getY() - this.getSize().getHeight() - 4));
+		this.setY((int)(go.getLocation().getY() - go.getSize().getHeight() - 4));
 	}
 
 	public void positionAnywhereIn(GameObject go) {
@@ -231,5 +231,11 @@ public class GameObject implements Serializable{
 		int xOffset = generator.nextInt(go.getSize().width);
 		int yOffset = generator.nextInt(go.getSize().height);
 		this.setLocation(go.getX() + xOffset, go.getY() + yOffset);
+	}
+
+	public void positionBelow(GameObject go) {
+		this.setViewDegree(go.getViewDegree());
+		this.setX((int)go.getLocation().getX());
+		this.setY((int)(go.getLocation().getY() + go.getSize().getHeight() + 4));
 	}
 }

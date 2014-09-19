@@ -58,6 +58,8 @@ public class SoccerMatch extends Match{
 	private final int EVENT_RESET_BALL = 3;
 	private final int EVENT_THROW_IN_TOP_TEAM1 = 4;
 	private final int EVENT_THROW_IN_TOP_TEAM2 = 5;
+	private final int EVENT_THROW_IN_BOTTOM_TEAM1 = 6;
+	private final int EVENT_THROW_IN_BOTTOM_TEAM2 = 7;
 	private final int ACTION_SHOOT = 1;
 	private final int TEAM_1 = 0;
 	private final int TEAM_2 = 1;
@@ -384,7 +386,29 @@ public class SoccerMatch extends Match{
 						break;
 					}
 				}else{
-					// TODO
+					GameObject touchBottom = gameObjects.get("TOUCH_BOTTOM");
+					if(ball.correspondsWith(touchBottom)){
+						switch (matchType) {
+						case TEST:
+							addClientEvent(EVENT_RESET_BALL);
+							resetBallPosition();
+							break;
+						case TEAM:
+							if(lastContactFromTeam(TEAM_1)){
+								addClientEvent(EVENT_THROW_IN_BOTTOM_TEAM2);
+								positionPlayerThrowInBottomForTeam(TEAM_2);
+							}else if(lastContactFromTeam(TEAM_2)){
+								addClientEvent(EVENT_THROW_IN_BOTTOM_TEAM1);
+								positionPlayerThrowInBottomForTeam(TEAM_1);
+							}else{
+								addClientEvent(EVENT_RESET_BALL);
+								resetBallPosition();
+							}
+							break;
+						default:
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -398,7 +422,7 @@ public class SoccerMatch extends Match{
 		ball.setViewDegree(90);
 		ball.setY(52);
 		ball.setCurrentAnimationType(animationStand);
-		GameObject throwInPlayerArea = new GameObject(ball.getLocation().x - ((130-ball.getSize().width)/2), ball.getLocation().y + 80, new Dimension(130, 80));
+		GameObject throwInPlayerArea = new GameObject(ball.getLocation().x - ((130-ball.getSize().width)/2), ball.getLocation().y + 60, new Dimension(130, 60));
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				GameObject player = gameObjects.get("PLAYER" + user.getID());
@@ -406,6 +430,29 @@ public class SoccerMatch extends Match{
 					player.setSpeed(0.0);
 					player.setCurrentAnimationType(animationStand);
 					player.positionOver(ball);
+				}else{
+					player.positionAnywhereIn(throwInPlayerArea);
+				}
+			}
+		}
+	}
+	
+	private void positionPlayerThrowInBottomForTeam(int i) {
+		Random generator = new Random();
+		int throwInPlayerID = playmode.getTeams()[i].getUser()[generator.nextInt(playmode.getTeams()[i].getUser().length)].getID();
+		GameObject ball = gameObjects.get("BALL");
+		ball.setSpeed(0.0);
+		ball.setViewDegree(270);
+		ball.setY(333);
+		ball.setCurrentAnimationType(animationStand);
+		GameObject throwInPlayerArea = new GameObject(ball.getLocation().x - ((130-ball.getSize().width)/2), ball.getLocation().y - 60, new Dimension(130, 60));
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				if(user.getID() == throwInPlayerID){
+					player.setSpeed(0.0);
+					player.setCurrentAnimationType(animationStand);
+					player.positionBelow(ball);
 				}else{
 					player.positionAnywhereIn(throwInPlayerArea);
 				}
@@ -434,6 +481,7 @@ public class SoccerMatch extends Match{
 				break;
 			case EVENT_RESET_BALL:
 				resetBallPosition();
+				break;
 			case EVENT_THROW_IN_TOP_TEAM1:
 				positionPlayerThrowInTopForTeam(TEAM_1);
 				break;
