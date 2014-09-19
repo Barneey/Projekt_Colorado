@@ -188,4 +188,11 @@ public class GameObject implements Serializable{
 		information.setLocation(information.getSpeed() * Math.cos(Math.toRadians(information.getViewDegree())) + getX(), information.getSpeed() * Math.sin(Math.toRadians(this.information.getViewDegree())) + getY());
 		calculateSpeed();
 	}
+
+	public boolean isCloseTo(GameObject go, int offset) {
+		return (this.getX() + this.size.width + offset) >= (go.getX()) &&
+				(this.getX() - offset <= (go.getX() + go.getSize().width)) &&
+				(this.getY() + this.size.height + offset) >= (go.getY()) &&
+				(this.getY() - offset) <= (go.getY() + go.getSize().height);
+	}
 }

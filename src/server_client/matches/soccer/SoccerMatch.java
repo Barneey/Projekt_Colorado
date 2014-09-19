@@ -38,7 +38,8 @@ public class SoccerMatch extends Match{
 	private GameObject player;
 	private Set<Integer> pressedKeys;
 	private int playerAnimationTimer;
-	private double ballSpeed;
+	private double ballSpeedRun;
+	private double ballSpeedShoot;
 	private double ballSpeedReduction;
 	private transient BufferedImage[] ballStand;
 	private transient BufferedImage[] ballMove;
@@ -57,7 +58,8 @@ public class SoccerMatch extends Match{
 		this.pressedKeys = new HashSet<>();
 		this.userID = -1;
 		this.playerAnimationTimer = 6;
-		this.ballSpeed = 5.0;
+		this.ballSpeedRun = 5.0;
+		this.ballSpeedShoot = 9.0;
 		this.ballSpeedReduction = 0.2;
 		this.animationStand = "STAND";
 		this.animationMove = "MOVE";
@@ -310,7 +312,7 @@ public class SoccerMatch extends Match{
 				GameObject player = gameObjects.get("PLAYER" + user.getID());
 				if(player.correspondsWith(ball)){
 					ball.setViewDegree(player.getViewDegree());
-					ball.setSpeed(ballSpeed);
+					ball.setSpeed(ballSpeedRun);
 					ball.setCurrentAnimationType(animationMove);
 				}
 			}
@@ -426,60 +428,57 @@ public class SoccerMatch extends Match{
 		if(pressedKeys.size() == 0){
 			player.setSpeed(0);
 			player.setCurrentAnimationType(animationStand);
-		}
-		if(pressedKeys.size() == 1){
-			if(pressedKeys.contains(KeyEvent.VK_LEFT)){
-				player.setViewDegree(180);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
-			if(pressedKeys.contains(KeyEvent.VK_UP)){
-				player.setViewDegree(270);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
-			if(pressedKeys.contains(KeyEvent.VK_RIGHT)){
-				player.setViewDegree(0);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
-			if(pressedKeys.contains(KeyEvent.VK_DOWN)){
-				player.setViewDegree(90);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
-		}
-		if(pressedKeys.size() == 2){
-			if(pressedKeys.contains(KeyEvent.VK_LEFT) && pressedKeys.contains(KeyEvent.VK_UP)){
-				player.setViewDegree(225);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
-			if(pressedKeys.contains(KeyEvent.VK_UP) && pressedKeys.contains(KeyEvent.VK_RIGHT)){
-				player.setViewDegree(315);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
-			if(pressedKeys.contains(KeyEvent.VK_RIGHT) && pressedKeys.contains(KeyEvent.VK_DOWN)){
-				player.setViewDegree(45);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
-			if(pressedKeys.contains(KeyEvent.VK_DOWN) && pressedKeys.contains(KeyEvent.VK_LEFT)){
-				player.setViewDegree(135);
-				player.setSpeed(3);
-				player.setCurrentAnimationType(animationMove);
-			}
+		}else if(pressedKeys.contains(KeyEvent.VK_LEFT) && pressedKeys.contains(KeyEvent.VK_UP)){
+			player.setViewDegree(225);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else if(pressedKeys.contains(KeyEvent.VK_UP) && pressedKeys.contains(KeyEvent.VK_RIGHT)){
+			player.setViewDegree(315);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else if(pressedKeys.contains(KeyEvent.VK_RIGHT) && pressedKeys.contains(KeyEvent.VK_DOWN)){
+			player.setViewDegree(45);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else if(pressedKeys.contains(KeyEvent.VK_DOWN) && pressedKeys.contains(KeyEvent.VK_LEFT)){
+			player.setViewDegree(135);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else if(pressedKeys.contains(KeyEvent.VK_LEFT)){
+			player.setViewDegree(180);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else if(pressedKeys.contains(KeyEvent.VK_UP)){
+			player.setViewDegree(270);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else if(pressedKeys.contains(KeyEvent.VK_RIGHT)){
+			player.setViewDegree(0);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else if(pressedKeys.contains(KeyEvent.VK_DOWN)){
+			player.setViewDegree(90);
+			player.setSpeed(3);
+			player.setCurrentAnimationType(animationMove);
+		}else{
+			player.setSpeed(0.0);
+			player.setCurrentAnimationType(animationStand);
 		}
 	}
 
 	@Override
-	public void performClientAction(int userID, Integer[] actions) {
+	public void performClientActions(int userID, Integer[] actions) {
 		GameObject player = gameObjects.get("PLAYER" + userID);
 		for (Integer integer : actions) {
 			switch (integer) {
 			case ACTION_SHOOT:{
-				// TODO handle the action
+				GameObject ball = gameObjects.get("BALL");
+				int offset = 3;
+				if(player.isCloseTo(ball, offset)){
+					ball.setViewDegree(player.getViewDegree());
+					ball.setSpeed(ballSpeedShoot);
+					ball.setCurrentAnimationType(animationMove);
+				}
 				break;
 				}
 			default:

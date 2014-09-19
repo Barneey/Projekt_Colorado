@@ -91,6 +91,6 @@ public class GameManager {
 	}
 
 	public void performActions(int gameID, int userID, Integer[] actions) {
-		getCurrentMatch(gameID).performClientAction(userID, actions);
+		getCurrentMatch(gameID).performClientActions(userID, actions);
 	}
 }
