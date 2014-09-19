@@ -93,8 +93,8 @@ public class ChatPanel extends JPanel{
 										            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jscrllChannels.setPreferredSize(channelListSize);
 		this.add(jscrllChannels);
-		updater.setRunning(refreshing);
 		updater.start();
+		updater.setRunning(refreshing);
 	}
 
 	private void loadChannel(){
@@ -115,11 +115,10 @@ public class ChatPanel extends JPanel{
 	
 	private class ChannelListUpdater extends Thread{
 		
-		private boolean running;
+		private boolean running = false;
 		
 		@Override
 		public void run(){
-			running = true;
 			while(true){
 				if(running){
 					try {

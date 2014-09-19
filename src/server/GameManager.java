@@ -40,9 +40,18 @@ public class GameManager {
 			}
 		}
 		Game game = new Game(playmode);
-
+		int matchType = Match.TEST;
+		if(playmode.getTitel().equals("FFA")){
+			matchType = Match.FFA;
+		}else if(playmode.getTitel().equals("TEAM")){
+			matchType = Match.TEAM;
+		}else if(playmode.getTitel().equals("UNDERDOG")){
+			matchType = Match.UNDERDOG;
+		}else if(playmode.getTitel().equals("Test")){
+			matchType = Match.TEST;
+		}
 		// TODO find a way to add new games according to the playmode
-		game.addMatch(new SoccerMatch(0, playmode));
+		game.addMatch(new SoccerMatch(matchType, playmode));
 		
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);

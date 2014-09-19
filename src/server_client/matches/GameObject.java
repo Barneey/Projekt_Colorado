@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import server_client.matches.soccer.SoccerImageLoader;
 
@@ -53,8 +54,16 @@ public class GameObject implements Serializable{
 		return this.information.getLocation().x;
 	}
 	
+	public void setX(int x){
+		this.information.getLocation().x = x;
+	}
+	
 	public int getY(){
 		return this.information.getLocation().y;
+	}
+	
+	public void setY(int y){
+		this.information.getLocation().y = y;
 	}
 
 	public int getViewDegree() {
@@ -194,5 +203,33 @@ public class GameObject implements Serializable{
 				(this.getX() - offset <= (go.getX() + go.getSize().width)) &&
 				(this.getY() + this.size.height + offset) >= (go.getY()) &&
 				(this.getY() - offset) <= (go.getY() + go.getSize().height);
+	}
+
+	public void outOfBoundsCorrection(GameObject background) {
+		if(this.getX() < background.getX()){
+			this.setX(background.getX());
+		}
+		if((this.getX() + this.getSize().width) > (background.getX() + background.getSize().getWidth())){
+			this.setX((int)(background.getX() + background.getSize().getWidth() - this.getSize().getWidth()));
+		}
+		if(this.getY() < background.getY()){
+			this.setY(background.getY());
+		}
+		if((this.getY() + this.getSize().height) > (background.getY() + background.getSize().getHeight())){
+			this.setY((int)(background.getY() + background.getSize().getHeight() - this.getSize().getHeight()));
+		}
+	}
+
+	public void positionOver(GameObject go) {
+		this.setViewDegree(go.getViewDegree());
+		this.setX((int)go.getLocation().getX());
+		this.setY((int)(go.getLocation().getY() - this.getSize().getHeight() - 4));
+	}
+
+	public void positionAnywhereIn(GameObject go) {
+		Random generator = new Random();
+		int xOffset = generator.nextInt(go.getSize().width);
+		int yOffset = generator.nextInt(go.getSize().height);
+		this.setLocation(go.getX() + xOffset, go.getY() + yOffset);
 	}
 }

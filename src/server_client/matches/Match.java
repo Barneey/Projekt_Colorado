@@ -25,7 +25,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	public static final int TEAM = 1;
 	public static final int UNDERDOG = 2;
 	public static final int TEST = 3;
-	private int matchType;
+	protected int matchType;
 	protected transient Image offscreen;
 	protected transient Graphics offscreenGraphics;
 	protected HashMap<String, GameObject> gameObjects;
@@ -123,10 +123,6 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	
 	public void setSize(Dimension d){
 		throw new IllegalArgumentException("The Size can not be changed");
-	}
-	
-	public int getMatchType(){
-		return this.matchType;
 	}
 	
 	public Team[] getTeams(){

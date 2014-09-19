@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import client.GameConnection;
@@ -24,6 +28,8 @@ import server_client.User;
 import server_client.matches.GameObject;
 import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 
 public class SoccerMatch extends Match{
@@ -36,6 +42,7 @@ public class SoccerMatch extends Match{
 	private String animationStand;
 	private String animationMove;
 	private GameObject player;
+	private int lastContactUserID;
 	private Set<Integer> pressedKeys;
 	private int playerAnimationTimer;
 	private double ballSpeedRun;
@@ -48,7 +55,12 @@ public class SoccerMatch extends Match{
 	private transient BufferedImage[] playerMove;
 	private final int EVENT_GOAL_TEAM_1 = 1;
 	private final int EVENT_GOAL_TEAM_2 = 2;
+	private final int EVENT_RESET_BALL = 3;
+	private final int EVENT_THROW_IN_TOP_TEAM1 = 4;
+	private final int EVENT_THROW_IN_TOP_TEAM2 = 5;
 	private final int ACTION_SHOOT = 1;
+	private final int TEAM_1 = 0;
+	private final int TEAM_2 = 1;
 	private boolean goal;
 	private int goalCounter;
 	private int goalCounterMax;
@@ -57,6 +69,7 @@ public class SoccerMatch extends Match{
 		super(matchType, playmode);
 		this.pressedKeys = new HashSet<>();
 		this.userID = -1;
+		this.lastContactUserID = -1;
 		this.playerAnimationTimer = 6;
 		this.ballSpeedRun = 5.0;
 		this.ballSpeedShoot = 9.0;
@@ -75,8 +88,14 @@ public class SoccerMatch extends Match{
 		this.gameObjects.put("BACKGROUND", new GameObject(0, 0, new Dimension(getWidth(), getHeight())));
 		this.gameObjects.put("GOAL1", new GameObject(45, 162, new Dimension(3, 82)));
 		this.gameObjects.put("GOAL2", new GameObject(674, 162, new Dimension(3, 82)));
+		this.gameObjects.put("TOUCH_TOP", new GameObject(40, 48, new Dimension(640, 3)));
+		this.gameObjects.put("TOUCH_BOTTOM", new GameObject(40, 358, new Dimension(640, 3)));
+		this.gameObjects.put("GOAL_LINE_TEAM1_TOP", new GameObject(40, 48, new Dimension(3, 112)));
+		this.gameObjects.put("GOAL_LINE_TEAM1_BOTTOM", new GameObject(40, 244, new Dimension(3, 112)));
+		this.gameObjects.put("GOAL_LINE_TEAM2_TOP", new GameObject(680, 48, new Dimension(3, 112)));
+		this.gameObjects.put("GOAL_LINE_TEAM2_BOTTOM", new GameObject(680, 244, new Dimension(3, 112)));
 		// Check playmode and create Objects
-		if(playmode.getTitel().equals("TEAM")){
+		if(this.matchType == TEAM){
 			User[] user = playmode.getTeams()[0].getUser();
 			int xOffset = fieldSize.width / 30;
 			int yOffset = fieldSize.height / ((user.length + 1) / 2);
@@ -92,7 +111,7 @@ public class SoccerMatch extends Match{
 				gameObjects.put("PLAYER" + user[i].getID(), newPlayer);
 			}			
 		}
-		if(playmode.getTitel().equals("Test")){
+		if(this.matchType == TEST){
 			for (Team team : playmode.getTeams()) {
 				for (User user : team.getUser()) {
 					GameObject newPlayer = new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(21,21));
@@ -278,9 +297,12 @@ public class SoccerMatch extends Match{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		GameObject background = gameObjects.get("BACKGROUND");
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				animateGameObject(gameObjects.get("PLAYER" + user.getID()));
+				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				animateGameObject(player);
+				player.outOfBoundsCorrection(background);
 			}
 		}
 		animateGameObject(gameObjects.get("BALL"), false);
@@ -314,6 +336,7 @@ public class SoccerMatch extends Match{
 					ball.setViewDegree(player.getViewDegree());
 					ball.setSpeed(ballSpeedRun);
 					ball.setCurrentAnimationType(animationMove);
+					this.lastContactUserID = user.getID();
 				}
 			}
 		}
@@ -337,8 +360,66 @@ public class SoccerMatch extends Match{
 				ball.setLocation(401, 193);
 				ball.setSpeed(0.0);
 				ball.setCurrentAnimationType(animationStand);
+			}else{
+				GameObject touchTop = gameObjects.get("TOUCH_TOP");
+				if(ball.correspondsWith(touchTop)){
+					switch (matchType) {
+					case TEST:
+						addClientEvent(EVENT_RESET_BALL);
+						resetBallPosition();
+						break;
+					case TEAM:
+						if(lastContactFromTeam(TEAM_1)){
+							addClientEvent(EVENT_THROW_IN_TOP_TEAM2);
+							positionPlayerThrowInTopForTeam(TEAM_2);
+						}else if(lastContactFromTeam(TEAM_2)){
+							addClientEvent(EVENT_THROW_IN_TOP_TEAM1);
+							positionPlayerThrowInTopForTeam(TEAM_1);
+						}else{
+							addClientEvent(EVENT_RESET_BALL);
+							resetBallPosition();
+						}
+						break;
+					default:
+						break;
+					}
+				}else{
+					// TODO
+				}
 			}
 		}
+	}
+	
+	private void positionPlayerThrowInTopForTeam(int i) {
+		Random generator = new Random();
+		int throwInPlayerID = playmode.getTeams()[i].getUser()[generator.nextInt(playmode.getTeams()[i].getUser().length)].getID();
+		GameObject ball = gameObjects.get("BALL");
+		ball.setSpeed(0.0);
+		ball.setViewDegree(90);
+		ball.setY(52);
+		ball.setCurrentAnimationType(animationStand);
+		GameObject throwInPlayerArea = new GameObject(ball.getLocation().x - ((130-ball.getSize().width)/2), ball.getLocation().y + 80, new Dimension(130, 80));
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				if(user.getID() == throwInPlayerID){
+					player.setSpeed(0.0);
+					player.setCurrentAnimationType(animationStand);
+					player.positionOver(ball);
+				}else{
+					player.positionAnywhereIn(throwInPlayerArea);
+				}
+			}
+		}
+	}
+
+	private boolean lastContactFromTeam(int i) {
+		for (User user : playmode.getTeams()[i].getUser()) {
+			if(user.getID() == lastContactUserID){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override
@@ -351,21 +432,47 @@ public class SoccerMatch extends Match{
 			case EVENT_GOAL_TEAM_2:
 				goalTeamTwo();
 				break;
+			case EVENT_RESET_BALL:
+				resetBallPosition();
+			case EVENT_THROW_IN_TOP_TEAM1:
+				positionPlayerThrowInTopForTeam(TEAM_1);
+				break;
+			case EVENT_THROW_IN_TOP_TEAM2:
+				positionPlayerThrowInTopForTeam(TEAM_2);
+				break;
 			default:
 				break;
 			}
 		}
 	}
 	
+	public static synchronized void playSound() {
+		  new Thread(new Runnable() {
+		  // The wrapper thread is unnecessary, unless it blocks on the
+		  // Clip finishing; see comments.
+		    public void run() {
+		      try {
+		    	InputStream in = new FileInputStream("sounds/goal.wav");
+		    	AudioStream as = new AudioStream(in);         
+		    	AudioPlayer.player.start(as);            
+		      } catch (Exception e) {
+		    	  e.printStackTrace();
+		      }
+		    }
+		  }).start();
+		}
+	
 	private void goalTeamOne(){
 		score[0]++;
 		goal=true;
+		playSound();
 		resetPlayerPositions();
 	}
 	
 	private void goalTeamTwo(){
 		score[1]++;
 		goal=true;
+		playSound();
 		resetPlayerPositions();
 	}
 	
@@ -375,6 +482,13 @@ public class SoccerMatch extends Match{
 				gameObjects.get("PLAYER" + user.getID()).resetLocation();
 			}
 		}
+	}
+
+	private void resetBallPosition(){
+		GameObject ball = gameObjects.get("BALL");
+		ball.resetLocation();
+		ball.setSpeed(0.0);
+		ball.setCurrentAnimationType(animationStand);
 	}
 	
 	@Override
@@ -417,6 +531,7 @@ public class SoccerMatch extends Match{
 		pressedKeys.remove(e.getKeyCode());
 		setMovementForPlayer();
 	}
+
 
 	public void keyTyped(KeyEvent e) {
 	}
@@ -465,6 +580,7 @@ public class SoccerMatch extends Match{
 			player.setCurrentAnimationType(animationStand);
 		}
 	}
+
 
 	@Override
 	public void performClientActions(int userID, Integer[] actions) {
