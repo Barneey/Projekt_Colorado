@@ -37,6 +37,10 @@ public class GameObject implements Serializable{
 		this.information = goi;
 	}
 	
+	public void resetLocation(){
+		this.information.resetLocation();
+	}
+	
 	public void setLocation(int x, int y){
 		information.setLocation(x, y);
 	}

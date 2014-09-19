@@ -6,6 +6,7 @@ import java.io.Serializable;
 public class GameObjectInformation implements Serializable{
 
 	private Point location;
+	private Point defaultLocation;
 	private int viewDegree;
 	private double speed;
 	private String currentAnimationType;
@@ -13,6 +14,7 @@ public class GameObjectInformation implements Serializable{
 
 	public GameObjectInformation(int x, int y, int viewDegree){
 		this.location = new Point(x, y);
+		this.defaultLocation = new Point(x, y);
 		this.viewDegree = viewDegree;
 		this.currentAnimationType = "";
 		this.speedReduction = 0.0;
@@ -21,8 +23,13 @@ public class GameObjectInformation implements Serializable{
 	public Point getLocation() {
 		return location;
 	}
+	
 	public void setLocation(int x, int y) {
 		this.location.setLocation(x, y);
+	}
+	
+	public void resetLocation(){
+		this.setLocation(defaultLocation.x, defaultLocation.y);
 	}
 	
 	public void setLocation(double x, double y){

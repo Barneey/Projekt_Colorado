@@ -46,6 +46,8 @@ public class SoccerMatch extends Match{
 	private transient BufferedImage[] playerMove;
 	private final int EVENT_GOAL_TEAM_1 = 1;
 	private final int EVENT_GOAL_TEAM_2 = 2;
+	private boolean goal;
+	private int goalCounter;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
@@ -58,6 +60,8 @@ public class SoccerMatch extends Match{
 		this.animationMove = "MOVE";
 		this.fieldSize = new Dimension(626, 307);
 		this.fieldStart = new Point(47, 49);
+		this.goal = false;
+		this.goalCounter = 0;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);
 		ball.setAnimationCounterMax(8);
@@ -196,14 +200,33 @@ public class SoccerMatch extends Match{
 		// Draw components
 		drawGameObject(gameObjects.get("BACKGROUND"));
 		drawGameObject(gameObjects.get("BALL"));
+		boolean firstTeam = true;
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				GameObject player = gameObjects.get("PLAYER" + user.getID());
 				drawGameObject(player);
-				drawString((user.getNick().length() >= 10 ? user.getNick().substring(0, 9) : user.getNick()), Color.CYAN, new Font(Font.SERIF, Font.PLAIN, 10), new Point(player.getX(), player.getY() - 5));
+				Color color = Color.RED;
+				if(!firstTeam){
+					color = Color.BLUE;
+				}
+				if(user.getID() == userID){
+					color = Color.ORANGE;
+				}
+				drawString((user.getNick().length() >= 10 ? user.getNick().substring(0, 9) : user.getNick()), color, new Font(Font.SERIF, Font.PLAIN, 10), new Point(player.getX(), player.getY() - 5));
 			}
+			firstTeam = false;
 		}
 		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 14, 40));
+		if(goal){
+			goalCounter++;
+			if(goalCounter % 2 == 0){
+				drawString("G O A L", Color.WHITE, new Font(Font.SANS_SERIF, Font.PLAIN, 40), new Point(getWidth() / 2 - 80,100));
+			}
+			if(goalCounter >= 30){
+				goal=false;
+				goalCounter=0;
+			}
+		}
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
@@ -270,10 +293,18 @@ public class SoccerMatch extends Match{
 		GameObject goal1 = gameObjects.get("GOAL1");
 		if(ball.correspondsWith(goal1)){
 			addGameEvent(EVENT_GOAL_TEAM_2);
+			resetPlayerPositions();
+			ball.setLocation(301, 193);
+			ball.setSpeed(0.0);
+			ball.setCurrentAnimationType(animationStand);
 		}else{
 			GameObject goal2 = gameObjects.get("GOAL2");
 			if(ball.correspondsWith(goal2)){
 				addGameEvent(EVENT_GOAL_TEAM_1);
+				resetPlayerPositions();
+				ball.setLocation(401, 193);
+				ball.setSpeed(0.0);
+				ball.setCurrentAnimationType(animationStand);
 			}
 		}
 	}
@@ -283,13 +314,31 @@ public class SoccerMatch extends Match{
 		for (Integer integer : events) {
 			switch (integer) {
 			case EVENT_GOAL_TEAM_1:
-				score[1]++;
+				goalTeamOne();
 				break;
 			case EVENT_GOAL_TEAM_2:
-				score[0]++;
+				goalTeamTwo();
 				break;
 			default:
 				break;
+			}
+		}
+	}
+	
+	private void goalTeamOne(){
+		score[0]++;
+		goal=true;
+	}
+	
+	private void goalTeamTwo(){
+		score[1]++;
+		goal=true;
+	}
+	
+	private void resetPlayerPositions(){
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				gameObjects.get("PLAYER" + user.getID()).resetLocation();
 			}
 		}
 	}
