@@ -89,4 +89,8 @@ public class GameManager {
 		return currentMatch.getEventsFor(userID);
 		
 	}
+
+	public void performActions(int gameID, int userID, Integer[] actions) {
+		getCurrentMatch(gameID).performClientAction(userID, actions);
+	}
 }

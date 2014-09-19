@@ -35,9 +35,14 @@ public class GameServerExecutionThread extends Thread{
 			
 			switch (order) {
 			case "UPDATE_GAME_INFORMATION":{
+				int userID = objectInputStream.readInt();
+				Integer[] actions = (Integer[])objectInputStream.readObject();
 				HashMap<String, GameObjectInformation> gameObjectInformation = (HashMap<String, GameObjectInformation>)objectInputStream.readObject();
 				int gameID = objectInputStream.readInt();
 				objectOutputStream.writeObject(GameManager.getInstance().updateGameInformation(gameObjectInformation, gameID));
+				if(actions.length > 0){
+					GameManager.getInstance().performActions(gameID, userID, actions);
+				}
 				objectOutputStream.flush();
 				break;	
 				}

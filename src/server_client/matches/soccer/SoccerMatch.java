@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,6 +47,7 @@ public class SoccerMatch extends Match{
 	private transient BufferedImage[] playerMove;
 	private final int EVENT_GOAL_TEAM_1 = 1;
 	private final int EVENT_GOAL_TEAM_2 = 2;
+	private final int ACTION_SHOOT = 1;
 	private boolean goal;
 	private int goalCounter;
 	private int goalCounterMax;
@@ -167,7 +169,6 @@ public class SoccerMatch extends Match{
 						Thread.sleep(40);
 						updateGame();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -260,7 +261,7 @@ public class SoccerMatch extends Match{
 		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
 		clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
 		try {
-			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(clientPlayerObjects, gameID);
+			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(userID, getActions(), clientPlayerObjects, gameID);
 			Iterator<Entry<String, GameObjectInformation>> it = clientPlayerObjects.entrySet().iterator();
 			while(it.hasNext()){
 				Entry<String, GameObjectInformation> entry = it.next();
@@ -294,6 +295,14 @@ public class SoccerMatch extends Match{
 		}			
 	}
 	
+	private Integer[] getActions() {
+		ArrayList<Integer> alstActions = new ArrayList<>();
+		if(pressedKeys.contains(KeyEvent.VK_SPACE)){
+			alstActions.add(ACTION_SHOOT);
+		}
+		return alstActions.toArray(new Integer[0]);
+	}
+
 	protected void updateGame(){
 		GameObject ball = gameObjects.get("BALL");
 		for (Team team : playmode.getTeams()) {
@@ -313,7 +322,7 @@ public class SoccerMatch extends Match{
 		}
 		GameObject goal1 = gameObjects.get("GOAL1");
 		if(ball.correspondsWith(goal1)){
-			addGameEvent(EVENT_GOAL_TEAM_2);
+			addClientEvent(EVENT_GOAL_TEAM_2);
 			resetPlayerPositions();
 			ball.setLocation(301, 193);
 			ball.setSpeed(0.0);
@@ -321,7 +330,7 @@ public class SoccerMatch extends Match{
 		}else{
 			GameObject goal2 = gameObjects.get("GOAL2");
 			if(ball.correspondsWith(goal2)){
-				addGameEvent(EVENT_GOAL_TEAM_1);
+				addClientEvent(EVENT_GOAL_TEAM_1);
 				resetPlayerPositions();
 				ball.setLocation(401, 193);
 				ball.setSpeed(0.0);
@@ -389,9 +398,9 @@ public class SoccerMatch extends Match{
 	}
 	
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_SPACE){
+//		if(e.getKeyCode() == KeyEvent.VK_SPACE){
 //			System.out.println(MouseInfo.getPointerInfo().getLocation().x + " " + MouseInfo.getPointerInfo().getLocation().y);
-		}
+//		}
 		if(player == null){
 			player = gameObjects.get("PLAYER" + userID);
 		}
@@ -460,6 +469,21 @@ public class SoccerMatch extends Match{
 				player.setViewDegree(135);
 				player.setSpeed(3);
 				player.setCurrentAnimationType(animationMove);
+			}
+		}
+	}
+
+	@Override
+	public void performClientAction(int userID, Integer[] actions) {
+		GameObject player = gameObjects.get("PLAYER" + userID);
+		for (Integer integer : actions) {
+			switch (integer) {
+			case ACTION_SHOOT:{
+				// TODO handle the action
+				break;
+				}
+			default:
+				break;
 			}
 		}
 	}

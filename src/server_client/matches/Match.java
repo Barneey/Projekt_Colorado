@@ -30,7 +30,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected transient Graphics offscreenGraphics;
 	protected HashMap<String, GameObject> gameObjects;
 	protected HashMap<Integer, Boolean> userIDtoMatchLoaded;
-	protected HashMap<Integer, ArrayList<Integer>> userIDtoGameEvents;
+	protected HashMap<Integer, ArrayList<Integer>> userIDtoClientEvents;
 	protected Playmode playmode;
 	protected Integer[] leftUser;
 	protected int userID;
@@ -42,13 +42,13 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.matchType = matchType;
 		this.playmode = playmode;
 		this.userIDtoMatchLoaded = new HashMap<>();
-		this.userIDtoGameEvents = new HashMap<>();
+		this.userIDtoClientEvents = new HashMap<>();
 		this.running = false;
 		this.addKeyListener(this);
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				userIDtoMatchLoaded.put(user.getID(), false);
-				userIDtoGameEvents.put(user.getID(), new ArrayList<Integer>());
+				userIDtoClientEvents.put(user.getID(), new ArrayList<Integer>());
 			}
 		}
 		super.setSize(720, 405);
@@ -64,6 +64,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected abstract void updateGame();
 	protected abstract void executeGameEvents(Integer[] events);
 	protected abstract void startUpdating();
+	public abstract void performClientAction(int userID, Integer[] actions);
 	
 	public void setUserID(int userID){
 		this.userID = userID;
@@ -105,12 +106,12 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		paint(g);
 	}
 	
-	public void addGameEvent(int event){
+	public void addClientEvent(int event){
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				ArrayList<Integer> events = userIDtoGameEvents.get(user.getID());
+				ArrayList<Integer> events = userIDtoClientEvents.get(user.getID());
 				events.add(event);
-				userIDtoGameEvents.put(user.getID(), events);
+				userIDtoClientEvents.put(user.getID(), events);
 			}
 		}
 	}
@@ -188,9 +189,9 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	}
 
 	public Integer[] getEventsFor(int userID) {
-		ArrayList<Integer> alstEvents = userIDtoGameEvents.get(userID);
+		ArrayList<Integer> alstEvents = userIDtoClientEvents.get(userID);
 		Integer[] aEvents = alstEvents.toArray(new Integer[0]);
-		userIDtoGameEvents.put(userID, new ArrayList<Integer>());
+		userIDtoClientEvents.put(userID, new ArrayList<Integer>());
 		return aEvents;
 	}
 }

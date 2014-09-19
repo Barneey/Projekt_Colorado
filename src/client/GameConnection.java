@@ -198,7 +198,7 @@ public class GameConnection extends ServerConnection{
 		socket.close();
 	}
 
-	public synchronized HashMap<String, GameObjectInformation> updateGameObjects(HashMap<String, GameObjectInformation> clientPlayerObjects, int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized HashMap<String, GameObjectInformation> updateGameObjects(int userID, Integer[] actions, HashMap<String, GameObjectInformation> clientPlayerObjects, int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -210,6 +210,8 @@ public class GameConnection extends ServerConnection{
 		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
 		objectOutputStream.writeObject("UPDATE_GAME_INFORMATION");
+		objectOutputStream.writeInt(userID);
+		objectOutputStream.writeObject(actions);
 		objectOutputStream.writeObject(clientPlayerObjects);
 		objectOutputStream.writeInt(gameID);
 		objectOutputStream.flush();
