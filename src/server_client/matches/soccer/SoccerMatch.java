@@ -297,7 +297,7 @@ public class SoccerMatch extends Match{
 		}			
 	}
 	
-	private Integer[] getActions() {
+	protected Integer[] getActions() {
 		ArrayList<Integer> alstActions = new ArrayList<>();
 		if(pressedKeys.contains(KeyEvent.VK_SPACE)){
 			alstActions.add(ACTION_SHOOT);
