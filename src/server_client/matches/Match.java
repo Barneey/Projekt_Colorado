@@ -35,6 +35,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected Integer[] leftUser;
 	protected int userID;
 	protected int gameID;
+	protected boolean running;
 	
 	public Match(int matchType, Playmode playmode){
 		this.gameID = -1;
@@ -42,6 +43,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.playmode = playmode;
 		this.userIDtoMatchLoaded = new HashMap<>();
 		this.userIDtoGameEvents = new HashMap<>();
+		this.running = false;
 		this.addKeyListener(this);
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
@@ -61,6 +63,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected abstract void updateGameObjects();
 	protected abstract void updateGame();
 	protected abstract void executeGameEvents(Integer[] events);
+	protected abstract void startUpdating();
 	
 	public void setUserID(int userID){
 		this.userID = userID;
@@ -140,6 +143,10 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 			}
 			it.remove();
 		}
+		if(!running){
+			running = true;
+			startUpdating();
+		}
 		return true;
 	}
 
@@ -168,7 +175,6 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 			Entry<String, GameObjectInformation> entry = it.next();
 			gameObjects.get(entry.getKey()).setGameInformation(entry.getValue());
 		}
-		updateGame();
 	}
 
 	public HashMap<String, GameObjectInformation> getGameInformation() {

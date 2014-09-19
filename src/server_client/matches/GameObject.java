@@ -154,6 +154,7 @@ public class GameObject implements Serializable{
 		if(relocate){
 			relocate();
 		}
+		calculateSpeed();
 		this.animationCounter++;
 		if(this.animationCounter >= this.animationCounterMax){
 			this.animationCounter = 0;

@@ -156,6 +156,26 @@ public class SoccerMatch extends Match{
 		imagesLoaded = true;
 	}
 	
+	protected void startUpdating(){
+		
+		Runnable thread = new Runnable(){
+
+			@Override
+			public void run() {
+				while(running){
+					try {
+						Thread.sleep(40);
+						updateGame();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		(new Thread(thread)).start();
+	}
+	
 	private void renewImages(){
 		
 		Runnable thread = new Runnable() {
@@ -329,11 +349,13 @@ public class SoccerMatch extends Match{
 	private void goalTeamOne(){
 		score[0]++;
 		goal=true;
+		resetPlayerPositions();
 	}
 	
 	private void goalTeamTwo(){
 		score[1]++;
 		goal=true;
+		resetPlayerPositions();
 	}
 	
 	private void resetPlayerPositions(){
@@ -347,8 +369,9 @@ public class SoccerMatch extends Match{
 	@Override
 	public void run() {
 		showGameInfo();
+		running = true;
 		int counter = 0;
-		while(true){
+		while(running){
 			try {
 				counter++;
 				if(counter >= 10){
