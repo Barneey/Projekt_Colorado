@@ -48,6 +48,7 @@ public class SoccerMatch extends Match{
 	private final int EVENT_GOAL_TEAM_2 = 2;
 	private boolean goal;
 	private int goalCounter;
+	private int goalCounterMax;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
@@ -62,6 +63,7 @@ public class SoccerMatch extends Match{
 		this.fieldStart = new Point(47, 49);
 		this.goal = false;
 		this.goalCounter = 0;
+		this.goalCounterMax = 30;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);
 		ball.setAnimationCounterMax(8);
@@ -219,10 +221,9 @@ public class SoccerMatch extends Match{
 		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 14, 40));
 		if(goal){
 			goalCounter++;
-			if(goalCounter % 2 == 0){
-				drawString("G O A L", Color.WHITE, new Font(Font.SANS_SERIF, Font.PLAIN, 40), new Point(getWidth() / 2 - 80,100));
-			}
-			if(goalCounter >= 30){
+			int colorValue = (100 + (155 * goalCounter / goalCounterMax));
+			drawString("G O A L", new Color(colorValue,colorValue,colorValue), new Font(Font.SANS_SERIF, Font.PLAIN, 40), new Point(getWidth() / 2 - 77,100));
+			if(goalCounter >= goalCounterMax){
 				goal=false;
 				goalCounter=0;
 			}
