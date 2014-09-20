@@ -219,7 +219,12 @@ public class GameObject implements Serializable{
 			this.setY((int)(background.getY() + background.getSize().getHeight() - this.getSize().getHeight()));
 		}
 	}
-
+	
+	public void relativeTo(GameObject go, int xOffset, int yOffset){
+		// TODO this method replaces positionOver/Below etc
+	}
+	
+	
 	public void positionOver(GameObject go) {
 		this.setViewDegree(go.getViewDegree());
 		this.setX((int)go.getLocation().getX());

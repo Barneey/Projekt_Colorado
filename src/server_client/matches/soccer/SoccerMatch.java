@@ -60,6 +60,12 @@ public class SoccerMatch extends Match{
 	private final int EVENT_THROW_IN_TOP_TEAM2 = 5;
 	private final int EVENT_THROW_IN_BOTTOM_TEAM1 = 6;
 	private final int EVENT_THROW_IN_BOTTOM_TEAM2 = 7;
+	private final int EVENT_CORNER_TOP_TEAM_1 = 8;
+	private final int EVENT_CORNER_BOTTOM_TEAM_1 = 9;
+	private final int EVENT_CORNER_TOP_TEAM_2 = 10;
+	private final int EVENT_CORNER_BOTTOM_TEAM_2 = 11;
+	private final int EVENT_KICKOFF_TEAM_1 = 12;
+	private final int EVENT_KICKOFF_TEAM_2 = 13;
 	private final int ACTION_SHOOT = 1;
 	private final int TEAM_1 = 0;
 	private final int TEAM_2 = 1;
@@ -408,6 +414,30 @@ public class SoccerMatch extends Match{
 						default:
 							break;
 						}
+					}else{
+						GameObject goalLineTeam1Top = gameObjects.get("GOAL_LINE_TEAM1_TOP");
+						if(ball.correspondsWith(goalLineTeam1Top)){
+							switch (matchType) {
+							case TEST:
+								addClientEvent(EVENT_RESET_BALL);
+								resetBallPosition();
+								break;
+							case TEAM:
+								if(lastContactFromTeam(TEAM_1)){
+									addClientEvent(EVENT_CORNER_TOP_TEAM_2);
+									positionCornerTop(TEAM_2);
+								}else if(lastContactFromTeam(TEAM_2)){
+									addClientEvent(EVENT_KICKOFF_TEAM_1);
+									positionPlayerKickOff(TEAM_1);
+								}else{
+									addClientEvent(EVENT_RESET_BALL);
+									resetBallPosition();
+								}
+								break;
+							default:
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -491,6 +521,9 @@ public class SoccerMatch extends Match{
 			case EVENT_THROW_IN_BOTTOM_TEAM1:
 				positionPlayerThrowInBottomForTeam(TEAM_1);
 				break;
+			case EVENT_THROW_IN_BOTTOM_TEAM2:
+				positionPlayerThrowInBottomForTeam(TEAM_2);
+				break;
 			default:
 				break;
 			}
@@ -499,8 +532,6 @@ public class SoccerMatch extends Match{
 	
 	public static synchronized void playSound() {
 		  new Thread(new Runnable() {
-		  // The wrapper thread is unnecessary, unless it blocks on the
-		  // Clip finishing; see comments.
 		    public void run() {
 		      try {
 		    	InputStream in = new FileInputStream("sounds/goal.wav");
