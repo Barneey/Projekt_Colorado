@@ -23,6 +23,12 @@ public class GameObject implements Serializable{
 	private int animationCounter;
 	private int animationCounterMax;
 	private transient Image currentImage;
+	public static final int X_OFFSET_LEFT = 0;
+	public static final int X_OFFSET_MIDDLE = 1;
+	public static final int X_OFFSET_RIGHT = 2;
+	public static final int Y_OFFSET_OVER = 3;
+	public static final int Y_OFFSET_MIDDLE = 4;
+	public static final int Y_OFFSET_BELOW = 5;
 	
 	public GameObject(int x, int y, Dimension size){
 		this.information = new GameObjectInformation(x, y, 0);
@@ -221,26 +227,39 @@ public class GameObject implements Serializable{
 	}
 	
 	public void relativeTo(GameObject go, int xOffset, int yOffset){
-		// TODO this method replaces positionOver/Below etc
-	}
-	
-	
-	public void positionOver(GameObject go) {
 		this.setViewDegree(go.getViewDegree());
-		this.setX((int)go.getLocation().getX());
-		this.setY((int)(go.getLocation().getY() - go.getSize().getHeight() - 4));
+		switch (xOffset) {
+		case X_OFFSET_LEFT:
+			this.setX((int)(go.getLocation().getX() - this.getSize().width - 4));
+			break;
+		case X_OFFSET_MIDDLE:
+			this.setX(go.getX());
+			break;
+		case X_OFFSET_RIGHT:
+			this.setX((int)(go.getLocation().getX() + go.getSize().width + 4));
+			break;
+		default:
+			break;
+		}
+		switch (yOffset) {
+		case Y_OFFSET_OVER:
+			this.setY((int)(go.getLocation().getY() - this.getSize().height - 4));
+			break;
+		case Y_OFFSET_MIDDLE:
+			this.setY(go.getY());
+			break;
+		case Y_OFFSET_BELOW:
+			this.setY((int)(go.getLocation().getY() + go.getSize().height + 4));
+			break;
+		default:
+			break;
+		}
 	}
-
+	
 	public void positionAnywhereIn(GameObject go) {
 		Random generator = new Random();
 		int xOffset = generator.nextInt(go.getSize().width);
 		int yOffset = generator.nextInt(go.getSize().height);
 		this.setLocation(go.getX() + xOffset, go.getY() + yOffset);
-	}
-
-	public void positionBelow(GameObject go) {
-		this.setViewDegree(go.getViewDegree());
-		this.setX((int)go.getLocation().getX());
-		this.setY((int)(go.getLocation().getY() + go.getSize().getHeight() + 4));
 	}
 }
