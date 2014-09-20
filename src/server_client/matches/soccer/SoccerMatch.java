@@ -488,6 +488,9 @@ public class SoccerMatch extends Match{
 			case EVENT_THROW_IN_TOP_TEAM2:
 				positionPlayerThrowInTopForTeam(TEAM_2);
 				break;
+			case EVENT_THROW_IN_BOTTOM_TEAM1:
+				positionPlayerThrowInBottomForTeam(TEAM_1);
+				break;
 			default:
 				break;
 			}
