@@ -437,11 +437,95 @@ public class SoccerMatch extends Match{
 							default:
 								break;
 							}
+						}else{
+							GameObject goalLineTeam1Bottom = gameObjects.get("GOAL_LINE_TEAM1_BOTTOM");
+							if(ball.correspondsWith(goalLineTeam1Bottom)){
+								switch (matchType) {
+								case TEST:
+									addClientEvent(EVENT_RESET_BALL);
+									resetBallPosition();
+									break;
+								case TEAM:
+									if(lastContactFromTeam(TEAM_1)){
+										addClientEvent(EVENT_CORNER_BOTTOM_TEAM_2);
+										positionCornerBottom(TEAM_2);
+									}else if(lastContactFromTeam(TEAM_2)){
+										addClientEvent(EVENT_KICKOFF_TEAM_1);
+										positionPlayerKickOff(TEAM_1);
+									}else{
+										addClientEvent(EVENT_RESET_BALL);
+										resetBallPosition();
+									}
+									break;
+								default:
+									break;
+								}
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	private void positionPlayerKickOff(int teamNumber) {
+		switch (teamNumber) {
+		case TEAM_1:{
+			Random generator = new Random();
+			int kickOffPlayerID = playmode.getTeams()[teamNumber].getUser()[generator.nextInt(playmode.getTeams()[teamNumber].getUser().length)].getID();
+			GameObject ball = gameObjects.get("BALL");
+			ball.setSpeed(0.0);
+			ball.setViewDegree(0);
+			ball.setLocation(103, 194);
+			ball.setCurrentAnimationType(animationStand);
+			GameObject kickOffPlayerArea = new GameObject(235, 56, new Dimension(251,295));
+			for (Team team : playmode.getTeams()) {
+				for (User user : team.getUser()) {
+					GameObject player = gameObjects.get("PLAYER" + user.getID());
+					player.setSpeed(0.0);
+					player.setCurrentAnimationType(animationStand);
+					if(user.getID() == kickOffPlayerID){
+						player.positionRelativeTo(ball, GameObject.X_OFFSET_LEFT, GameObject.Y_OFFSET_MIDDLE);
+					}else{
+						player.positionAnywhereIn(kickOffPlayerArea);
+					}
+				}
+			}
+			break;
+			}
+		case TEAM_2:
+			Random generator = new Random();
+			int kickOffPlayerID = playmode.getTeams()[teamNumber].getUser()[generator.nextInt(playmode.getTeams()[teamNumber].getUser().length)].getID();
+			GameObject ball = gameObjects.get("BALL");
+			ball.setSpeed(0.0);
+			ball.setViewDegree(180);
+			ball.setLocation(603, 194);
+			ball.setCurrentAnimationType(animationStand);
+			GameObject kickOffPlayerArea = new GameObject(235, 56, new Dimension(251,295));
+			for (Team team : playmode.getTeams()) {
+				for (User user : team.getUser()) {
+					GameObject player = gameObjects.get("PLAYER" + user.getID());
+					player.setSpeed(0.0);
+					player.setCurrentAnimationType(animationStand);
+					if(user.getID() == kickOffPlayerID){
+						player.positionRelativeTo(ball, GameObject.X_OFFSET_RIGHT, GameObject.Y_OFFSET_MIDDLE);
+					}else{
+						player.positionAnywhereIn(kickOffPlayerArea);
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void positionCornerTop(int team) {
+		// TODO Auto-generated method stub
+	}
+
+	private void positionCornerBottom(int team){
+		// TODO
 	}
 	
 	private void positionPlayerThrowInTopForTeam(int i) {
@@ -456,10 +540,10 @@ public class SoccerMatch extends Match{
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
 				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				player.setSpeed(0.0);
+				player.setCurrentAnimationType(animationStand);
 				if(user.getID() == throwInPlayerID){
-					player.setSpeed(0.0);
-					player.setCurrentAnimationType(animationStand);
-					player.positionOver(ball);
+					player.positionRelativeTo(ball, GameObject.X_OFFSET_MIDDLE, GameObject.Y_OFFSET_OVER);
 				}else{
 					player.positionAnywhereIn(throwInPlayerArea);
 				}
@@ -482,7 +566,7 @@ public class SoccerMatch extends Match{
 				if(user.getID() == throwInPlayerID){
 					player.setSpeed(0.0);
 					player.setCurrentAnimationType(animationStand);
-					player.positionBelow(ball);
+					player.positionRelativeTo(ball, GameObject.X_OFFSET_MIDDLE, GameObject.Y_OFFSET_BELOW);
 				}else{
 					player.positionAnywhereIn(throwInPlayerArea);
 				}
@@ -614,7 +698,6 @@ public class SoccerMatch extends Match{
 		setMovementForPlayer();
 	}
 
-
 	public void keyTyped(KeyEvent e) {
 	}
 	
@@ -662,7 +745,6 @@ public class SoccerMatch extends Match{
 			player.setCurrentAnimationType(animationStand);
 		}
 	}
-
 
 	@Override
 	public void performClientActions(int userID, Integer[] actions) {

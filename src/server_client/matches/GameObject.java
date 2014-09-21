@@ -226,7 +226,7 @@ public class GameObject implements Serializable{
 		}
 	}
 	
-	public void relativeTo(GameObject go, int xOffset, int yOffset){
+	public void positionRelativeTo(GameObject go, int xOffset, int yOffset){
 		this.setViewDegree(go.getViewDegree());
 		switch (xOffset) {
 		case X_OFFSET_LEFT:
