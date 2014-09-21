@@ -53,22 +53,25 @@ public class SoccerMatch extends Match{
 	private transient BufferedImage[] backgroundStand;
 	private transient BufferedImage[] playerStand;
 	private transient BufferedImage[] playerMove;
-	private final int EVENT_GOAL_TEAM_1 = 1;
-	private final int EVENT_GOAL_TEAM_2 = 2;
-	private final int EVENT_RESET_BALL = 3;
-	private final int EVENT_THROW_IN_TOP_TEAM1 = 4;
-	private final int EVENT_THROW_IN_TOP_TEAM2 = 5;
-	private final int EVENT_THROW_IN_BOTTOM_TEAM1 = 6;
-	private final int EVENT_THROW_IN_BOTTOM_TEAM2 = 7;
-	private final int EVENT_CORNER_TOP_TEAM_1 = 8;
-	private final int EVENT_CORNER_BOTTOM_TEAM_1 = 9;
-	private final int EVENT_CORNER_TOP_TEAM_2 = 10;
-	private final int EVENT_CORNER_BOTTOM_TEAM_2 = 11;
-	private final int EVENT_KICKOFF_TEAM_1 = 12;
-	private final int EVENT_KICKOFF_TEAM_2 = 13;
-	private final int ACTION_SHOOT = 1;
-	private final int TEAM_1 = 0;
-	private final int TEAM_2 = 1;
+	private final static int EVENT_GOAL_TEAM_1 = 1;
+	private final static int EVENT_GOAL_TEAM_2 = 2;
+	private final static int EVENT_RESET_BALL = 3;
+	private final static int EVENT_THROW_IN_TOP_TEAM1 = 4;
+	private final static int EVENT_THROW_IN_TOP_TEAM2 = 5;
+	private final static int EVENT_THROW_IN_BOTTOM_TEAM1 = 6;
+	private final static int EVENT_THROW_IN_BOTTOM_TEAM2 = 7;
+	private final static int EVENT_CORNER_TOP_TEAM_1 = 8;
+	private final static int EVENT_CORNER_BOTTOM_TEAM_1 = 9;
+	private final static int EVENT_CORNER_TOP_TEAM_2 = 10;
+	private final static int EVENT_CORNER_BOTTOM_TEAM_2 = 11;
+	private final static int EVENT_KICKOFF_TEAM_1 = 12;
+	private final static int EVENT_KICKOFF_TEAM_2 = 13;
+	private int skipSendingUserInformationCounter;
+	private final static int ACTION_SHOOT = 1;
+	private final static int TEAM_1 = 0;
+	private final static int TEAM_2 = 1;
+	private final static int TOP = 0;
+	private final static int BOTTOM = 1;
 	private boolean goal;
 	private int goalCounter;
 	private int goalCounterMax;
@@ -89,6 +92,7 @@ public class SoccerMatch extends Match{
 		this.goal = false;
 		this.goalCounter = 0;
 		this.goalCounterMax = 30;
+		this.skipSendingUserInformationCounter = 0;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);
 		ball.setAnimationCounterMax(8);
@@ -286,9 +290,13 @@ public class SoccerMatch extends Match{
 	}
 	
 	protected void updateGameObjects(){
-		player = gameObjects.get("PLAYER" + userID);
 		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
-		clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
+		if(skipSendingUserInformationCounter <= 0){
+			player = gameObjects.get("PLAYER" + userID);
+			clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
+		}else{
+			skipSendingUserInformationCounter--;
+		}
 		try {
 			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(userID, getActions(), clientPlayerObjects, gameID);
 			Iterator<Entry<String, GameObjectInformation>> it = clientPlayerObjects.entrySet().iterator();
@@ -425,7 +433,7 @@ public class SoccerMatch extends Match{
 							case TEAM:
 								if(lastContactFromTeam(TEAM_1)){
 									addClientEvent(EVENT_CORNER_TOP_TEAM_2);
-									positionCornerTop(TEAM_2);
+									positionCorner(TEAM_2, TOP);
 								}else if(lastContactFromTeam(TEAM_2)){
 									addClientEvent(EVENT_KICKOFF_TEAM_1);
 									positionPlayerKickOff(TEAM_1);
@@ -448,7 +456,7 @@ public class SoccerMatch extends Match{
 								case TEAM:
 									if(lastContactFromTeam(TEAM_1)){
 										addClientEvent(EVENT_CORNER_BOTTOM_TEAM_2);
-										positionCornerBottom(TEAM_2);
+										positionCorner(TEAM_2, BOTTOM);
 									}else if(lastContactFromTeam(TEAM_2)){
 										addClientEvent(EVENT_KICKOFF_TEAM_1);
 										positionPlayerKickOff(TEAM_1);
@@ -459,6 +467,54 @@ public class SoccerMatch extends Match{
 									break;
 								default:
 									break;
+								}
+							}else{
+								GameObject goalLineTeam2Top = gameObjects.get("GOAL_LINE_TEAM2_TOP");
+								if(ball.correspondsWith(goalLineTeam2Top)){
+									switch (matchType) {
+									case TEST:
+										addClientEvent(EVENT_RESET_BALL);
+										resetBallPosition();
+										break;
+									case TEAM:
+										if(lastContactFromTeam(TEAM_2)){
+											addClientEvent(EVENT_CORNER_TOP_TEAM_1);
+											positionCorner(TEAM_1, TOP);
+										}else if(lastContactFromTeam(TEAM_1)){
+											addClientEvent(EVENT_KICKOFF_TEAM_2);
+											positionPlayerKickOff(TEAM_2);
+										}else{
+											addClientEvent(EVENT_RESET_BALL);
+											resetBallPosition();
+										}
+										break;
+									default:
+										break;
+									}
+								}else{
+									GameObject goalLineTeam2Bottom = gameObjects.get("GOAL_LINE_TEAM2_BOTTOM");
+									if(ball.correspondsWith(goalLineTeam2Bottom)){
+										switch (matchType) {
+										case TEST:
+											addClientEvent(EVENT_RESET_BALL);
+											resetBallPosition();
+											break;
+										case TEAM:
+											if(lastContactFromTeam(TEAM_2)){
+												addClientEvent(EVENT_CORNER_BOTTOM_TEAM_1);
+												positionCorner(TEAM_1, BOTTOM);
+											}else if(lastContactFromTeam(TEAM_1)){
+												addClientEvent(EVENT_KICKOFF_TEAM_2);
+												positionPlayerKickOff(TEAM_2);
+											}else{
+												addClientEvent(EVENT_RESET_BALL);
+												resetBallPosition();
+											}
+											break;
+										default:
+											break;
+										}
+									}
 								}
 							}
 						}
@@ -520,12 +576,58 @@ public class SoccerMatch extends Match{
 		}
 	}
 
-	private void positionCornerTop(int team) {
-		// TODO Auto-generated method stub
-	}
-
-	private void positionCornerBottom(int team){
-		// TODO
+	private void positionCorner(int teamNumber, int side) {
+		Random generator = new Random();
+		int throwInPlayerID = playmode.getTeams()[teamNumber].getUser()[generator.nextInt(playmode.getTeams()[teamNumber].getUser().length)].getID();
+		GameObject ball = gameObjects.get("BALL");
+		ball.setSpeed(0.0);
+		ball.setCurrentAnimationType(animationStand);
+		GameObject cornerPlayerArea = new GameObject(-1, -1, new Dimension(145, 180));
+		if(teamNumber == TEAM_1){
+			cornerPlayerArea.setLocation(520, 118);
+			if(side == TOP){
+				ball.setLocation(647, 60);
+				ball.setViewDegree(135);
+			}else if(side == BOTTOM){
+				ball.setLocation(647, 327);
+				ball.setViewDegree(225);
+			}else{
+				ball.resetLocation();
+			}
+		}else if(teamNumber == TEAM_2){
+			cornerPlayerArea.setLocation(60, 118);
+			if(side == TOP){
+				ball.setLocation(60, 60);
+				ball.setViewDegree(45);
+			}else if(side == BOTTOM){
+				ball.setLocation(60, 327);
+				ball.setViewDegree(315);
+			}else{
+				ball.resetLocation();
+			}
+		}
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				player.setSpeed(0.0);
+				player.setCurrentAnimationType(animationStand);
+				if(user.getID() == throwInPlayerID){
+					if(teamNumber == TEAM_2 && side == TOP){
+						player.positionRelativeTo(ball, GameObject.X_OFFSET_LEFT, GameObject.Y_OFFSET_OVER);
+					}else if(teamNumber == TEAM_2 && side == BOTTOM){
+						player.positionRelativeTo(ball, GameObject.X_OFFSET_LEFT, GameObject.Y_OFFSET_BELOW);
+					}else if(teamNumber == TEAM_1 && side == TOP){
+						player.positionRelativeTo(ball, GameObject.X_OFFSET_RIGHT, GameObject.Y_OFFSET_OVER);
+					}else if(teamNumber == TEAM_1 && side == BOTTOM){
+						player.positionRelativeTo(ball, GameObject.X_OFFSET_RIGHT, GameObject.Y_OFFSET_BELOW);
+					}else{
+						player.positionRelativeTo(ball, GameObject.X_OFFSET_MIDDLE, GameObject.Y_OFFSET_MIDDLE);
+					}
+				}else{
+					player.positionAnywhereIn(cornerPlayerArea);
+				}
+			}
+		}
 	}
 	
 	private void positionPlayerThrowInTopForTeam(int i) {
@@ -605,8 +707,23 @@ public class SoccerMatch extends Match{
 			case EVENT_THROW_IN_BOTTOM_TEAM1:
 				positionPlayerThrowInBottomForTeam(TEAM_1);
 				break;
-			case EVENT_THROW_IN_BOTTOM_TEAM2:
-				positionPlayerThrowInBottomForTeam(TEAM_2);
+			case EVENT_CORNER_TOP_TEAM_1:
+				positionCorner(TEAM_1, TOP);
+				break;
+			case EVENT_CORNER_TOP_TEAM_2:
+				positionCorner(TEAM_2, TOP);
+				break;
+			case EVENT_CORNER_BOTTOM_TEAM_1:
+				positionCorner(TEAM_1, BOTTOM);
+				break;
+			case EVENT_CORNER_BOTTOM_TEAM_2:
+				positionCorner(TEAM_2, BOTTOM);
+				break;
+			case EVENT_KICKOFF_TEAM_1:
+				positionPlayerKickOff(TEAM_1);
+				break;
+			case EVENT_KICKOFF_TEAM_2:
+				positionPlayerKickOff(TEAM_2);
 				break;
 			default:
 				break;

@@ -257,9 +257,13 @@ public class GameObject implements Serializable{
 	}
 	
 	public void positionAnywhereIn(GameObject go) {
-		Random generator = new Random();
-		int xOffset = generator.nextInt(go.getSize().width);
-		int yOffset = generator.nextInt(go.getSize().height);
-		this.setLocation(go.getX() + xOffset, go.getY() + yOffset);
+		if(this.getSize().width > go.getSize().width || this.getSize().height > go.getSize().height){
+			throw new IllegalArgumentException("GameObject is bigger than the passed GameObject");
+		}else{
+			Random generator = new Random();
+			int xOffset = generator.nextInt(go.getSize().width - this.getSize().width + 1);
+			int yOffset = generator.nextInt(go.getSize().height - this.getSize().height + 1);
+			this.setLocation(go.getX() + xOffset, go.getY() + yOffset);
+		}
 	}
 }
