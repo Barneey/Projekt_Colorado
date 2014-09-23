@@ -253,8 +253,18 @@ public class SoccerMatch extends Match{
 		}
 		 // Clear screen
 		offscreenGraphics.clearRect(0, 0, getWidth(), getHeight());
-		// Draw components
+		// Draw background
 		drawGameObject(gameObjects.get("BACKGROUND"));
+		// Draw GameInfo
+		if(showingGameInfo){
+			if(showingGameInfoCounter < showingGameInfoMax){
+				showingGameInfoCounter++;
+				drawString("Use the Arrow-Keys and Space to move the ball into the opponent goal", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), new Point(getWidth()/3, 100));
+			}else{
+				showingGameInfo = false;
+			}
+		}
+		// Draw components
 		drawGameObject(gameObjects.get("BALL"));
 		boolean firstTeam = true;
 		for (Team team : playmode.getTeams()) {
@@ -285,10 +295,6 @@ public class SoccerMatch extends Match{
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
-	protected void showGameInfo(){
-		repaint();
-	}
-	
 	protected void updateGameObjects(){
 		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
 		if(skipSendingUserInformationCounter <= 0){
@@ -776,7 +782,8 @@ public class SoccerMatch extends Match{
 	
 	@Override
 	public void run() {
-		showGameInfo();
+		showingGameInfo = true;
+		repaint();
 		running = true;
 		int counter = 0;
 		while(running){

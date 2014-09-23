@@ -36,6 +36,9 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected int userID;
 	protected int gameID;
 	protected boolean running;
+	protected boolean showingGameInfo;
+	protected int showingGameInfoCounter;
+	protected int showingGameInfoMax;
 	
 	public Match(int matchType, Playmode playmode){
 		this.gameID = -1;
@@ -44,6 +47,9 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.userIDtoMatchLoaded = new HashMap<>();
 		this.userIDtoClientEvents = new HashMap<>();
 		this.running = false;
+		this.showingGameInfo = false;
+		this.showingGameInfoCounter = 0;
+		this.showingGameInfoMax = 50;
 		this.addKeyListener(this);
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
@@ -59,7 +65,6 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	
 	public abstract void paint(Graphics g);
 	public abstract void loadImages();
-	protected abstract void showGameInfo();
 	protected abstract void updateGameObjects();
 	protected abstract void updateGame();
 	protected abstract void executeGameEvents(Integer[] events);
