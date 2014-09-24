@@ -25,6 +25,13 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	public static final int TEAM = 1;
 	public static final int UNDERDOG = 2;
 	public static final int TEST = 3;
+	public static final int NO_ALIGN = -1;
+	public static final int VERTICAL_ALIGN_LEFT = 0;
+	public static final int VERTICAL_ALIGN_CENTER = 1;
+	public static final int VERTICAL_ALIGN_RIGHT = 2;
+	public static final int HORIZONTAL_ALIGN_TOP = 3;
+	public static final int HORIZONTAL_ALIGN_CENTER = 4;
+	public static final int HORIZONTAL_ALIGN_BOTTOM = 5;
 	protected int matchType;
 	protected transient Image offscreen;
 	protected transient Graphics offscreenGraphics;
@@ -49,7 +56,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.running = false;
 		this.showingGameInfo = false;
 		this.showingGameInfoCounter = 0;
-		this.showingGameInfoMax = 50;
+		this.showingGameInfoMax = 100;
 		this.addKeyListener(this);
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
@@ -82,7 +89,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		}
 	}
 	
-	protected void drawString(String string, Color c, Font font, Point location){
+	protected void drawString(String string, Color c, Font font, int verticalAlign, int horizontalAlign ,int xOffset, int yOffset){
 		Color cCopy = offscreenGraphics.getColor();
 		Font fontCopy = offscreenGraphics.getFont();
 		if(c != null){
@@ -91,7 +98,45 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		if(font != null){
 			offscreenGraphics.setFont(font);
 		}
-		offscreenGraphics.drawString(string, location.x, location.y);
+        int stringWidth = (int)offscreenGraphics.getFontMetrics().getStringBounds(string, offscreenGraphics).getWidth();
+        int xStart = 0;
+        switch (verticalAlign) {
+		case VERTICAL_ALIGN_LEFT:
+			xStart = 0;
+			break;
+		case VERTICAL_ALIGN_CENTER:
+			xStart = offscreen.getWidth(this) / 2 - stringWidth / 2;
+			break;
+		case VERTICAL_ALIGN_RIGHT:
+			xStart = offscreen.getWidth(this) - stringWidth;
+			break;
+		case NO_ALIGN:
+			xStart = 0;
+			break;
+		default:
+			xStart = 0;
+			break;
+		}
+        int stringHeight = (int)offscreenGraphics.getFontMetrics().getStringBounds(string, offscreenGraphics).getHeight();
+        int yStart = 0;
+        switch (horizontalAlign) {
+		case HORIZONTAL_ALIGN_TOP:
+			yStart = 0;
+			break;
+		case HORIZONTAL_ALIGN_CENTER:
+			yStart = offscreen.getHeight(this) / 2 - stringHeight / 2;
+			break;
+		case HORIZONTAL_ALIGN_BOTTOM:
+			yStart = offscreen.getHeight(this) - stringHeight;
+			break;
+		case NO_ALIGN:
+			yStart = 0;
+			break;
+		default:
+			yStart = 0;
+			break;
+		}
+		offscreenGraphics.drawString(string, xStart + xOffset, yStart + yOffset);
 		if(c != null){
 			offscreenGraphics.setColor(cCopy);
 		}

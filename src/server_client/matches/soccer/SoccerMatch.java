@@ -259,7 +259,7 @@ public class SoccerMatch extends Match{
 		if(showingGameInfo){
 			if(showingGameInfoCounter < showingGameInfoMax){
 				showingGameInfoCounter++;
-				drawString("Use the Arrow-Keys and Space to move the ball into the opponent goal", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), new Point(getWidth()/3, 100));
+				drawString("Use the Arrow-Keys and Space to move the ball into the opponent goal", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 100);
 			}else{
 				showingGameInfo = false;
 			}
@@ -278,15 +278,15 @@ public class SoccerMatch extends Match{
 				if(user.getID() == userID){
 					color = Color.ORANGE;
 				}
-				drawString((user.getNick().length() >= 10 ? user.getNick().substring(0, 9) : user.getNick()), color, new Font(Font.SERIF, Font.PLAIN, 10), new Point(player.getX(), player.getY() - 5));
+				drawString((user.getNick().length() >= 10 ? user.getNick().substring(0, 9) : user.getNick()), color, new Font(Font.SERIF, Font.PLAIN, 10), NO_ALIGN, NO_ALIGN, player.getX(), player.getY() - 5);
 			}
 			firstTeam = false;
 		}
-		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), new Point(getWidth() / 2 - 14, 40));
+		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 30);
 		if(goal){
 			goalCounter++;
 			int colorValue = (100 + (155 * goalCounter / goalCounterMax));
-			drawString("G O A L", new Color(colorValue,colorValue,colorValue), new Font(Font.SANS_SERIF, Font.PLAIN, 40), new Point(getWidth() / 2 - 77,100));
+			drawString("G O A L", new Color(colorValue,colorValue,colorValue), new Font(Font.SANS_SERIF, Font.PLAIN, 40), VERTICAL_ALIGN_CENTER, NO_ALIGN, -4, 130);
 			if(goalCounter >= goalCounterMax){
 				goal=false;
 				goalCounter=0;
