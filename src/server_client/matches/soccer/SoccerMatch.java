@@ -71,10 +71,13 @@ public class SoccerMatch extends Match{
 	private final static int TEAM_2 = 1;
 	private final static int TOP = 0;
 	private final static int BOTTOM = 1;
+	private final static int GAMEINTERVAL = 40;
 	private boolean goal;
 	private int goalCounter;
 	private int goalCounterMax;
 	private int skipRepaintingCounter;
+	private int gameTimerMax;
+	private int currentGameTime;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
@@ -93,6 +96,8 @@ public class SoccerMatch extends Match{
 		this.goalCounter = 0;
 		this.goalCounterMax = 30;
 		this.skipRepaintingCounter = 0;
+		this.gameTimerMax = 3 * 60 * 1000 / GAMEINTERVAL;
+		this.currentGameTime = 0;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);
 		ball.setAnimationCounterMax(8);
@@ -199,7 +204,7 @@ public class SoccerMatch extends Match{
 			public void run() {
 				while(running){
 					try {
-						Thread.sleep(40);
+						Thread.sleep(GAMEINTERVAL);
 						updateGame();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -283,6 +288,11 @@ public class SoccerMatch extends Match{
 			firstTeam = false;
 		}
 		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 30);
+		int ms = currentGameTime * GAMEINTERVAL;
+		int seconds = (ms / 1000) % 60;
+		String sSeconds = seconds / 10 + "" + seconds % 10;
+		int minutes = (ms / (1000*60)) % 60;
+		drawString("Time: " + minutes + ":" + sSeconds , null, null, VERTICAL_ALIGN_RIGHT, NO_ALIGN, -20, 30);
 		if(goal){
 			goalCounter++;
 			int colorValue = (100 + (155 * goalCounter / goalCounterMax));
@@ -798,7 +808,8 @@ public class SoccerMatch extends Match{
 					counter = 0;
 					renewImages();
 				}
-				Thread.sleep(40);
+				Thread.sleep(GAMEINTERVAL);
+				currentGameTime++;
 				updateGameObjects();
 				if(skipRepaintingCounter > 0){
 					skipRepaintingCounter--;
@@ -806,6 +817,9 @@ public class SoccerMatch extends Match{
 					repaint();
 				}
 				requestFocusInWindow();
+				if(currentGameTime >= gameTimerMax){
+					running = false;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
