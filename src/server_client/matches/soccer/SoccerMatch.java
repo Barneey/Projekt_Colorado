@@ -66,7 +66,6 @@ public class SoccerMatch extends Match{
 	private final static int EVENT_CORNER_BOTTOM_TEAM_2 = 11;
 	private final static int EVENT_KICKOFF_TEAM_1 = 12;
 	private final static int EVENT_KICKOFF_TEAM_2 = 13;
-	private int skipSendingUserInformationCounter;
 	private final static int ACTION_SHOOT = 1;
 	private final static int TEAM_1 = 0;
 	private final static int TEAM_2 = 1;
@@ -75,6 +74,7 @@ public class SoccerMatch extends Match{
 	private boolean goal;
 	private int goalCounter;
 	private int goalCounterMax;
+	private int skipRepaintingCounter;
 	
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
@@ -92,7 +92,7 @@ public class SoccerMatch extends Match{
 		this.goal = false;
 		this.goalCounter = 0;
 		this.goalCounterMax = 30;
-		this.skipSendingUserInformationCounter = 0;
+		this.skipRepaintingCounter = 0;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);
 		ball.setAnimationCounterMax(8);
@@ -297,12 +297,8 @@ public class SoccerMatch extends Match{
 
 	protected void updateGameObjects(){
 		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
-		if(skipSendingUserInformationCounter <= 0){
-			player = gameObjects.get("PLAYER" + userID);
-			clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
-		}else{
-			skipSendingUserInformationCounter--;
-		}
+		player = gameObjects.get("PLAYER" + userID);
+		clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
 		try {
 			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(userID, getActions(), clientPlayerObjects, gameID);
 			Iterator<Entry<String, GameObjectInformation>> it = clientPlayerObjects.entrySet().iterator();
@@ -706,30 +702,39 @@ public class SoccerMatch extends Match{
 				break;
 			case EVENT_THROW_IN_TOP_TEAM1:
 				positionPlayerThrowInTopForTeam(TEAM_1);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_THROW_IN_TOP_TEAM2:
 				positionPlayerThrowInTopForTeam(TEAM_2);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_THROW_IN_BOTTOM_TEAM1:
 				positionPlayerThrowInBottomForTeam(TEAM_1);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_CORNER_TOP_TEAM_1:
 				positionCorner(TEAM_1, TOP);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_CORNER_TOP_TEAM_2:
 				positionCorner(TEAM_2, TOP);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_CORNER_BOTTOM_TEAM_1:
 				positionCorner(TEAM_1, BOTTOM);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_CORNER_BOTTOM_TEAM_2:
 				positionCorner(TEAM_2, BOTTOM);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_KICKOFF_TEAM_1:
 				positionPlayerKickOff(TEAM_1);
+				skipRepaintingCounter = 2;
 				break;
 			case EVENT_KICKOFF_TEAM_2:
 				positionPlayerKickOff(TEAM_2);
+				skipRepaintingCounter = 2;
 				break;
 			default:
 				break;
@@ -795,7 +800,11 @@ public class SoccerMatch extends Match{
 				}
 				Thread.sleep(40);
 				updateGameObjects();
-				repaint();
+				if(skipRepaintingCounter > 0){
+					skipRepaintingCounter--;
+				}else{
+					repaint();
+				}
 				requestFocusInWindow();
 			} catch (Exception e) {
 				e.printStackTrace();
