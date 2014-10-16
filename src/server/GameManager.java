@@ -8,6 +8,8 @@ import server_client.Team;
 import server_client.User;
 import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
+import server_client.matches.Score;
+import server_client.matches.ScoreList;
 import server_client.matches.soccer.SoccerMatch;
 
 public class GameManager {
@@ -101,5 +103,13 @@ public class GameManager {
 
 	public void performActions(int gameID, int userID, Integer[] actions) {
 		getCurrentMatch(gameID).performClientActions(userID, actions);
+	}
+
+	public ScoreList getScoreList(int gameID) {
+		return getCurrentMatch(gameID).getScoreList();
+	}
+
+	public Match getNextMatch(int gameID, int userID) {
+		return gameIDtoGame.get(gameID).requestNextMatch(userID);
 	}
 }

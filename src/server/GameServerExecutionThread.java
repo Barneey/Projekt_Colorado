@@ -114,6 +114,23 @@ public class GameServerExecutionThread extends Thread{
 //				GameManager.getInstance().leaveGames((Integer)objectInputStream.readObject());
 				break;
 			}
+			case "GET_SCORELIST":{
+				int gameID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().getScoreList(gameID));
+				objectOutputStream.flush();
+			}
+			case "GET_NEXT_MATCH":{
+				int gameID = objectInputStream.readInt();
+				int userID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().getNextMatch(gameID, userID));
+				objectOutputStream.flush();
+			}
+//			case "NEXT_MATCH":{
+//				int gameID = objectInputStream.readInt();
+//				int userID = objectInputStream.readInt();
+//				objectOutputStream.writeBoolean(GameManager.getInstance().nextMatch(gameID, userID));
+//				objectOutputStream.flush();
+//			}
 			default:
 				break;
 			}

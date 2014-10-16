@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import server_client.Playmode;
@@ -16,6 +17,8 @@ import server_client.User;
 import server_client.matches.GameObject;
 import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
+import server_client.matches.Score;
+import server_client.matches.ScoreList;
 
 public class GameConnection extends ServerConnection{
 	
@@ -160,11 +163,11 @@ public class GameConnection extends ServerConnection{
 		objectOutputStream.writeObject(gameID);
 		objectOutputStream.flush();
 		
-		boolean isMatchFullyLoaded = (Boolean)objectInputStream.readObject();
+		boolean gameFinished = (Boolean)objectInputStream.readObject();
 		
 		socket.close();
 		
-		return isMatchFullyLoaded;
+		return gameFinished;
 	}
 
 	public synchronized void leaveGame(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
@@ -249,4 +252,72 @@ public class GameConnection extends ServerConnection{
 		
 		return gameEvents;
 	}
+
+	public ScoreList getScoreList(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		ScoreList scoreList = null;
+		
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		
+		objectOutputStream.writeObject("GET_SCORELIST");
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.flush();
+		
+
+		scoreList = (ScoreList)objectInputStream.readObject();
+		
+		socket.close();
+		
+		return scoreList;
+	}
+
+	public synchronized Match getNextMatch(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+		
+		socket.setSoTimeout(TIMEOUT);
+		
+		OutputStream outputStream = socket.getOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		InputStream inputStream = socket.getInputStream();
+		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+		
+		objectOutputStream.writeObject("GET_NEXT_MATCH");
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.writeInt(userID);
+		objectOutputStream.flush();
+		
+		Match nextMatch = (Match)objectInputStream.readObject();
+		
+		socket.close();
+		
+		return nextMatch;
+	}
+
+//	public boolean nextMatch(int gameID, int userID) throws UnknownHostException, IOException, SocketException, ClassNotFoundException{
+//		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
+//		
+//		OutputStream outputStream = socket.getOutputStream();
+//		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+//		
+//		InputStream inputStream = socket.getInputStream();
+//		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+//		
+//		objectOutputStream.writeObject("NEXT_MATCH");
+//		objectOutputStream.writeInt(gameID);
+//		objectOutputStream.writeInt(userID);
+//		objectOutputStream.flush();
+//		
+//		boolean nextMatch = objectInputStream.readBoolean();
+//		
+//		socket.close();
+//		return nextMatch;
+//	}
 }

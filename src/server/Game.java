@@ -3,11 +3,15 @@ package server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 import server_client.Playmode;
+import server_client.Team;
+import server_client.User;
 import server_client.matches.Match;
+import server_client.matches.ScoreList;
 
 public class Game {
 	
@@ -15,13 +19,25 @@ public class Game {
 	private Playmode playmode;
 	private Queue<Match> upcomingMatches;
 	private Queue<Match> finishedMatches;
+	private Match runningMatch;
 	private ArrayList<Integer> alstLeftUser;
+	private ArrayList<Integer> alstNewMatchRequests;
+	private ScoreList scoreList;
 	
 	public Game(Playmode playmode){
 		this.playmode = playmode; 
 		this.upcomingMatches = new PriorityQueue<>();
 		this.finishedMatches = new PriorityQueue<>();
+		this.runningMatch = null;
 		this.alstLeftUser = new ArrayList<>();
+		ArrayList<User> alstUsers = new ArrayList<>();
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				alstUsers.add(user);
+			}
+		}
+		this.alstNewMatchRequests = new ArrayList<>();
+		this.scoreList = new ScoreList(alstUsers.toArray(new User[0]));
 	}
 	
 	public void setGID(int gID){
@@ -29,6 +45,9 @@ public class Game {
 		Iterator<Match> it = upcomingMatches.iterator();
 		while(it.hasNext()){
 			it.next().setGameID(gID);
+		}
+		if(runningMatch != null){
+			runningMatch.setGameID(gID);
 		}
 	}
 
@@ -41,13 +60,18 @@ public class Game {
 	}
 	
 	public void addMatch(Match match){
-		match.setPlaymode(playmode);
+		match.setPlaymode(this.playmode);
 		match.setGameID(this.gID);
-		upcomingMatches.add(match);
+		match.setScoreList(this.scoreList);
+		if(this.runningMatch == null){
+			this.runningMatch = match;
+		}else{
+			this.upcomingMatches.add(match);
+		}
 	}
 	
 	public Match getCurrentMatch(){
-		return upcomingMatches.peek();
+		return this.runningMatch;
 	}
 
 	public void setMatchLoaded(int userID, boolean matchLoaded) {
@@ -55,10 +79,12 @@ public class Game {
 	}
 	
 	public boolean nextMatch(){
-		Match upcomingMatch = null;
-		if((upcomingMatch = upcomingMatches.poll()) != null){
-			upcomingMatch.setLeftUser(alstLeftUser.toArray(new Integer[0]));
-			finishedMatches.add(upcomingMatches.poll());	
+		this.scoreList = getCurrentMatch().getScoreList();
+		this.finishedMatches.add(getCurrentMatch());	
+		if(upcomingMatches.peek() != null){
+			this.runningMatch = upcomingMatches.poll();
+			this.runningMatch.setLeftUser(alstLeftUser.toArray(new Integer[0]));
+			this.runningMatch.setScoreList(this.scoreList);
 			return true;
 		}
 		return false;
@@ -66,6 +92,29 @@ public class Game {
 
 	public void leaveUser(int userID) {
 		alstLeftUser.add(userID);
-		getCurrentMatch().setLeftUser(alstLeftUser.toArray(new Integer[0]));
+		Match currentMatch = getCurrentMatch();
+		if(currentMatch == null){
+			//
+		}else{
+			getCurrentMatch().setLeftUser(alstLeftUser.toArray(new Integer[0]));
+		}
+	}
+	
+	public ScoreList getScoreList(){
+		return this.scoreList;
+	}
+
+	public Match requestNextMatch(int userID) {
+		alstNewMatchRequests.add(userID);
+		int userCount = 0;
+		for (Team team : playmode.getTeams()) {
+			userCount += team.getUser().length;
+		}
+		Match nextMatch = upcomingMatches.peek();
+		if((alstNewMatchRequests.size() - alstLeftUser.size()) == userCount){
+			nextMatch();
+			alstNewMatchRequests.clear();
+		}
+		return nextMatch;
 	}
 }

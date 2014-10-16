@@ -32,20 +32,27 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	public static final int HORIZONTAL_ALIGN_TOP = 3;
 	public static final int HORIZONTAL_ALIGN_CENTER = 4;
 	public static final int HORIZONTAL_ALIGN_BOTTOM = 5;
+	protected static final int EVENT_MATCH_OVER = -1337;
 	protected int matchType;
 	protected transient Image offscreen;
 	protected transient Graphics offscreenGraphics;
 	protected HashMap<String, GameObject> gameObjects;
 	protected HashMap<Integer, Boolean> userIDtoMatchLoaded;
 	protected HashMap<Integer, ArrayList<Integer>> userIDtoClientEvents;
+	protected ScoreList scoreList;
 	protected Playmode playmode;
 	protected Integer[] leftUser;
 	protected int userID;
 	protected int gameID;
 	protected boolean running;
 	protected boolean showingGameInfo;
+	protected boolean showingScore;
+	protected boolean onlyDisplayScore;
 	protected int showingGameInfoCounter;
 	protected int showingGameInfoMax;
+	protected int showingScoreCounter;
+	protected int showingScoreMax;
+	protected boolean over;
 	
 	public Match(int matchType, Playmode playmode){
 		this.gameID = -1;
@@ -55,8 +62,13 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.userIDtoClientEvents = new HashMap<>();
 		this.running = false;
 		this.showingGameInfo = false;
+		this.showingScore = false;
+		this.onlyDisplayScore = true;
 		this.showingGameInfoCounter = 0;
 		this.showingGameInfoMax = 100;
+		this.showingScoreCounter = 0;
+		this.showingScoreMax = 150;
+		this.over = false;
 		this.addKeyListener(this);
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
@@ -240,5 +252,17 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		Integer[] aEvents = alstEvents.toArray(new Integer[0]);
 		userIDtoClientEvents.put(userID, new ArrayList<Integer>());
 		return aEvents;
+	}
+	
+	public void setScoreList(ScoreList scoreList){
+		this.scoreList = scoreList;
+	}
+
+	public ScoreList getScoreList() {
+		return this.scoreList;
+	}
+	
+	public boolean isOver(){
+		return this.over;
 	}
 }

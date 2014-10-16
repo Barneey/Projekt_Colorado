@@ -28,6 +28,7 @@ import server_client.User;
 import server_client.matches.GameObject;
 import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
+import server_client.matches.Score;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
 
@@ -73,8 +74,8 @@ public class SoccerMatch extends Match{
 	private final static int BOTTOM = 1;
 	private final static int GAMEINTERVAL = 40;
 	private boolean goal;
-	private int goalCounter;
-	private int goalCounterMax;
+	private int goalDisplayCounter;
+	private int goalDisplayCounterMax;
 	private int skipRepaintingCounter;
 	private int gameTimerMax;
 	private int currentGameTime;
@@ -93,10 +94,10 @@ public class SoccerMatch extends Match{
 		this.fieldSize = new Dimension(626, 307);
 		this.fieldStart = new Point(47, 49);
 		this.goal = false;
-		this.goalCounter = 0;
-		this.goalCounterMax = 30;
+		this.goalDisplayCounter = 0;
+		this.goalDisplayCounterMax = 30;
 		this.skipRepaintingCounter = 0;
-		this.gameTimerMax = 3 * 60 * 1000 / GAMEINTERVAL;
+		this.gameTimerMax = (int)(0.1 * 60 * 1000 / GAMEINTERVAL);
 		this.currentGameTime = 0;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);
@@ -206,10 +207,40 @@ public class SoccerMatch extends Match{
 					try {
 						Thread.sleep(GAMEINTERVAL);
 						updateGame();
+						currentGameTime++;
+						if(currentGameTime >= gameTimerMax-1){
+							running = false;
+						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
+				// Match over
+				if(matchType == TEAM){
+					if(score[TEAM_1] == score[TEAM_2]){
+						for (Team team : playmode.getTeams()) {
+							for (User user : team.getUser()) {
+								scoreList.addScoreFor(user, 150);
+							}
+						}
+					}else if(score[TEAM_1] > score[TEAM_2]){
+						for (User user : playmode.getTeams()[TEAM_1].getUser()) {
+							scoreList.addScoreFor(user, 400);
+						}
+					}else if(score[TEAM_2] > score[TEAM_1]){
+						for (User user : playmode.getTeams()[TEAM_2].getUser()) {
+							scoreList.addScoreFor(user, 400);
+						}
+					}
+				}else if(matchType == TEST){
+					for (Team team : playmode.getTeams()) {
+						for (User user : team.getUser()) {
+							scoreList.addScoreFor(user, 1337);
+						}
+					}
+				}
+				addClientEvent(EVENT_MATCH_OVER);
+				
 			}
 		};
 		(new Thread(thread)).start();
@@ -256,17 +287,27 @@ public class SoccerMatch extends Match{
 		if(!imagesLoaded){
 			loadImages();
 		}
-		 // Clear screen
+		// Clear screen
 		offscreenGraphics.clearRect(0, 0, getWidth(), getHeight());
 		// Draw background
 		drawGameObject(gameObjects.get("BACKGROUND"));
-		// Draw GameInfo
+		// Draw gameInfo
 		if(showingGameInfo){
 			if(showingGameInfoCounter < showingGameInfoMax){
 				showingGameInfoCounter++;
 				drawString("Use the Arrow-Keys and Space to move the ball into the opponent goal", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 100);
 			}else{
 				showingGameInfo = false;
+			}
+		}
+		// Draw score
+		if(showingScore){
+			Score[] currentScore = scoreList.getOrderedScore();
+			for (int i = 0; i < currentScore.length; i++) {
+				drawString(i+1 + ". " + currentScore[i].toString(), Color.BLACK, new Font(Font.SANS_SERIF, Font.BOLD, 15), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20*i+100);
+			}
+			if(!onlyDisplayScore){
+				scoreList.calculateNewScores(showingScoreCounter, showingScoreMax);
 			}
 		}
 		// Draw components
@@ -287,19 +328,19 @@ public class SoccerMatch extends Match{
 			}
 			firstTeam = false;
 		}
-		drawString(score[0] + ":"+score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 30);
+		drawString(score[0] + ":" + score[1], Color.RED, new Font(Font.SANS_SERIF, Font.PLAIN, 20), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 30);
 		int ms = currentGameTime * GAMEINTERVAL;
 		int seconds = (ms / 1000) % 60;
 		String sSeconds = seconds / 10 + "" + seconds % 10;
 		int minutes = (ms / (1000*60)) % 60;
 		drawString("Time: " + minutes + ":" + sSeconds , null, null, VERTICAL_ALIGN_RIGHT, NO_ALIGN, -20, 30);
 		if(goal){
-			goalCounter++;
-			int colorValue = (100 + (155 * goalCounter / goalCounterMax));
+			goalDisplayCounter++;
+			int colorValue = (100 + (155 * goalDisplayCounter / goalDisplayCounterMax));
 			drawString("G O A L", new Color(colorValue,colorValue,colorValue), new Font(Font.SANS_SERIF, Font.PLAIN, 40), VERTICAL_ALIGN_CENTER, NO_ALIGN, -4, 130);
-			if(goalCounter >= goalCounterMax){
-				goal=false;
-				goalCounter=0;
+			if(goalDisplayCounter >= goalDisplayCounterMax){
+				goal = false;
+				goalDisplayCounter = 0;
 			}
 		}
 		g.drawImage(offscreen, 0, 0, this);
@@ -380,6 +421,17 @@ public class SoccerMatch extends Match{
 			ball.setLocation(301, 193);
 			ball.setSpeed(0.0);
 			ball.setCurrentAnimationType(animationStand);
+			if(this.matchType == TEAM){
+				for (User user : playmode.getTeams()[TEAM_2].getUser()) {
+					this.scoreList.addScoreFor(user, 80);
+				}
+			}else if(this.matchType == TEST){
+				for (Team team : playmode.getTeams()) {
+					for (User user : team.getUser()) {
+						this.scoreList.addScoreFor(user, 80);
+					}
+				}
+			}
 		}else{
 			GameObject goal2 = gameObjects.get("GOAL2");
 			if(ball.correspondsWith(goal2)){
@@ -388,6 +440,17 @@ public class SoccerMatch extends Match{
 				ball.setLocation(401, 193);
 				ball.setSpeed(0.0);
 				ball.setCurrentAnimationType(animationStand);
+				if(this.matchType == TEAM){
+					for (User user : playmode.getTeams()[TEAM_1].getUser()) {
+						this.scoreList.addScoreFor(user, 80);
+					}
+				}else if(this.matchType == TEST){
+					for (Team team : playmode.getTeams()) {
+						for (User user : team.getUser()) {
+							this.scoreList.addScoreFor(user, 80);
+						}
+					}
+				}
 			}else{
 				GameObject touchTop = gameObjects.get("TOUCH_TOP");
 				if(ball.correspondsWith(touchTop)){
@@ -746,6 +809,9 @@ public class SoccerMatch extends Match{
 				positionPlayerKickOff(TEAM_2);
 				skipRepaintingCounter = 2;
 				break;
+			case EVENT_MATCH_OVER:{
+				endMatch();
+			}
 			default:
 				break;
 			}
@@ -795,6 +861,10 @@ public class SoccerMatch extends Match{
 		ball.setCurrentAnimationType(animationStand);
 	}
 	
+	private void endMatch(){
+		running = false;
+	}
+	
 	@Override
 	public void run() {
 		showingGameInfo = true;
@@ -817,12 +887,28 @@ public class SoccerMatch extends Match{
 					repaint();
 				}
 				requestFocusInWindow();
-				if(currentGameTime >= gameTimerMax){
-					running = false;
-				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		try {
+			this.scoreList = GameConnection.getInstance().getScoreList(gameID); 
+			showingScore = true;
+			onlyDisplayScore = false;
+			while(showingScoreCounter < showingScoreMax){
+				Thread.sleep(GAMEINTERVAL);
+				repaint();
+				showingScoreCounter++;
+			}
+			onlyDisplayScore = true;
+			for(int i = 0; i < 50; i++){
+				Thread.sleep(GAMEINTERVAL);
+				repaint();
+			}
+			showingScore = false;
+			over = true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

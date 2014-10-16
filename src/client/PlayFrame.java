@@ -67,12 +67,21 @@ public class PlayFrame extends JFrame{
 				}
 				if(matchRunning){
 					if(gameCon.isGameFinished(gameID)){
+						// TODO show last score or something. -> End the game properly
 						gameFinished = true;
 						leaveGame();
 						dispose();
 					}else{
-						if(!gameCon.isEveryoneFinishedLoading(gameID)){
-							// TODO Neues Match muss geladen werden
+						if(currentMatch.isOver()){
+							remove(currentMatch); // Notwendig?
+							currentMatch = gameCon.getNextMatch(gameID, user.getID());
+							if(currentMatch == null){
+								System.out.println("Game totaly over bro");
+							}else{
+//								add(currentMatch);
+//								(new Thread(currentMatch)).start();
+								System.out.println("else");
+							}
 						}
 					}
 					try {
