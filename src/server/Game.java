@@ -70,17 +70,20 @@ public class Game {
 		}
 	}
 	
-	public Match getCurrentMatch(){
+	public Match getCurrentMatch(int userID){
+		if(alstNewMatchRequests.contains(userID)){
+			return this.upcomingMatches.peek();
+		}
 		return this.runningMatch;
 	}
 
 	public void setMatchLoaded(int userID, boolean matchLoaded) {
-		getCurrentMatch().setMatchLoaded(userID, matchLoaded);
+		getCurrentMatch(userID).setMatchLoaded(userID, matchLoaded);
 	}
 	
-	public boolean nextMatch(){
-		this.scoreList = getCurrentMatch().getScoreList();
-		this.finishedMatches.add(getCurrentMatch());	
+	public boolean nextMatch(int userID){
+		this.scoreList = this.runningMatch.getScoreList();
+		this.finishedMatches.add(this.runningMatch);	
 		if(upcomingMatches.peek() != null){
 			this.runningMatch = upcomingMatches.poll();
 			this.runningMatch.setLeftUser(alstLeftUser.toArray(new Integer[0]));
@@ -92,11 +95,11 @@ public class Game {
 
 	public void leaveUser(int userID) {
 		alstLeftUser.add(userID);
-		Match currentMatch = getCurrentMatch();
+		Match currentMatch = getCurrentMatch(userID);
 		if(currentMatch == null){
 			//
 		}else{
-			getCurrentMatch().setLeftUser(alstLeftUser.toArray(new Integer[0]));
+			getCurrentMatch(userID).setLeftUser(alstLeftUser.toArray(new Integer[0]));
 		}
 	}
 	
@@ -112,7 +115,7 @@ public class Game {
 		}
 		Match nextMatch = upcomingMatches.peek();
 		if((alstNewMatchRequests.size() - alstLeftUser.size()) == userCount){
-			nextMatch();
+			nextMatch(userID);
 			alstNewMatchRequests.clear();
 		}
 		return nextMatch;

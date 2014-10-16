@@ -892,21 +892,21 @@ public class SoccerMatch extends Match{
 			}
 		}
 		try {
-			this.scoreList = GameConnection.getInstance().getScoreList(gameID); 
-			showingScore = true;
-			onlyDisplayScore = false;
+			this.scoreList = GameConnection.getInstance().getScoreList(gameID, userID); 
+			this.showingScore = true;
+			this.onlyDisplayScore = false;
 			while(showingScoreCounter < showingScoreMax){
 				Thread.sleep(GAMEINTERVAL);
 				repaint();
-				showingScoreCounter++;
+				this.showingScoreCounter++;
 			}
-			onlyDisplayScore = true;
+			this.onlyDisplayScore = true;
 			for(int i = 0; i < 50; i++){
 				Thread.sleep(GAMEINTERVAL);
 				repaint();
 			}
-			showingScore = false;
-			over = true;
+			this.showingScore = false;
+			this.over = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

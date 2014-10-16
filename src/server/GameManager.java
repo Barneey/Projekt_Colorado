@@ -67,8 +67,8 @@ public class GameManager {
 		return userIDtoNewGame.remove(user.getID());
 	}
 
-	public Match getCurrentMatch(int gameID) {
-		return gameIDtoGame.get(gameID).getCurrentMatch();
+	public Match getCurrentMatch(int gameID, int userID) {
+		return gameIDtoGame.get(gameID).getCurrentMatch(userID);
 	}
 
 	public void setMatchLoaded(int gameID, int userID, boolean matchLoaded) {
@@ -89,24 +89,24 @@ public class GameManager {
 		gameIDtoGame.get(gameID).leaveUser(userID);
 	}
 
-	public synchronized HashMap<String, GameObjectInformation> updateGameInformation(HashMap<String, GameObjectInformation> gameObjectInformation,int gameID) {
-		Match currentMatch = getCurrentMatch(gameID);
+	public synchronized HashMap<String, GameObjectInformation> updateGameInformation(HashMap<String, GameObjectInformation> gameObjectInformation,int gameID, int userID) {
+		Match currentMatch = getCurrentMatch(gameID, userID);
 		currentMatch.updateGameInformation(gameObjectInformation);
 		return currentMatch.getGameInformation();
 	}
 
 	public Integer[] getGameEvents(int gameID, int userID) {
-		Match currentMatch = getCurrentMatch(gameID);
+		Match currentMatch = getCurrentMatch(gameID, userID);
 		return currentMatch.getEventsFor(userID);
 		
 	}
 
 	public void performActions(int gameID, int userID, Integer[] actions) {
-		getCurrentMatch(gameID).performClientActions(userID, actions);
+		getCurrentMatch(gameID, userID).performClientActions(userID, actions);
 	}
 
-	public ScoreList getScoreList(int gameID) {
-		return getCurrentMatch(gameID).getScoreList();
+	public ScoreList getScoreList(int gameID, int userID) {
+		return getCurrentMatch(gameID, userID).getScoreList();
 	}
 
 	public Match getNextMatch(int gameID, int userID) {

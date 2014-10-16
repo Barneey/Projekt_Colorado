@@ -30,7 +30,7 @@ public class PlayFrame extends JFrame{
 		this.addWindowListener(new WLPlayFrame());
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		try {
-			currentMatch = gameCon.getCurrentMatch(gameID);
+			currentMatch = gameCon.getCurrentMatch(gameID, user.getID());
 			setLayout(new BorderLayout());
 			JLabel jlblMessage = new JLabel("Loading data...", SwingConstants.CENTER);
 			add(jlblMessage, BorderLayout.NORTH);
@@ -51,7 +51,7 @@ public class PlayFrame extends JFrame{
 					jlblMessage.setText("Waiting for other players...");
 				}
 				while(!everyoneFinishedLoading){
-					everyoneFinishedLoading = gameCon.isEveryoneFinishedLoading(gameID);
+					everyoneFinishedLoading = gameCon.isEveryoneFinishedLoading(gameID, user.getID());
 					try {
 						Thread.sleep(66);
 					} catch (InterruptedException e) {
@@ -66,7 +66,7 @@ public class PlayFrame extends JFrame{
 					matchRunning = true;
 				}
 				if(matchRunning){
-					if(gameCon.isGameFinished(gameID)){
+					if(gameCon.isGameFinished(gameID, user.getID())){
 						// TODO show last score or something. -> End the game properly
 						gameFinished = true;
 						leaveGame();
@@ -77,9 +77,10 @@ public class PlayFrame extends JFrame{
 							currentMatch = gameCon.getNextMatch(gameID, user.getID());
 							if(currentMatch == null){
 								System.out.println("Game totaly over bro");
+								gameFinished = true;
 							}else{
-//								add(currentMatch);
-//								(new Thread(currentMatch)).start();
+								add(currentMatch);
+								(new Thread(currentMatch)).start();
 								System.out.println("else");
 							}
 						}
@@ -91,6 +92,7 @@ public class PlayFrame extends JFrame{
 					}	
 				}
 			}
+			System.out.println("So, jetzt ist es vorbei");
 		} catch (SocketTimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

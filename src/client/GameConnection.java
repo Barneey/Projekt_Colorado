@@ -87,7 +87,7 @@ public class GameConnection extends ServerConnection{
 		return gameID;
 	}
 
-	public synchronized Match getCurrentMatch(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized Match getCurrentMatch(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -99,7 +99,8 @@ public class GameConnection extends ServerConnection{
 		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 		
 		objectOutputStream.writeObject("GET_CURRENT_MATCH");
-		objectOutputStream.writeObject(gameID);
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.writeInt(gameID);
 		objectOutputStream.flush();
 		
 		Match currentMatch = (Match)objectInputStream.readObject();
@@ -126,7 +127,7 @@ public class GameConnection extends ServerConnection{
 		socket.close();
 	}
 
-	public synchronized boolean isEveryoneFinishedLoading(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized boolean isEveryoneFinishedLoading(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -138,7 +139,8 @@ public class GameConnection extends ServerConnection{
 		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 		
 		objectOutputStream.writeObject("IS_MATCH_FULLY_LOADED");
-		objectOutputStream.writeObject(gameID);
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.writeInt(userID);
 		objectOutputStream.flush();
 		
 		boolean isMatchFullyLoaded = (Boolean)objectInputStream.readObject();
@@ -148,7 +150,7 @@ public class GameConnection extends ServerConnection{
 		return isMatchFullyLoaded;
 	}
 
-	public synchronized boolean isGameFinished(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public synchronized boolean isGameFinished(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);
@@ -160,7 +162,8 @@ public class GameConnection extends ServerConnection{
 		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 		
 		objectOutputStream.writeObject("IS_GAME_FINISHED");
-		objectOutputStream.writeObject(gameID);
+		objectOutputStream.writeInt(gameID);
+		objectOutputStream.writeInt(userID);
 		objectOutputStream.flush();
 		
 		boolean gameFinished = (Boolean)objectInputStream.readObject();
@@ -253,7 +256,7 @@ public class GameConnection extends ServerConnection{
 		return gameEvents;
 	}
 
-	public ScoreList getScoreList(int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+	public ScoreList getScoreList(int gameID, int userID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
 		ScoreList scoreList = null;
 		
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
@@ -268,6 +271,7 @@ public class GameConnection extends ServerConnection{
 		
 		objectOutputStream.writeObject("GET_SCORELIST");
 		objectOutputStream.writeInt(gameID);
+		objectOutputStream.writeInt(userID);
 		objectOutputStream.flush();
 		
 

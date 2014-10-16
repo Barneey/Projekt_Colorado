@@ -39,7 +39,7 @@ public class GameServerExecutionThread extends Thread{
 				Integer[] actions = (Integer[])objectInputStream.readObject();
 				HashMap<String, GameObjectInformation> gameObjectInformation = (HashMap<String, GameObjectInformation>)objectInputStream.readObject();
 				int gameID = objectInputStream.readInt();
-				objectOutputStream.writeObject(GameManager.getInstance().updateGameInformation(gameObjectInformation, gameID));
+				objectOutputStream.writeObject(GameManager.getInstance().updateGameInformation(gameObjectInformation, gameID, userID));
 				if(actions.length > 0){
 					GameManager.getInstance().performActions(gameID, userID, actions);
 				}
@@ -80,8 +80,9 @@ public class GameServerExecutionThread extends Thread{
 				objectOutputStream.flush();
 				break;
 			case "GET_CURRENT_MATCH":{
-				int gameID = (Integer)objectInputStream.readObject();
-				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID));
+				int gameID = objectInputStream.readInt();
+				int userID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID, userID));
 				objectOutputStream.flush();
 				break;
 			}
@@ -93,14 +94,16 @@ public class GameServerExecutionThread extends Thread{
 				break;
 			}
 			case "IS_MATCH_FULLY_LOADED":{
-				int gameID = (Integer)objectInputStream.readObject();
-				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID).isLoaded());
+				int gameID = objectInputStream.readInt();
+				int userID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID, userID).isLoaded());
 				objectOutputStream.flush();
 				break;
 			}
 			case "IS_GAME_FINISHED":{
-				int gameID = (Integer)objectInputStream.readObject();
-				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID) == null);
+				int gameID = objectInputStream.readInt();
+				int userID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().getCurrentMatch(gameID, userID) == null);
 				objectOutputStream.flush();
 				break;
 			}
@@ -116,7 +119,8 @@ public class GameServerExecutionThread extends Thread{
 			}
 			case "GET_SCORELIST":{
 				int gameID = objectInputStream.readInt();
-				objectOutputStream.writeObject(GameManager.getInstance().getScoreList(gameID));
+				int userID = objectInputStream.readInt();
+				objectOutputStream.writeObject(GameManager.getInstance().getScoreList(gameID, userID));
 				objectOutputStream.flush();
 			}
 			case "GET_NEXT_MATCH":{
@@ -125,12 +129,6 @@ public class GameServerExecutionThread extends Thread{
 				objectOutputStream.writeObject(GameManager.getInstance().getNextMatch(gameID, userID));
 				objectOutputStream.flush();
 			}
-//			case "NEXT_MATCH":{
-//				int gameID = objectInputStream.readInt();
-//				int userID = objectInputStream.readInt();
-//				objectOutputStream.writeBoolean(GameManager.getInstance().nextMatch(gameID, userID));
-//				objectOutputStream.flush();
-//			}
 			default:
 				break;
 			}
