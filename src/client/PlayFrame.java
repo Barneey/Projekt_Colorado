@@ -1,7 +1,5 @@
 package client;
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -32,19 +30,19 @@ public class PlayFrame extends JFrame{
 		try {
 			currentMatch = gameCon.getCurrentMatch(gameID, user.getID());
 			setLayout(new BorderLayout());
-			JLabel jlblMessage = new JLabel("Loading data...", SwingConstants.CENTER);
+			JLabel jlblMessage = new JLabel("", SwingConstants.CENTER);
 			add(jlblMessage, BorderLayout.NORTH);
 			setSize(currentMatch.getSize().width + 16, currentMatch.getSize().height + 39);
 			setLocationRelativeTo(null);
 			setVisible(true);
 			
-
 			boolean everyoneFinishedLoading = false;
 			boolean matchRunning = false;
 			boolean matchLoaded = false;
 			boolean gameFinished = false;
 			while(!gameFinished){
 				if(!matchLoaded){
+					jlblMessage.setText("Loading data...");
 					currentMatch.loadImages();
 					gameCon.setMatchLoaded(gameID, user.getID(), true);
 					matchLoaded = true;
@@ -59,7 +57,7 @@ public class PlayFrame extends JFrame{
 					}	
 				}
 				if(!matchRunning && everyoneFinishedLoading){
-					remove(jlblMessage);
+					jlblMessage.setText("");
 					currentMatch.setUserID(user.getID());
 					add(currentMatch);
 					(new Thread(currentMatch)).start();	
@@ -76,12 +74,11 @@ public class PlayFrame extends JFrame{
 							remove(currentMatch); // Notwendig?
 							currentMatch = gameCon.getNextMatch(gameID, user.getID());
 							if(currentMatch == null){
-								System.out.println("Game totaly over bro");
 								gameFinished = true;
 							}else{
-								add(currentMatch);
-								(new Thread(currentMatch)).start();
-								System.out.println("else");
+								matchLoaded = false;
+								everyoneFinishedLoading = false;
+								matchRunning = false;
 							}
 						}
 					}

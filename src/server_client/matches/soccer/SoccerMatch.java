@@ -83,7 +83,6 @@ public class SoccerMatch extends Match{
 	public SoccerMatch(int matchType, Playmode playmode) {
 		super(matchType, playmode);
 		this.pressedKeys = new HashSet<>();
-		this.userID = -1;
 		this.lastContactUserID = -1;
 		this.playerAnimationTimer = 6;
 		this.ballSpeedRun = 5.0;
@@ -97,7 +96,7 @@ public class SoccerMatch extends Match{
 		this.goalDisplayCounter = 0;
 		this.goalDisplayCounterMax = 30;
 		this.skipRepaintingCounter = 0;
-		this.gameTimerMax = (int)(0.1 * 60 * 1000 / GAMEINTERVAL);
+		this.gameTimerMax = (int)(1 * 60 * 1000 / GAMEINTERVAL);
 		this.currentGameTime = 0;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);
@@ -113,7 +112,8 @@ public class SoccerMatch extends Match{
 		this.gameObjects.put("GOAL_LINE_TEAM2_TOP", new GameObject(680, 48, new Dimension(3, 112)));
 		this.gameObjects.put("GOAL_LINE_TEAM2_BOTTOM", new GameObject(680, 244, new Dimension(3, 112)));
 		// Check playmode and create Objects
-		if(this.matchType == TEAM){
+		switch (this.matchType) {
+		case TEAM:{
 			User[] user = playmode.getTeams()[0].getUser();
 			int xOffset = fieldSize.width / 30;
 			int yOffset = fieldSize.height / ((user.length + 1) / 2);
@@ -127,9 +127,10 @@ public class SoccerMatch extends Match{
 				GameObject newPlayer = new GameObject(fieldStart.x + fieldSize.width - (xOffset + (i / 2 == 0 ? xOffset : 0)), fieldStart.y + fieldSize.height - (yOffset + yOffset * (i/2)), new Dimension(21,21));
 				newPlayer.setAnimationCounterMax(playerAnimationTimer);
 				gameObjects.put("PLAYER" + user[i].getID(), newPlayer);
-			}			
+			}
+			break;
 		}
-		if(this.matchType == TEST){
+		case TEST:{
 			for (Team team : playmode.getTeams()) {
 				for (User user : team.getUser()) {
 					GameObject newPlayer = new GameObject(fieldStart.x + fieldSize.width / 2, fieldStart.y + fieldSize.height / 2, new Dimension(21,21));
@@ -137,6 +138,10 @@ public class SoccerMatch extends Match{
 					gameObjects.put("PLAYER" + user.getID(), newPlayer);
 				}
 			}
+			break;
+		}
+		default:
+			break;
 		}
 		imagesLoaded = false;
 		score = new int[2];
@@ -859,10 +864,6 @@ public class SoccerMatch extends Match{
 		ball.resetLocation();
 		ball.setSpeed(0.0);
 		ball.setCurrentAnimationType(animationStand);
-	}
-	
-	private void endMatch(){
-		running = false;
 	}
 	
 	@Override

@@ -56,6 +56,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	
 	public Match(int matchType, Playmode playmode){
 		this.gameID = -1;
+		this.userID = -1;
 		this.matchType = matchType;
 		this.playmode = playmode;
 		this.userIDtoMatchLoaded = new HashMap<>();
@@ -260,6 +261,10 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 
 	public ScoreList getScoreList() {
 		return this.scoreList;
+	}
+	
+	protected void endMatch(){
+		running = false;
 	}
 	
 	public boolean isOver(){

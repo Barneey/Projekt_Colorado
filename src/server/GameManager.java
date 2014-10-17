@@ -10,6 +10,7 @@ import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
 import server_client.matches.Score;
 import server_client.matches.ScoreList;
+import server_client.matches.horserace.HorseRaceMatch;
 import server_client.matches.soccer.SoccerMatch;
 
 public class GameManager {
@@ -54,7 +55,7 @@ public class GameManager {
 		}
 		// TODO find a way to add new games according to the playmode
 		game.addMatch(new SoccerMatch(matchType, playmode));
-		
+		game.addMatch(new HorseRaceMatch(matchType, playmode));
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);
 		gameIDtoGame.put(game.getGID(), game);

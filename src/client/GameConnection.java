@@ -304,24 +304,4 @@ public class GameConnection extends ServerConnection{
 		
 		return nextMatch;
 	}
-
-//	public boolean nextMatch(int gameID, int userID) throws UnknownHostException, IOException, SocketException, ClassNotFoundException{
-//		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
-//		
-//		OutputStream outputStream = socket.getOutputStream();
-//		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-//		
-//		InputStream inputStream = socket.getInputStream();
-//		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-//		
-//		objectOutputStream.writeObject("NEXT_MATCH");
-//		objectOutputStream.writeInt(gameID);
-//		objectOutputStream.writeInt(userID);
-//		objectOutputStream.flush();
-//		
-//		boolean nextMatch = objectInputStream.readBoolean();
-//		
-//		socket.close();
-//		return nextMatch;
-//	}
 }
