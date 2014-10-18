@@ -54,7 +54,7 @@ public class GameManager {
 			matchType = Match.TEST;
 		}
 		// TODO find a way to add new games according to the playmode
-		game.addMatch(new SoccerMatch(matchType, playmode));
+//		game.addMatch(new SoccerMatch(matchType, playmode));
 		game.addMatch(new HorseRaceMatch(matchType, playmode));
 		ServerDataBaseManager sDBM = new ServerDataBaseManager();
 		sDBM.createNewGame(game);

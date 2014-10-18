@@ -21,7 +21,7 @@ public class GameObject implements Serializable{
 	private Dimension size;
 	private Hashtable<String, BufferedImage[]> animations;
 	private int animationCounter;
-	private int animationCounterMax;
+	private double animationCounterMax;
 	private transient Image currentImage;
 	public static final int X_OFFSET_LEFT = 0;
 	public static final int X_OFFSET_MIDDLE = 1;
@@ -187,7 +187,7 @@ public class GameObject implements Serializable{
 		this.information.setSpeedReduction(reduction);
 	}
 	
-	public int getAnimationCounterMax() {
+	public double getAnimationCounterMax() {
 		return animationCounterMax;
 	}
 
@@ -265,5 +265,17 @@ public class GameObject implements Serializable{
 			int yOffset = generator.nextInt(go.getSize().height - this.getSize().height + 1);
 			this.setLocation(go.getX() + xOffset, go.getY() + yOffset);
 		}
+	}
+
+	public void changeSpeedBy(double d) {
+		setSpeed(getSpeed() + d); 
+	}
+
+	public void changeAnimationCounterMaxbyPercent(double d) {
+		setAnimationCounterMax(getAnimationCounterMax() * (1 - d));
+	}
+
+	public void setAnimationCounterMax(double d) {
+		this.animationCounterMax = d;
 	}
 }

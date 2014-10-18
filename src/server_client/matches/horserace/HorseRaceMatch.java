@@ -26,11 +26,12 @@ public class HorseRaceMatch extends Match{
 	private String animationStandOpen;
 	private String animationMove;
 	private GameObject player;
-	private int playerAnimationTimer;
 	private transient BufferedImage[] backgroundStand;
 	private transient BufferedImage[] backgroundStandOpen;
 	private transient BufferedImage[] horseStand;
 	private transient BufferedImage[] horseMove;
+	private char keytoPress;
+	private boolean playing;
 
 	private final static int GAMEINTERVAL = 40;
 	
@@ -41,13 +42,16 @@ public class HorseRaceMatch extends Match{
 		this.animationStand = "STAND";
 		this.animationStandOpen = "STAND_OPEN";
 		this.animationMove = "MOVE";
+		this.keytoPress = 'A';
 		
 		gameObjects.put("BACKGROUND", new GameObject(0, 0, this.getSize()));
 		gameObjects.put("GOALLINE", new GameObject(655, 0, new Dimension(100, this.getHeight())));
 		int playerCounter = 0;
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				gameObjects.put("PLAYER" + user.getID(), new GameObject(5, playerCounter * 40 + 25, new Dimension(40,15)));
+				GameObject horse = new GameObject(5, playerCounter * 40 + 25, new Dimension(40,15));
+				horse.setAnimationCounterMax(30);
+				gameObjects.put("PLAYER" + user.getID(), horse);
 				playerCounter++;
 			}
 		}
@@ -58,7 +62,16 @@ public class HorseRaceMatch extends Match{
 	public void run() {
 		showingGameInfo = true;
 		repaint();
+		for (int i = 0; i < 50; i++) {
+			try {
+				Thread.sleep(GAMEINTERVAL);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		showingGameInfo = false;
 		running = true;
+		playing = true;
 //		int counter = 0;
 		while(running){
 			try {
@@ -101,21 +114,26 @@ public class HorseRaceMatch extends Match{
 	}
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
+	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void keyReleased(KeyEvent e) {
+		if(playing){
+			if(Character.toUpperCase(e.getKeyChar()) == keytoPress){
+				GameObject player = gameObjects.get("PLAYER" + userID);
+				player.changeSpeedBy(0.15);
+				player.changeAnimationCounterMaxbyPercent(0.04);
+				player.setCurrentAnimationType(animationMove);
+				keytoPress = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt((int)(Math.random() * 26));
+			}
+		}
 	}
 
 	@Override
-	public void keyTyped(KeyEvent arg0) {
+	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -130,11 +148,14 @@ public class HorseRaceMatch extends Match{
 		if(showingGameInfo){
 			if(showingGameInfoCounter < showingGameInfoMax){
 				showingGameInfoCounter++;
-				drawString("Use the Arrow-Keys and Space to move the ball into the opponent goal", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 100);
+				drawString("Press the displayed key to speed your unicorn up", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20);
 			}
 			if(showingGameInfoCounter > showingGameInfoMax){
 				// Draw countdown
 			}
+		}
+		if(playing){
+			drawString(keytoPress + "", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 20), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20);
 		}
 		// Draw score
 		if(showingScore){
@@ -211,13 +232,17 @@ public class HorseRaceMatch extends Match{
 	@Override
 	protected void updateGameObjects() {
 		// TODO Auto-generated method stub
-		
+		for (Team team : playmode.getTeams()) {
+			for (User user : team.getUser()) {
+				GameObject player = gameObjects.get("PLAYER" + user.getID());
+				animateGameObject(player);
+			}
+		}
 	}
 
 	@Override
 	protected void updateGame() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
