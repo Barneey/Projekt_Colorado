@@ -6,18 +6,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import server_client.Playmode;
 import server_client.User;
-import server_client.matches.GameObject;
 import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
-import server_client.matches.Score;
 import server_client.matches.ScoreList;
 
 public class GameConnection extends ServerConnection{
@@ -205,6 +201,10 @@ public class GameConnection extends ServerConnection{
 	}
 
 	public synchronized HashMap<String, GameObjectInformation> updateGameObjects(int userID, Integer[] actions, HashMap<String, GameObjectInformation> clientPlayerObjects, int gameID) throws UnknownHostException, IOException, SocketTimeoutException, ClassNotFoundException {
+		if(actions == null){
+			actions = new Integer[0];
+		}
+		
 		Socket socket = new Socket(SERVER_ADDRESS_GAME, GAME_PORT);
 		
 		socket.setSoTimeout(TIMEOUT);

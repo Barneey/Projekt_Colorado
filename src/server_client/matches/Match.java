@@ -45,9 +45,11 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected int userID;
 	protected int gameID;
 	protected boolean running;
+	protected boolean playing;
+	protected boolean showingCountDown;
 	protected boolean showingGameInfo;
-	protected boolean showingScore;
-	protected boolean onlyDisplayScore;
+	protected boolean showingAddingScore;
+	protected boolean showingOnlyScore;
 	protected int showingGameInfoCounter;
 	protected int showingGameInfoMax;
 	protected int showingScoreCounter;
@@ -62,9 +64,11 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		this.userIDtoMatchLoaded = new HashMap<>();
 		this.userIDtoClientEvents = new HashMap<>();
 		this.running = false;
+		this.playing = false;
+		this.showingCountDown = false;
 		this.showingGameInfo = false;
-		this.showingScore = false;
-		this.onlyDisplayScore = true;
+		this.showingAddingScore = false;
+		this.showingOnlyScore = true;
 		this.showingGameInfoCounter = 0;
 		this.showingGameInfoMax = 100;
 		this.showingScoreCounter = 0;
@@ -83,14 +87,15 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		gameObjects = new HashMap<>();
 	}
 	
-	public abstract void paint(Graphics g);
 	public abstract void loadImages();
-	protected abstract void updateGameObjects();
-	protected abstract void updateGame();
-	protected abstract void executeGameEvents(Integer[] events);
-	protected abstract void startUpdating();
+	public abstract void paint(Graphics g);
+	protected abstract void startServerLoop();
+	protected abstract void updateServerGame();
 	protected abstract Integer[] getActions();
+	protected abstract void updateGameObjects();
+	protected abstract boolean executeGameEvents(Integer[] events);
 	public abstract void performClientActions(int userID, Integer[] actions);
+	protected abstract void endMatch();
 	
 	public void setUserID(int userID){
 		this.userID = userID;
@@ -206,7 +211,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 		}
 		if(!running){
 			running = true;
-			startUpdating();
+			startServerLoop();
 		}
 		return true;
 	}
@@ -261,10 +266,6 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 
 	public ScoreList getScoreList() {
 		return this.scoreList;
-	}
-	
-	protected void endMatch(){
-		running = false;
 	}
 	
 	public boolean isOver(){

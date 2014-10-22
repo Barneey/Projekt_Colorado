@@ -202,7 +202,7 @@ public class SoccerMatch extends Match{
 		imagesLoaded = true;
 	}
 	
-	protected void startUpdating(){
+	protected void startServerLoop(){
 		
 		Runnable thread = new Runnable(){
 
@@ -211,7 +211,7 @@ public class SoccerMatch extends Match{
 				while(running){
 					try {
 						Thread.sleep(GAMEINTERVAL);
-						updateGame();
+						updateServerGame();
 						currentGameTime++;
 						if(currentGameTime >= gameTimerMax-1){
 							running = false;
@@ -306,12 +306,12 @@ public class SoccerMatch extends Match{
 			}
 		}
 		// Draw score
-		if(showingScore){
+		if(showingAddingScore){
 			Score[] currentScore = scoreList.getOrderedScore();
 			for (int i = 0; i < currentScore.length; i++) {
 				drawString(i+1 + ". " + currentScore[i].toString(), Color.BLACK, new Font(Font.SANS_SERIF, Font.BOLD, 15), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20*i+100);
 			}
-			if(!onlyDisplayScore){
+			if(!showingOnlyScore){
 				scoreList.calculateNewScores(showingScoreCounter, showingScoreMax);
 			}
 		}
@@ -401,7 +401,7 @@ public class SoccerMatch extends Match{
 		return alstActions.toArray(new Integer[0]);
 	}
 
-	protected void updateGame(){
+	protected void updateServerGame(){
 		GameObject ball = gameObjects.get("BALL");
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
@@ -766,7 +766,10 @@ public class SoccerMatch extends Match{
 	}
 	
 	@Override
-	protected void executeGameEvents(Integer[] events) {
+	protected boolean executeGameEvents(Integer[] events) {
+		if(events == null){
+			events = new Integer[0];
+		}
 		for (Integer integer : events) {
 			switch (integer) {
 			case EVENT_GOAL_TEAM_1:
@@ -821,6 +824,7 @@ public class SoccerMatch extends Match{
 				break;
 			}
 		}
+		return events.length > 0;
 	}
 	
 	public static synchronized void playSound() {
@@ -894,19 +898,19 @@ public class SoccerMatch extends Match{
 		}
 		try {
 			this.scoreList = GameConnection.getInstance().getScoreList(gameID, userID); 
-			this.showingScore = true;
-			this.onlyDisplayScore = false;
+			this.showingAddingScore = true;
+			this.showingOnlyScore = false;
 			while(showingScoreCounter < showingScoreMax){
 				Thread.sleep(GAMEINTERVAL);
 				repaint();
 				this.showingScoreCounter++;
 			}
-			this.onlyDisplayScore = true;
+			this.showingOnlyScore = true;
 			for(int i = 0; i < 50; i++){
 				Thread.sleep(GAMEINTERVAL);
 				repaint();
 			}
-			this.showingScore = false;
+			this.showingAddingScore = false;
 			this.over = true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -999,5 +1003,10 @@ public class SoccerMatch extends Match{
 				break;
 			}
 		}
+	}
+
+	@Override
+	protected void endMatch() {
+		running = false;
 	}
 }

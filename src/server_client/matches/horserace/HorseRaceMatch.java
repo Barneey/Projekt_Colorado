@@ -7,13 +7,21 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import client.GameConnection;
 import server_client.Playmode;
 import server_client.Team;
 import server_client.User;
 import server_client.matches.GameObject;
+import server_client.matches.GameObjectInformation;
 import server_client.matches.Match;
 import server_client.matches.Score;
 import server_client.matches.soccer.SoccerImageLoader;
@@ -32,6 +40,15 @@ public class HorseRaceMatch extends Match{
 	private transient BufferedImage[] horseMove;
 	private char keytoPress;
 	private boolean playing;
+	private int countdownTime;
+	private int gameTime;
+	private int addScoreTime;
+	private int showScoreTime;
+	private int currentGameTime;
+	private ArrayList<Integer> finishedPlayerIDs;
+	private final static int EVENT_PLAYER_FINISHED = 0;
+	private final static int EVENT_SHOW_COUNTDOWN = 1;
+	private final static int EVENT_START_GAME = 2;
 
 	private final static int GAMEINTERVAL = 40;
 	
@@ -43,13 +60,18 @@ public class HorseRaceMatch extends Match{
 		this.animationStandOpen = "STAND_OPEN";
 		this.animationMove = "MOVE";
 		this.keytoPress = 'A';
-		
+		this.countdownTime = (3 * 1000 / GAMEINTERVAL);
+		this.gameTime = (1 * 60 * 1000 / GAMEINTERVAL);
+		this.addScoreTime = (3 * 1000 / GAMEINTERVAL);
+		this.showScoreTime = (3 * 1000 / GAMEINTERVAL);
+		this.currentGameTime = 0;
+		this.finishedPlayerIDs = new ArrayList<>();
 		gameObjects.put("BACKGROUND", new GameObject(0, 0, this.getSize()));
 		gameObjects.put("GOALLINE", new GameObject(655, 0, new Dimension(100, this.getHeight())));
 		int playerCounter = 0;
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				GameObject horse = new GameObject(5, playerCounter * 40 + 25, new Dimension(40,15));
+				HorseGO horse = new HorseGO(5, playerCounter * 40 + 25, new Dimension(40,15));
 				horse.setAnimationCounterMax(30);
 				gameObjects.put("PLAYER" + user.getID(), horse);
 				playerCounter++;
@@ -60,6 +82,7 @@ public class HorseRaceMatch extends Match{
 
 	@Override
 	public void run() {
+		// TODO REWORK
 		showingGameInfo = true;
 		repaint();
 		for (int i = 0; i < 50; i++) {
@@ -72,21 +95,12 @@ public class HorseRaceMatch extends Match{
 		showingGameInfo = false;
 		running = true;
 		playing = true;
-//		int counter = 0;
 		while(running){
 			try {
-//				counter++;
-//				if(counter >= 10){
-//					counter = 0;
-//					renewImages();
-//				}
 				Thread.sleep(GAMEINTERVAL);
+				currentGameTime++;
 				updateGameObjects();
-//				if(skipRepaintingCounter > 0){
-//					skipRepaintingCounter--;
-//				}else{
-					repaint();
-//				}
+				repaint();
 				requestFocusInWindow();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -158,12 +172,12 @@ public class HorseRaceMatch extends Match{
 			drawString(keytoPress + "", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 20), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20);
 		}
 		// Draw score
-		if(showingScore){
+		if(showingAddingScore){
 			Score[] currentScore = scoreList.getOrderedScore();
 			for (int i = 0; i < currentScore.length; i++) {
 				drawString(i+1 + ". " + currentScore[i].toString(), Color.BLACK, new Font(Font.SANS_SERIF, Font.BOLD, 15), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20*i+100);
 			}
-			if(!onlyDisplayScore){
+			if(!showingOnlyScore){
 				scoreList.calculateNewScores(showingScoreCounter, showingScoreMax);
 			}
 		}
@@ -183,6 +197,13 @@ public class HorseRaceMatch extends Match{
 			}
 			firstTeam = false;
 		}
+		
+		int ms = currentGameTime * GAMEINTERVAL;
+		int seconds = (ms / 1000) % 60;
+		String sSeconds = seconds / 10 + "" + seconds % 10;
+		int minutes = (ms / (1000*60)) % 60;
+		drawString("Time: " + minutes + ":" + sSeconds , null, null, VERTICAL_ALIGN_RIGHT, NO_ALIGN, -20, 30);
+
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
@@ -231,36 +252,158 @@ public class HorseRaceMatch extends Match{
 
 	@Override
 	protected void updateGameObjects() {
-		// TODO Auto-generated method stub
+		boolean gameEventsGotten = false;
+		try {
+			gameEventsGotten = executeGameEvents(GameConnection.getInstance().getGameEvents(gameID, userID));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
+		if(!gameEventsGotten){
+			player = gameObjects.get("PLAYER" + userID);
+			clientPlayerObjects.put("PLAYER" + userID, player.getInformation());
+		}
+		try {
+			clientPlayerObjects = GameConnection.getInstance().updateGameObjects(userID, getActions(), clientPlayerObjects, gameID);
+			Iterator<Entry<String, GameObjectInformation>> it = clientPlayerObjects.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String, GameObjectInformation> entry = it.next();
+				gameObjects.get(entry.getKey()).setGameInformation(entry.getValue());
+			}
+		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		for (Team team : playmode.getTeams()) {
 			for (User user : team.getUser()) {
-				GameObject player = gameObjects.get("PLAYER" + user.getID());
-				animateGameObject(player);
+				animateGameObject(gameObjects.get("PLAYER" + user.getID()));
 			}
 		}
 	}
 
 	@Override
-	protected void updateGame() {
-		// TODO Auto-generated method stub
+	protected void updateServerGame() {
+		// Countdown
+		if(currentGameTime <= countdownTime){
+			if(!showingCountDown){
+				showingCountDown = true;
+				addClientEvent(EVENT_SHOW_COUNTDOWN);
+			}
+		}
+		// Game
+		if(currentGameTime > countdownTime && currentGameTime <= (countdownTime + gameTime)){
+			if(!playing){
+				showingCountDown = false;
+				playing = true;
+				addClientEvent(EVENT_START_GAME);
+				for (Team team : playmode.getTeams()) {
+					for (User user : team.getUser()) {
+						((HorseGO)(gameObjects.get("PLAYER" + user.getID()))).setRunning(true);;
+					}
+				}
+			}
+			int playerCounter = 0;
+			GameObject goalLine = gameObjects.get("GOALLINE");
+			for (Team team : playmode.getTeams()) {
+				for (User user : team.getUser()) {
+					if(!finishedPlayerIDs.contains(user.getID())){
+						HorseGO player = (HorseGO)gameObjects.get("PLAYER" + user.getID());
+						if(player.correspondsWith(goalLine)){
+							finishedPlayerIDs.add(user.getID());
+							player.setRunning(false);
+							scoreList.addScoreFor(user, (500 / finishedPlayerIDs.size()));
+						}
+					}
+					playerCounter++;
+				}
+			}
+			if(playerCounter == finishedPlayerIDs.size()){
+				endMatch();
+			}
+		}
+		// Add Scores up
+		if(currentGameTime > (countdownTime + gameTime) && currentGameTime <= (countdownTime + gameTime + addScoreTime)){
+			if(!showingAddingScore){
+				showingAddingScore = true;
+				running = false;
+				for (Team team : playmode.getTeams()) {
+					for (User user : team.getUser()) {
+						if(!finishedPlayerIDs.contains(user.getID())){
+							HorseGO player = (HorseGO)gameObjects.get("PLAYER" + user.getID());
+							finishedPlayerIDs.add(user.getID());
+							player.setRunning(false);
+							
+						}
+					}
+				}
+				addClientEvent(EVENT_SHOW_COUNTDOWN);
+			}
+		}
+		// Show Scores only
+		if(currentGameTime > (countdownTime + gameTime + addScoreTime) && currentGameTime <= (countdownTime + gameTime + addScoreTime + showScoreTime)){
+			
+		}
+		// Match over
+		if(currentGameTime > (countdownTime + gameTime + addScoreTime + showScoreTime)){
+			
+		}
+		currentGameTime++;
 	}
 
 	@Override
-	protected void executeGameEvents(Integer[] events) {
-		// TODO Auto-generated method stub
-		
+	protected boolean executeGameEvents(Integer[] events) {
+		if(events == null){
+			events = new Integer[0];
+		}
+		for(Integer event : events){
+			switch (event) {
+			case EVENT_START_GAME:{
+				
+				break;
+			}
+			case EVENT_SHOW_COUNTDOWN:{
+				break;
+			}
+			case EVENT_MATCH_OVER:{
+				endMatch();
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		return events.length > 0;
 	}
 
 	@Override
-	protected void startUpdating() {
-		// TODO Auto-generated method stub
-		
+	protected void startServerLoop() {
+		Runnable thread = new Runnable(){
+
+			@Override
+			public void run() {
+				while(running){
+					try {
+						Thread.sleep(GAMEINTERVAL);
+						updateServerGame();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		(new Thread(thread)).start();
 	}
 
 	@Override
 	protected Integer[] getActions() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Integer[0];
 	}
 
 	@Override
@@ -269,4 +412,8 @@ public class HorseRaceMatch extends Match{
 		
 	}
 
+	@Override
+	protected void endMatch() {
+		currentGameTime = countdownTime + gameTime + 1;
+	}
 }
