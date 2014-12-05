@@ -154,6 +154,9 @@ public class GameObject implements Serializable{
 		if((images = this.animations.get(this.information.getCurrentAnimationType())) == null || images.length == 0){
 			return currentImage;
 		}
+		if(this.animationCounter >= this.animationCounterMax){
+			this.animationCounter = 0;
+		}
 		currentImage = images[(int)Math.floor(images.length / (double)this.animationCounterMax * this.animationCounter)];
 		return currentImage;
 	}

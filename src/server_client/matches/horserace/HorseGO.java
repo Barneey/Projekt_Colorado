@@ -6,8 +6,6 @@ import server_client.matches.GameObject;
 
 public class HorseGO extends GameObject{
 	
-	
-	
 	public HorseGO(int x, int y, Dimension size){
 		super(x, y, size);
 		setGameInformation(new HorseGOI(x, y, 0));

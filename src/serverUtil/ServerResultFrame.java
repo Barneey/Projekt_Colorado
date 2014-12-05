@@ -1,6 +1,5 @@
 package serverUtil;
 
-import java.awt.BorderLayout;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

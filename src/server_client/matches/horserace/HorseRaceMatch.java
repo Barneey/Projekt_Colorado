@@ -45,6 +45,7 @@ public class HorseRaceMatch extends Match{
 	private int addScoreTime;
 	private int showScoreTime;
 	private int currentGameTime;
+	private int gameInfoTime;
 	private ArrayList<Integer> finishedPlayerIDs;
 	private final static int EVENT_PLAYER_FINISHED = 0;
 	private final static int EVENT_SHOW_COUNTDOWN = 1;
@@ -60,6 +61,7 @@ public class HorseRaceMatch extends Match{
 		this.animationStandOpen = "STAND_OPEN";
 		this.animationMove = "MOVE";
 		this.keytoPress = 'A';
+		this.gameInfoTime = (3 * 1000 / GAMEINTERVAL);
 		this.countdownTime = (3 * 1000 / GAMEINTERVAL);
 		this.gameTime = (1 * 60 * 1000 / GAMEINTERVAL);
 		this.addScoreTime = (3 * 1000 / GAMEINTERVAL);
@@ -82,49 +84,61 @@ public class HorseRaceMatch extends Match{
 
 	@Override
 	public void run() {
-		// TODO REWORK
-		showingGameInfo = true;
-		repaint();
-		for (int i = 0; i < 50; i++) {
-			try {
-				Thread.sleep(GAMEINTERVAL);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		showingGameInfo = false;
-		running = true;
-		playing = true;
-		while(running){
-			try {
-				Thread.sleep(GAMEINTERVAL);
+		try {
+			showingGameInfo = showingCountDown = playing = showingAddingScore = showingOnlyScore = false;
+			while(!isOver()){
+				// GameInfo
+				if(currentGameTime <= gameInfoTime){
+					if(!showingGameInfo){
+						showingGameInfo = true;
+					}
+					repaint();
+				}
+				// Countdown
+				if(currentGameTime > gameInfoTime && currentGameTime <= (countdownTime + gameInfoTime)){
+					if(!showingCountDown){
+						showingCountDown = true;
+						showingGameInfo = false;
+					}
+					repaint();
+				}
+				// Game
+				if(currentGameTime > countdownTime + gameInfoTime && currentGameTime <= (countdownTime + gameTime + gameInfoTime)){
+					if(!playing){
+						showingCountDown = false;
+						playing = true;
+					}
+					updateGameObjects();
+					repaint();
+					requestFocusInWindow();
+				}
+				// Add Scores up
+				if(currentGameTime > (countdownTime + gameTime + gameInfoTime) && currentGameTime <= (countdownTime + gameTime + addScoreTime + gameInfoTime)){
+					if(!showingAddingScore){
+						this.scoreList = GameConnection.getInstance().getScoreList(gameID, userID); 
+						showingAddingScore = true;
+						running = false;
+					}
+					repaint();
+				}
+				// Show Scores only
+				if(currentGameTime > (countdownTime + gameTime + addScoreTime + gameInfoTime) && currentGameTime <= (countdownTime + gameTime + addScoreTime + showScoreTime + gameInfoTime)){
+					if(!showingOnlyScore){
+						showingOnlyScore = true;
+						showingAddingScore = false;
+					}
+					repaint();
+				}
+				// Match over
+				if(currentGameTime > (countdownTime + gameTime + addScoreTime + showScoreTime + gameInfoTime)){
+					over = true;
+				}
 				currentGameTime++;
-				updateGameObjects();
-				repaint();
-				requestFocusInWindow();
-			} catch (Exception e) {
-				e.printStackTrace();
+				Thread.sleep(GAMEINTERVAL);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-//		try {
-//			this.scoreList = GameConnection.getInstance().getScoreList(gameID, userID); 
-//			this.showingScore = true;
-//			this.onlyDisplayScore = false;
-//			while(showingScoreCounter < showingScoreMax){
-//				Thread.sleep(GAMEINTERVAL);
-//				repaint();
-//				this.showingScoreCounter++;
-//			}
-//			this.onlyDisplayScore = true;
-//			for(int i = 0; i < 50; i++){
-//				Thread.sleep(GAMEINTERVAL);
-//				repaint();
-//			}
-//			this.showingScore = false;
-//			this.over = true;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	@Override
@@ -152,7 +166,7 @@ public class HorseRaceMatch extends Match{
 
 	@Override
 	public void paint(Graphics g) {
-		if(imagesLoaded){
+		if(!imagesLoaded){
 			loadImages();
 		}
 		// Clear screen
@@ -160,16 +174,21 @@ public class HorseRaceMatch extends Match{
 		// Draw background
 		drawGameObject(gameObjects.get("BACKGROUND"));
 		if(showingGameInfo){
-			if(showingGameInfoCounter < showingGameInfoMax){
-				showingGameInfoCounter++;
-				drawString("Press the displayed key to speed your unicorn up", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20);
-			}
-			if(showingGameInfoCounter > showingGameInfoMax){
-				// Draw countdown
-			}
+			drawString("Press the displayed key to speed your unicorn up", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 12), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20);
+		}
+		if(showingCountDown){
+			int countdown = (currentGameTime - gameInfoTime) * GAMEINTERVAL / 1000;
+			int countdownLimit = countdownTime * GAMEINTERVAL / 1000;
+			String sCountdown = (countdownLimit - countdown == 0 ? "GO!" : countdownLimit - countdown + "" );
+			drawString(sCountdown, Color.RED, null, VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20);
 		}
 		if(playing){
 			drawString(keytoPress + "", Color.YELLOW, new Font(Font.SANS_SERIF, Font.BOLD, 20), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20);
+			int ms = currentGameTime * GAMEINTERVAL;
+			int seconds = (ms / 1000) % 60;
+			String sSeconds = seconds / 10 + "" + seconds % 10;
+			int minutes = (ms / (1000*60)) % 60;
+			drawString("Time: " + minutes + ":" + sSeconds , null, null, VERTICAL_ALIGN_RIGHT, NO_ALIGN, -20, 30);
 		}
 		// Draw score
 		if(showingAddingScore){
@@ -177,9 +196,14 @@ public class HorseRaceMatch extends Match{
 			for (int i = 0; i < currentScore.length; i++) {
 				drawString(i+1 + ". " + currentScore[i].toString(), Color.BLACK, new Font(Font.SANS_SERIF, Font.BOLD, 15), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20*i+100);
 			}
-			if(!showingOnlyScore){
-				scoreList.calculateNewScores(showingScoreCounter, showingScoreMax);
+			scoreList.calculateNewScores(currentGameTime - (countdownTime + gameTime + gameInfoTime), (countdownTime + gameTime + addScoreTime + gameInfoTime) - (countdownTime + gameTime + gameInfoTime) + 1);
+		}
+		if(showingOnlyScore){
+			Score[] currentScore = scoreList.getOrderedScore();
+			for (int i = 0; i < currentScore.length; i++) {
+				drawString(i+1 + ". " + currentScore[i].toString(), Color.BLACK, new Font(Font.SANS_SERIF, Font.BOLD, 15), VERTICAL_ALIGN_CENTER, NO_ALIGN, 0, 20*i+100);
 			}
+			
 		}
 		boolean firstTeam = true;
 		for (Team team : playmode.getTeams()) {
@@ -197,13 +221,6 @@ public class HorseRaceMatch extends Match{
 			}
 			firstTeam = false;
 		}
-		
-		int ms = currentGameTime * GAMEINTERVAL;
-		int seconds = (ms / 1000) % 60;
-		String sSeconds = seconds / 10 + "" + seconds % 10;
-		int minutes = (ms / (1000*60)) % 60;
-		drawString("Time: " + minutes + ":" + sSeconds , null, null, VERTICAL_ALIGN_RIGHT, NO_ALIGN, -20, 30);
-
 		g.drawImage(offscreen, 0, 0, this);
 	}
 
@@ -259,7 +276,6 @@ public class HorseRaceMatch extends Match{
 			e.printStackTrace();
 		}
 		
-		
 		HashMap<String, GameObjectInformation> clientPlayerObjects = new HashMap<>();
 		if(!gameEventsGotten){
 			player = gameObjects.get("PLAYER" + userID);
@@ -290,6 +306,10 @@ public class HorseRaceMatch extends Match{
 
 	@Override
 	protected void updateServerGame() {
+		// GameInfo
+		if(currentGameTime <= gameInfoTime){
+			
+		}
 		// Countdown
 		if(currentGameTime <= countdownTime){
 			if(!showingCountDown){
@@ -302,6 +322,7 @@ public class HorseRaceMatch extends Match{
 			if(!playing){
 				showingCountDown = false;
 				playing = true;
+				gameObjects.get("BACKGROUND").setCurrentAnimationType(animationStandOpen);
 				addClientEvent(EVENT_START_GAME);
 				for (Team team : playmode.getTeams()) {
 					for (User user : team.getUser()) {
@@ -318,6 +339,7 @@ public class HorseRaceMatch extends Match{
 						if(player.correspondsWith(goalLine)){
 							finishedPlayerIDs.add(user.getID());
 							player.setRunning(false);
+							player.setCurrentAnimationType(animationStand);
 							scoreList.addScoreFor(user, (500 / finishedPlayerIDs.size()));
 						}
 					}
@@ -325,6 +347,7 @@ public class HorseRaceMatch extends Match{
 				}
 			}
 			if(playerCounter == finishedPlayerIDs.size()){
+				addClientEvent(EVENT_MATCH_OVER);
 				endMatch();
 			}
 		}
@@ -365,7 +388,6 @@ public class HorseRaceMatch extends Match{
 		for(Integer event : events){
 			switch (event) {
 			case EVENT_START_GAME:{
-				
 				break;
 			}
 			case EVENT_SHOW_COUNTDOWN:{

@@ -79,7 +79,6 @@ public class LoginFrame extends JFrame
 		jlbTitel.setForeground(JGSystem.COLOR_TEXT);
 		this.add(jlbTitel);
 		
-		
 		JLabel jlbUsername = new JLabel("Username");
 		jlbUsername.setSize(textLabelDimension);
 		jlbUsername.setLocation(startX ,startY);

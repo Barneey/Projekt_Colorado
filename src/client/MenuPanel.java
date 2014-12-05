@@ -29,7 +29,7 @@ public class MenuPanel extends JPanel{
 		add(jbttnPlay);
 		
 		JGCButton jbttnProfile = new JGCButton("Profile");
-		jbttnProfile.setEnabled(false);
+//		jbttnProfile.setEnabled(false);
 		jbttnProfile.setPreferredSize(buttonSize);
 		jbttnProfile.addActionListener(new ALProfile());
 		add(jbttnProfile);
@@ -66,7 +66,11 @@ public class MenuPanel extends JPanel{
 	private class ALProfile implements ActionListener{
 		
 		public void actionPerformed(ActionEvent ae){
-			// TODO write Method
+			if(profilePanel == null){
+				profilePanel = new ProfilePanel(contentPanel.getPreferredSize(), user);
+			}
+			//
+			contentPanel.setContent(profilePanel);
 		}
 	}
 

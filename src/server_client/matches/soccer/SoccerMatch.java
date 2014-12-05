@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -96,7 +95,7 @@ public class SoccerMatch extends Match{
 		this.goalDisplayCounter = 0;
 		this.goalDisplayCounterMax = 30;
 		this.skipRepaintingCounter = 0;
-		this.gameTimerMax = (int)(1 * 60 * 1000 / GAMEINTERVAL);
+		this.gameTimerMax = (int)(0.5 * 60 * 1000 / GAMEINTERVAL);
 		this.currentGameTime = 0;
 		GameObject ball = new GameObject(fieldStart.x + fieldSize.width / 2 - (20/2), fieldStart.y + fieldSize.height / 2 - (20/2), new Dimension(20,20));
 		ball.setSpeedReduction(ballSpeedReduction);

@@ -89,6 +89,8 @@ public class PlayFrame extends JFrame{
 					}	
 				}
 			}
+			// TODO handle game over -> final scores, close window -> or let close by button
+			// TODO reenable searching for a game
 			System.out.println("So, jetzt ist es vorbei");
 		} catch (SocketTimeoutException e) {
 			// TODO Auto-generated catch block

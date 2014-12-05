@@ -96,7 +96,7 @@ public abstract class Match extends JPanel implements Runnable, KeyListener {
 	protected abstract boolean executeGameEvents(Integer[] events);
 	public abstract void performClientActions(int userID, Integer[] actions);
 	protected abstract void endMatch();
-	
+
 	public void setUserID(int userID){
 		this.userID = userID;
 	}
